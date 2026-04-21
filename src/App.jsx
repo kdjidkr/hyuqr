@@ -45,18 +45,18 @@ function App() {
 
   return (
     <div className="app-container">
-      {!token ? (
-        <LoginForm onSuccess={handleLoginSuccess} />
-      ) : (
-        <>
-          {activeTab === 'qr' ? (
+      <div className="main-content">
+        {activeTab === 'qr' ? (
+          token ? (
             <QRView token={token} setToken={setToken} onLogout={handleLogout} />
           ) : (
-            <CafeteriaView />
-          )}
-          <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
-        </>
-      )}
+            <LoginForm onSuccess={handleLoginSuccess} />
+          )
+        ) : (
+          <CafeteriaView />
+        )}
+      </div>
+      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   );
 }
