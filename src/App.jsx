@@ -335,24 +335,26 @@ function QRView({ token, setToken, onLogout }) {
               background: 'rgba(245, 158, 11, 0.1)', 
               padding: '0.75rem', 
               borderRadius: '8px', 
-              fontSize: '0.8rem', 
+              fontSize: '0.85rem', 
               color: '#b45309',
-              fontWeight: '600',
-              lineHeight: '1.4',
-              textAlign: 'left'
+              fontWeight: '700',
+              textAlign: 'center'
             }}>
-              ⚠️ {seatData.checkinExpiryDate.substring(11, 16)}까지 오프라인 태그를 완료하지 않으면 배정이 자동으로 취소됩니다.
+              ⚠️ {seatData.checkinExpiryDate.substring(11, 16)}까지 좌석 배정을 완료해주세요
             </div>
           )}
 
-          <div className="seat-time">
-            <span>{seatData.state?.code === 'TEMP_CHARGE' ? '예약 만료:' : '반납 예정:'} {seatData.endTime?.substring(11, 16)}</span>
-            <span className="seat-remaining" style={{ color: seatData.state?.code === 'TEMP_CHARGE' ? 'var(--warning)' : 'var(--success)' }}>
-              ({seatData.remainTime}분 남음)
-            </span>
-          </div>
+          {seatData.state?.code !== 'TEMP_CHARGE' && (
+            <div className="seat-time">
+              <span>반납 예정: {seatData.endTime?.substring(11, 16)}</span>
+              <span className="seat-remaining" style={{ color: 'var(--success)' }}>
+                ({seatData.remainTime}분 남음)
+              </span>
+            </div>
+          )}
+
           <button className="seat-return-btn" onClick={handleSeatReturn} disabled={refreshing}>
-            좌석 반납하기
+            {seatData.state?.code === 'TEMP_CHARGE' ? '예약 취소하기' : '좌석 반납하기'}
           </button>
         </div>
       )}

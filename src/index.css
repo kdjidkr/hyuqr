@@ -282,7 +282,6 @@ p.subtitle {
 }
 
 .seat-info-card.is-temp {
-  border-left: 4px solid var(--warning);
   background: linear-gradient(to right, rgba(245, 158, 11, 0.05), white);
 }
 
