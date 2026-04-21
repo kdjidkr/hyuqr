@@ -156,7 +156,6 @@ function QRView({ token, setToken, onLogout }) {
   const [timeLeft, setTimeLeft] = useState(30);
 
   const fetchQR = useCallback(async (currentToken) => {
-    if (!qrData) setStatus('loading');
     setRefreshing(true);
     setTimeLeft(30);
     try {
@@ -173,7 +172,7 @@ function QRView({ token, setToken, onLogout }) {
         if (reloginRes.ok && reloginData.success) {
           localStorage.setItem('pyxisAccessToken', reloginData.accessToken);
           setToken(reloginData.accessToken);
-          fetchQR(reloginData.accessToken);
+          return fetchQR(reloginData.accessToken);
         } else { onLogout(); }
         return;
       }
@@ -189,11 +188,11 @@ function QRView({ token, setToken, onLogout }) {
       }
       setStatus('ready');
     } catch (err) { 
-      if (!qrData) setStatus('error');
+      setStatus(prev => prev === 'loading' ? 'error' : prev);
     } finally {
       setRefreshing(false);
     }
-  }, [onLogout, setToken, qrData]);
+  }, [onLogout, setToken]); // Removed qrData to avoid infinite loop
 
   useEffect(() => { if (token) fetchQR(token); }, [token, fetchQR]);
 
