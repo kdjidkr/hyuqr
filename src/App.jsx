@@ -1,24 +1,48 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { RefreshCw, MapPin, CheckCircle, Smartphone, Utensils, QrCode, ChevronLeft, ChevronRight, Flame } from 'lucide-react';
+import { RefreshCw, Smartphone, Utensils, QrCode, ChevronLeft, ChevronRight } from 'lucide-react';
 import './index.css';
+
+// Helper for KST Date
+const getKSTDate = () => new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
 
 function App() {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(null);
   const [userData, setUserData] = useState(null);
   const [activeTab, setActiveTab] = useState('qr'); // 'qr' or 'cafe'
+  
+  // Menu State lifted for pre-fetching
+  const [menuDate, setMenuDate] = useState(getKSTDate());
+  const [cafes, setCafes] = useState([]);
+  const [menuLoading, setMenuLoading] = useState(false);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('pyxisAccessToken');
     const storedCreds = localStorage.getItem('pyxisEncryptedCreds');
     if (storedToken && storedCreds) {
       setToken(storedToken);
-      setLoading(false);
-    } else {
-      setLoading(false);
     }
+    setLoading(false);
   }, []);
+
+  const fetchMenus = useCallback(async (targetDate) => {
+    setMenuLoading(true);
+    const dateStr = targetDate.toISOString().split('T')[0].replace(/-/g, '/');
+    try {
+      const res = await fetch(`/api/menu?id=all&date=${dateStr}`);
+      const data = await res.json();
+      if (data.success) {
+        setCafes(data.data);
+      }
+    } catch (e) { console.error(e); }
+    setMenuLoading(false);
+  }, []);
+
+  // Pre-fetch effect: Runs on mount and whenever menuDate changes
+  useEffect(() => {
+    fetchMenus(menuDate);
+  }, [menuDate, fetchMenus]);
 
   const handleLoginSuccess = (accessToken, encryptedCredentials, name) => {
     localStorage.setItem('pyxisAccessToken', accessToken);
@@ -32,6 +56,12 @@ function App() {
     localStorage.removeItem('pyxisEncryptedCreds');
     setToken(null);
     setUserData(null);
+  };
+
+  const changeMenuDate = (offset) => {
+    const newDate = new Date(menuDate);
+    newDate.setDate(menuDate.getDate() + offset);
+    setMenuDate(newDate);
   };
 
   if (loading) {
@@ -53,7 +83,12 @@ function App() {
             <LoginForm onSuccess={handleLoginSuccess} />
           )
         ) : (
-          <CafeteriaView />
+          <CafeteriaView 
+            date={menuDate} 
+            changeDate={changeMenuDate} 
+            cafes={cafes} 
+            loading={menuLoading} 
+          />
         )}
       </div>
       <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -169,7 +204,7 @@ function QRView({ token, setToken, onLogout }) {
   if (status === 'error') return <div className="qr-glass-panel"><button className="qr-refresh-btn" onClick={() => fetchQR(token)}>다시 시도</button></div>;
 
   return (
-    <div className="qr-glass-panel" style={{ marginBottom: '80px' }}>
+    <div className="qr-glass-panel">
       <h2 className="qr-title">출입증 QR</h2>
       <p className="qr-desc">스캐너에 화면을 인식시켜주세요.</p>
       <div className="qr-wrapper"><QRCodeSVG value={qrData} size={220} level="M" /></div>
@@ -187,30 +222,8 @@ function QRView({ token, setToken, onLogout }) {
   );
 }
 
-function CafeteriaView() {
-  const [date, setDate] = useState(new Date(new Date().getTime() + 9 * 60 * 60 * 1000));
-  const [cafes, setCafes] = useState([]);
+function CafeteriaView({ date, changeDate, cafes, loading }) {
   const [selectedCafeId, setSelectedCafeId] = useState('re15');
-  const [loading, setLoading] = useState(true);
-
-  const fetchMenus = useCallback(async (targetDate) => {
-    setLoading(true);
-    const dateStr = targetDate.toISOString().split('T')[0].replace(/-/g, '/');
-    try {
-      const res = await fetch(`/api/menu?id=all&date=${dateStr}`);
-      const data = await res.json();
-      if (data.success) setCafes(data.data);
-    } catch (e) { console.error(e); }
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { fetchMenus(date); }, [date, fetchMenus]);
-
-  const changeDate = (offset) => {
-    const newDate = new Date(date);
-    newDate.setDate(date.getDate() + offset);
-    setDate(newDate);
-  };
 
   const selectedCafe = cafes.find(c => c.id === selectedCafeId) || { menus: [] };
 
@@ -236,13 +249,13 @@ function CafeteriaView() {
       </div>
 
       <div className="menu-list">
-        {loading ? (
+        {loading && cafes.length === 0 ? (
           <div className="no-menu"><div className="loader-spinner" style={{ margin: '0 auto 1rem', width: '30px', height: '30px' }}></div>식단표 로딩 중...</div>
         ) : selectedCafe.menus.length > 0 ? (
           selectedCafe.menus.map((m, i) => (
             <div key={i} className="menu-card">
               <div className="menu-type">{m.type}</div>
-              <div className="menu-items">{m.menu}</div>
+              <div className="menu-items" style={{ whiteSpace: 'pre-line' }}>{m.menu}</div>
             </div>
           ))
         ) : (

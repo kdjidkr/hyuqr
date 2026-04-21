@@ -47,6 +47,9 @@ async function scrapeCafe(cafeId, dateStr) {
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ message: 'Method Not Allowed' });
 
+  // Add Edge Caching: Cache for 1 hour, revalidate in background if up to 10 mins old
+  res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=600');
+
   const id = req.query.id || 'all';
   let dateStr = req.query.date;
 
