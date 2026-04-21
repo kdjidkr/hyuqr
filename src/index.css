@@ -99,14 +99,23 @@ p.subtitle {
 
 .input-field {
   width: 100%;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--glass-border);
+  background: white;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 0.875rem 1rem;
-  color: white;
+  color: #1e293b;
   font-size: 1rem;
   transition: all 0.2s ease;
   font-family: inherit;
+}
+
+.input-field.room-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.25rem;
+  padding-right: 2.5rem;
 }
 
 .input-field:focus {
@@ -370,6 +379,35 @@ p.subtitle {
 .seat-return-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Reserve Panel */
+.reserve-panel {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  animation: slideUp 0.4s ease-out;
+}
+
+.reserve-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.reserve-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--hyu-blue);
+  margin-bottom: 0.25rem;
+}
+
+.reserve-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
 }
 
 

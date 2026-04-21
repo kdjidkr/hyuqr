@@ -6,6 +6,13 @@ import './index.css';
 // Helper for KST Date
 const getKSTDate = () => new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
 
+const ROOMS = [
+  { id: 61, name: '제1열람실 (2F)', max: 324, offset: 2276 },
+  { id: 63, name: '제2열람실 (4F)', max: 218, offset: 2786 },
+  { id: 132, name: '노상일 HOLMZ (4F)', max: 83, offset: 3823 },
+  { id: 131, name: '집중열람실 (4F)', max: 10, offset: 3811 }
+];
+
 function App() {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(null);
@@ -253,7 +260,33 @@ function QRView({ token, setToken, onLogout }) {
     } finally {
       setRefreshing(false);
     }
-  }, [onLogout, setToken]);
+  }, [onLogout, setToken, fetchQR, token]);
+
+  const handleReserve = async (seatId) => {
+    setRefreshing(true);
+    try {
+      const res = await fetch('/api/reserve', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Pyxis-Auth-Token': token 
+        },
+        body: JSON.stringify({ seatId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('예약되었습니다.');
+        fetchQR(token);
+      } else {
+        alert(data.message || '예약 실패');
+      }
+    } catch (err) {
+      console.error('Reserve error:', err);
+      alert('통신 오류가 발생했습니다.');
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const handleSeatReturn = async () => {
     if (!seatData) return;
@@ -357,6 +390,8 @@ function QRView({ token, setToken, onLogout }) {
             {seatData.state?.code === 'TEMP_CHARGE' ? '예약 취소하기' : '좌석 반납하기'}
           </button>
         </div>
+      ) : (
+        <ReserveForm onReserve={handleReserve} loading={refreshing} />
       )}
       <button className="qr-refresh-btn" onClick={() => fetchQR(token)} disabled={refreshing}>
         <RefreshCw size={16} className={refreshing ? 'spin-animation' : ''} />
@@ -364,6 +399,63 @@ function QRView({ token, setToken, onLogout }) {
       </button>
       <button className="qr-logout-btn" onClick={onLogout}>로그아웃</button>
       <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#94a3b8', fontSize: '0.75rem' }}><Smartphone size={14} /> 화면 밝기 최대 권장</div>
+    </div>
+  );
+}
+
+function ReserveForm({ onReserve, loading }) {
+  const [selectedRoomIdx, setSelectedRoomIdx] = useState(0);
+  const [seatNum, setSeatNum] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!seatNum) return;
+    const room = ROOMS[selectedRoomIdx];
+    const num = parseInt(seatNum, 10);
+    
+    if (isNaN(num) || num <= 0 || num > room.max) {
+      alert(`좌석 번호는 1~${room.max} 사이여야 합니다.`);
+      return;
+    }
+
+    const seatId = room.offset + num;
+    onReserve(seatId);
+  };
+
+  return (
+    <div className="reserve-panel">
+      <div className="reserve-header">
+        <h3 className="reserve-title">좌석 예약하기</h3>
+        <p className="reserve-subtitle">열람실과 좌석 번호를 입력하세요</p>
+      </div>
+      <form onSubmit={handleSubmit}>
+        <div className="input-group">
+          <label>열람실 선택</label>
+          <select 
+            className="input-field room-select" 
+            value={selectedRoomIdx} 
+            onChange={e => setSelectedRoomIdx(parseInt(e.target.value, 10))}
+          >
+            {ROOMS.map((room, idx) => (
+              <option key={room.id} value={idx}>{room.name}</option>
+            ))}
+          </select>
+        </div>
+        <div className="input-group">
+          <label>좌석 번호 (1~{ROOMS[selectedRoomIdx].max})</label>
+          <input 
+            type="number" 
+            className="input-field" 
+            value={seatNum} 
+            onChange={e => setSeatNum(e.target.value)} 
+            placeholder="좌석 번호" 
+            required 
+          />
+        </div>
+        <button type="submit" className="primary-btn" disabled={loading} style={{ marginTop: '1rem' }}>
+          {loading ? <div className="spinner" /> : '좌석 예약하기'}
+        </button>
+      </form>
     </div>
   );
 }
