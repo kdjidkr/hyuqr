@@ -351,6 +351,13 @@ function QRView({ token, setToken, onLogout }) {
       <div style={{ color: timeLeft <= 5 ? '#ef4444' : '#10b981', fontWeight: '700', fontSize: '1rem', marginBottom: '1rem' }}>
         {refreshing ? '갱신 중...' : `유효시간: ${timeLeft}초`}
       </div>
+      
+      {userData?.name && (
+        <div style={{ color: '#64748b', fontSize: '0.9rem', fontWeight: '600', marginBottom: '1rem' }}>
+          반갑습니다, <span style={{ color: 'var(--hyu-blue)' }}>{userData.name}</span>님
+        </div>
+      )}
+
       {seatData ? (
         <div className={`seat-info-card ${seatData.state?.code === 'TEMP_CHARGE' ? 'is-temp' : 'is-confirmed'}`}>
           <div className="seat-header">
