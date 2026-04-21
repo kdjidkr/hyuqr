@@ -211,8 +211,33 @@ function QRView({ token, setToken, onLogout }) {
         const seatRes = await fetch('/api/seat', { headers: { 'X-Pyxis-Auth-Token': currentToken } });
         if (seatRes.ok) {
           const sData = await seatRes.json();
-          if (sData.success && sData.data?.list?.[0]?.seat?.[0]) {
-            setSeatData(sData.data.list[0].seat[0]);
+          if (sData.success && sData.data?.list?.[0]) {
+            const item = sData.data.list[0];
+            // list[0].seat[0] 형태이거나 list[0].seat 형태일 수 있음 (유연하게 처리)
+            const seatObj = Array.isArray(item.seat) ? item.seat[0] : item.seat;
+            
+            if (seatObj) {
+              const seat = {
+                ...seatObj, // 기존 필드 유지
+                id: item.id || seatObj.id,
+                room: item.room || seatObj.room,
+                endTime: item.endTime || seatObj.endTime,
+                state: item.state || seatObj.state,
+                checkinExpiryDate: item.checkinExpiryDate || seatObj.checkinExpiryDate,
+                remainTime: item.remainTime ?? item.remainingTime ?? seatObj.remainTime ?? seatObj.remainingTime
+              };
+
+              // Calculate remaining minutes if field is missing or invalid
+              if (seat.remainTime === undefined && seat.endTime) {
+                try {
+                  const end = new Date(seat.endTime.replace(/-/g, '/'));
+                  const now = new Date();
+                  const diff = Math.floor((end - now) / 60000);
+                  seat.remainTime = Math.max(0, diff);
+                } catch (e) { console.error('Time calc error', e); }
+              }
+              setSeatData(seat);
+            }
           } else {
             setSeatData(null);
           }
@@ -294,17 +319,37 @@ function QRView({ token, setToken, onLogout }) {
         {refreshing ? '갱신 중...' : `유효시간: ${timeLeft}초`}
       </div>
       {seatData && (
-        <div className="seat-info-card">
+        <div className={`seat-info-card ${seatData.state?.code === 'TEMP_CHARGE' ? 'is-temp' : 'is-confirmed'}`}>
           <div className="seat-header">
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+              <div className={`status-badge ${seatData.state?.code === 'TEMP_CHARGE' ? 'temp' : 'confirmed'}`}>
+                {seatData.state?.code === 'TEMP_CHARGE' ? '확정 대기중' : '좌석 이용중'}
+              </div>
               <span className="seat-room">{seatData.room?.name}</span>
-              <span style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '2px' }}>{seatData.endTime?.substring(0, 10)}</span>
             </div>
-            <span className="seat-number">{seatData.seat}번 좌석</span>
+            <span className="seat-number">{seatData.seat || seatData.code}번 좌석</span>
           </div>
+
+          {seatData.state?.code === 'TEMP_CHARGE' && seatData.checkinExpiryDate && (
+            <div style={{ 
+              background: 'rgba(245, 158, 11, 0.1)', 
+              padding: '0.75rem', 
+              borderRadius: '8px', 
+              fontSize: '0.8rem', 
+              color: '#b45309',
+              fontWeight: '600',
+              lineHeight: '1.4',
+              textAlign: 'left'
+            }}>
+              ⚠️ {seatData.checkinExpiryDate.substring(11, 16)}까지 오프라인 태그를 완료하지 않으면 배정이 자동으로 취소됩니다.
+            </div>
+          )}
+
           <div className="seat-time">
-            <span>만료 예정: {seatData.endTime?.substring(11, 16)}</span>
-            <span className="seat-remaining">({seatData.remainTime ?? seatData.remainingTime}분 남음)</span>
+            <span>{seatData.state?.code === 'TEMP_CHARGE' ? '예약 만료:' : '반납 예정:'} {seatData.endTime?.substring(11, 16)}</span>
+            <span className="seat-remaining" style={{ color: seatData.state?.code === 'TEMP_CHARGE' ? 'var(--warning)' : 'var(--success)' }}>
+              ({seatData.remainTime}분 남음)
+            </span>
           </div>
           <button className="seat-return-btn" onClick={handleSeatReturn} disabled={refreshing}>
             좌석 반납하기
