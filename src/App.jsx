@@ -138,9 +138,11 @@ function LoginForm({ onSuccess }) {
 function QRView({ token, setToken, onLogout }) {
   const [qrData, setQrData] = useState(null);
   const [status, setStatus] = useState('loading'); // loading, ready, error
+  const [timeLeft, setTimeLeft] = useState(30);
 
   const fetchQR = useCallback(async (currentToken) => {
     setStatus('loading');
+    setTimeLeft(30);
     try {
       const res = await fetch('/api/qr', {
         headers: { 'X-Pyxis-Auth-Token': currentToken }
@@ -207,6 +209,22 @@ function QRView({ token, setToken, onLogout }) {
     if (token) fetchQR(token);
   }, [token, fetchQR]);
 
+  // Auto-refresh timer logic
+  useEffect(() => {
+    if (status !== 'ready') return;
+
+    if (timeLeft <= 0) {
+      fetchQR(token);
+      return;
+    }
+
+    const timerIdle = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timerIdle);
+  }, [status, timeLeft, token, fetchQR]);
+
   if (status === 'loading') {
     return (
       <div className="qr-glass-panel">
@@ -233,6 +251,19 @@ function QRView({ token, setToken, onLogout }) {
       
       <div className="qr-wrapper">
         <QRCodeSVG value={qrData} size={220} level="M" />
+      </div>
+
+      <div style={{
+          color: timeLeft <= 5 ? '#ef4444' : '#10b981',
+          fontWeight: '700',
+          fontSize: '1rem',
+          marginBottom: '1rem',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '8px'
+      }}>
+        유효시간: {timeLeft}초
       </div>
 
       <button className="qr-refresh-btn" onClick={() => fetchQR(token)}>
