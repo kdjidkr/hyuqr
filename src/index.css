@@ -480,3 +480,13 @@ p.subtitle {
   padding: 3rem 1rem;
   color: var(--text-secondary);
 }
+
+/* Refresh Spin Animation */
+.spin-animation {
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

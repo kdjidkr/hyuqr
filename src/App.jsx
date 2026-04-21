@@ -151,11 +151,13 @@ function LoginForm({ onSuccess }) {
 function QRView({ token, setToken, onLogout }) {
   const [qrData, setQrData] = useState(null);
   const [seatData, setSeatData] = useState(null);
-  const [status, setStatus] = useState('loading');
+  const [status, setStatus] = useState('loading'); // 'loading', 'ready', 'error'
+  const [refreshing, setRefreshing] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30);
 
   const fetchQR = useCallback(async (currentToken) => {
-    setStatus('loading');
+    if (!qrData) setStatus('loading');
+    setRefreshing(true);
     setTimeLeft(30);
     try {
       const res = await fetch('/api/qr', { headers: { 'X-Pyxis-Auth-Token': currentToken } });
@@ -186,36 +188,47 @@ function QRView({ token, setToken, onLogout }) {
         else setSeatData(null);
       }
       setStatus('ready');
-    } catch (err) { setStatus('error'); }
-  }, [onLogout, setToken]);
+    } catch (err) { 
+      if (!qrData) setStatus('error');
+    } finally {
+      setRefreshing(false);
+    }
+  }, [onLogout, setToken, qrData]);
 
   useEffect(() => { if (token) fetchQR(token); }, [token, fetchQR]);
 
   useEffect(() => {
-    if (status !== 'ready' || timeLeft <= 0) {
-      if (timeLeft === 0) fetchQR(token);
+    if (status !== 'ready' || timeLeft <= 0 || refreshing) {
+      if (timeLeft === 0 && !refreshing) fetchQR(token);
       return;
     }
     const timer = setInterval(() => setTimeLeft(p => p - 1), 1000);
     return () => clearInterval(timer);
-  }, [status, timeLeft, token, fetchQR]);
+  }, [status, timeLeft, token, fetchQR, refreshing]);
 
-  if (status === 'loading') return <div className="qr-glass-panel"><div className="loader-spinner" style={{ borderColor: 'rgba(0,0,0,0.1)', borderTopColor: 'var(--hyu-blue)' }}></div></div>;
-  if (status === 'error') return <div className="qr-glass-panel"><button className="qr-refresh-btn" onClick={() => fetchQR(token)}>다시 시도</button></div>;
+  if (status === 'loading') return <div className="qr-glass-panel"><div className="loader-spinner" style={{ borderColor: 'rgba(0,0,0,0.1)', borderTopColor: 'var(--hyu-blue)' }}></div><p style={{ color: '#64748b', fontSize: '0.875rem', marginTop: '1rem' }}>인증 코드를 불러오는 중...</p></div>;
+  if (status === 'error') return <div className="qr-glass-panel"><p style={{ color: '#ef4444', marginBottom: '1.5rem' }}>오류가 발생했습니다.</p><button className="qr-refresh-btn" onClick={() => fetchQR(token)}>다시 시도</button></div>;
 
   return (
-    <div className="qr-glass-panel">
+    <div className="qr-glass-panel" style={{ opacity: refreshing ? 0.7 : 1, transition: 'opacity 0.2s' }}>
       <h2 className="qr-title">출입증 QR</h2>
       <p className="qr-desc">스캐너에 화면을 인식시켜주세요.</p>
-      <div className="qr-wrapper"><QRCodeSVG value={qrData} size={220} level="M" /></div>
-      <div style={{ color: timeLeft <= 5 ? '#ef4444' : '#10b981', fontWeight: '700', fontSize: '1rem', marginBottom: '1rem' }}>유효시간: {timeLeft}초</div>
+      <div className="qr-wrapper" style={{ filter: refreshing ? 'blur(2px)' : 'none' }}>
+        <QRCodeSVG value={qrData} size={220} level="M" />
+      </div>
+      <div style={{ color: timeLeft <= 5 ? '#ef4444' : '#10b981', fontWeight: '700', fontSize: '1rem', marginBottom: '1rem' }}>
+        {refreshing ? '갱신 중...' : `유효시간: ${timeLeft}초`}
+      </div>
       {seatData && (
         <div className="seat-info-card">
           <div className="seat-header"><span className="seat-room">{seatData.room?.name}</span><span className="seat-number">{seatData.seat}번 좌석</span></div>
           <div className="seat-time"><span>만료 예정: {seatData.endTime?.substring(11, 16)}</span><span className="seat-remaining">({seatData.remainingTime}분 남음)</span></div>
         </div>
       )}
-      <button className="qr-refresh-btn" onClick={() => fetchQR(token)}><RefreshCw size={16} /> <span>새로고침</span></button>
+      <button className="qr-refresh-btn" onClick={() => fetchQR(token)} disabled={refreshing}>
+        <RefreshCw size={16} className={refreshing ? 'spin-animation' : ''} /> 
+        <span>{refreshing ? '갱신 중...' : '새로고침'}</span>
+      </button>
       <button className="qr-logout-btn" onClick={onLogout}>로그아웃</button>
       <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#94a3b8', fontSize: '0.75rem' }}><Smartphone size={14} /> 화면 밝기 최대 권장</div>
     </div>
