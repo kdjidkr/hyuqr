@@ -1,21 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { RefreshCw, MapPin, CheckCircle, Smartphone } from 'lucide-react';
+import { RefreshCw, MapPin, CheckCircle, Smartphone, Utensils, QrCode, ChevronLeft, ChevronRight, Flame } from 'lucide-react';
 import './index.css';
 
 function App() {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(null);
   const [userData, setUserData] = useState(null);
+  const [activeTab, setActiveTab] = useState('qr'); // 'qr' or 'cafe'
 
-  // Load from local storage on mount
   useEffect(() => {
     const storedToken = localStorage.getItem('pyxisAccessToken');
     const storedCreds = localStorage.getItem('pyxisEncryptedCreds');
-    
     if (storedToken && storedCreds) {
       setToken(storedToken);
-      // We don't verify token immediately, wait for QR component to try
       setLoading(false);
     } else {
       setLoading(false);
@@ -40,17 +38,24 @@ function App() {
     return (
       <div className="loader-overlay">
         <div className="loader-spinner"></div>
-        <p style={{ color: 'var(--text-secondary)' }}>한양대 도서관 연동 중...</p>
+        <p style={{ color: 'var(--text-secondary)' }}>한양대 연동 중...</p>
       </div>
     );
   }
 
   return (
     <div className="app-container">
-      {token ? (
-        <QRView token={token} setToken={setToken} onLogout={handleLogout} />
-      ) : (
+      {!token ? (
         <LoginForm onSuccess={handleLoginSuccess} />
+      ) : (
+        <>
+          {activeTab === 'qr' ? (
+            <QRView token={token} setToken={setToken} onLogout={handleLogout} />
+          ) : (
+            <CafeteriaView />
+          )}
+          <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
+        </>
       )}
     </div>
   );
@@ -59,35 +64,30 @@ function App() {
 function LoginForm({ onSuccess }) {
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
-  const [status, setStatus] = useState('idle'); // idle, loading, error
+  const [status, setStatus] = useState('idle');
   const [errMsg, setErrMsg] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!loginId || !password) return;
-
     setStatus('loading');
     setErrMsg('');
-
     try {
       const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ loginId, password })
       });
-      
       const data = await res.json();
-
       if (res.ok && data.success) {
-        setStatus('idle');
         onSuccess(data.accessToken, data.encryptedCredentials, data.name);
       } else {
         setStatus('error');
-        setErrMsg(data.message || '로그인에 실패했습니다.');
+        setErrMsg(data.message || '로그인 실패');
       }
     } catch (err) {
       setStatus('error');
-      setErrMsg('서버와 통신할 수 없습니다.');
+      setErrMsg('서버 통신 오류');
     }
   };
 
@@ -95,40 +95,18 @@ function LoginForm({ onSuccess }) {
     <div className="glass-panel">
       <h1 className="title">HYU QR Pass</h1>
       <p className="subtitle">빠른 입장을 위한 모바일 QR 패스</p>
-      
       <form onSubmit={handleSubmit}>
         <div className="input-group">
-          <label>한양인 아이디</label>
-          <input 
-            type="text" 
-            className="input-field" 
-            value={loginId} 
-            onChange={e => setLoginId(e.target.value)} 
-            placeholder="포털 아이디"
-            required
-          />
+          <label>포털 아이디</label>
+          <input type="text" className="input-field" value={loginId} onChange={e => setLoginId(e.target.value)} placeholder="포털 아이디" required />
         </div>
         <div className="input-group">
           <label>비밀번호</label>
-          <input 
-            type="password" 
-            className="input-field" 
-            value={password} 
-            onChange={e => setPassword(e.target.value)} 
-            placeholder="포털 비밀번호"
-            required
-          />
+          <input type="password" className="input-field" value={password} onChange={e => setPassword(e.target.value)} placeholder="포털 비밀번호" required />
         </div>
-        
-        <button 
-          type="submit" 
-          className="primary-btn" 
-          disabled={status === 'loading'}
-          style={{ marginTop: '1.5rem' }}
-        >
+        <button type="submit" className="primary-btn" disabled={status === 'loading'} style={{ marginTop: '1.5rem' }}>
           {status === 'loading' ? <div className="spinner" /> : '로그인 연동하기'}
         </button>
-
         {status === 'error' && <p className="error-msg">{errMsg}</p>}
       </form>
     </div>
@@ -138,172 +116,153 @@ function LoginForm({ onSuccess }) {
 function QRView({ token, setToken, onLogout }) {
   const [qrData, setQrData] = useState(null);
   const [seatData, setSeatData] = useState(null);
-  const [status, setStatus] = useState('loading'); // loading, ready, error
+  const [status, setStatus] = useState('loading');
   const [timeLeft, setTimeLeft] = useState(30);
 
   const fetchQR = useCallback(async (currentToken) => {
     setStatus('loading');
     setTimeLeft(30);
     try {
-      const res = await fetch('/api/qr', {
-        headers: { 'X-Pyxis-Auth-Token': currentToken }
-      });
-      
+      const res = await fetch('/api/qr', { headers: { 'X-Pyxis-Auth-Token': currentToken } });
       if (res.status === 401) {
-        // Token expired, let's relogin silently
         const creds = localStorage.getItem('pyxisEncryptedCreds');
-        if (!creds) {
-          onLogout();
-          return;
-        }
-
+        if (!creds) { onLogout(); return; }
         const reloginRes = await fetch('/api/relogin', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ encryptedCredentials: creds })
         });
-        
         const reloginData = await reloginRes.json();
-        
         if (reloginRes.ok && reloginData.success) {
           localStorage.setItem('pyxisAccessToken', reloginData.accessToken);
           setToken(reloginData.accessToken);
-          // Recursively fetch QR with new token
-          await fetchQR(reloginData.accessToken);
-        } else {
-          // Relogin failed completely
-          onLogout();
-        }
+          fetchQR(reloginData.accessToken);
+        } else { onLogout(); }
         return;
       }
-
-      if (!res.ok) throw new Error('API Error');
-
       const data = await res.json();
-      if (data && data.data && data.data.data) {
-          const mCard = data.data.membershipCard || (data.data.data && data.data.data.membershipCard);
-          if (mCard) {
-            setQrData(mCard);
-          } else {
-            throw new Error('No QR format matched');
-          }
-      } else if (data && data.success && typeof data.data === 'string') {
-          setQrData(data.data);
-      } else {
-        throw new Error('Invalid QR payload');
-      }
-
-      // Fetch Seat info in parallel
-      try {
-        const seatRes = await fetch('/api/seat', {
-          headers: { 'X-Pyxis-Auth-Token': currentToken }
-        });
-        if (seatRes.ok) {
-          const sData = await seatRes.json();
-          if (sData.success && sData.data?.list?.length > 0 && sData.data.list[0].seat?.length > 0) {
-             setSeatData(sData.data.list[0].seat[0]);
-          } else {
-             setSeatData(null);
-          }
-        }
-      } catch (e) {
-        console.error('Seat fetch failed', e);
-      }
+      const mCard = data.data?.membershipCard || data.data?.data?.membershipCard || (typeof data.data === 'string' ? data.data : null);
+      if (mCard) setQrData(mCard);
       
+      const seatRes = await fetch('/api/seat', { headers: { 'X-Pyxis-Auth-Token': currentToken } });
+      if (seatRes.ok) {
+        const sData = await seatRes.json();
+        if (sData.success && sData.data?.list?.[0]?.seat?.[0]) setSeatData(sData.data.list[0].seat[0]);
+        else setSeatData(null);
+      }
       setStatus('ready');
-      
-
-    } catch (err) {
-      console.error(err);
-      setStatus('error');
-    }
+    } catch (err) { setStatus('error'); }
   }, [onLogout, setToken]);
 
-  useEffect(() => {
-    if (token) fetchQR(token);
-  }, [token, fetchQR]);
+  useEffect(() => { if (token) fetchQR(token); }, [token, fetchQR]);
 
-  // Auto-refresh timer logic
   useEffect(() => {
-    if (status !== 'ready') return;
-
-    if (timeLeft <= 0) {
-      fetchQR(token);
+    if (status !== 'ready' || timeLeft <= 0) {
+      if (timeLeft === 0) fetchQR(token);
       return;
     }
-
-    const timerIdle = setInterval(() => {
-      setTimeLeft(prev => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(timerIdle);
+    const timer = setInterval(() => setTimeLeft(p => p - 1), 1000);
+    return () => clearInterval(timer);
   }, [status, timeLeft, token, fetchQR]);
 
-  if (status === 'loading') {
-    return (
-      <div className="qr-glass-panel">
-        <div className="loader-spinner" style={{ borderColor: 'rgba(0,0,0,0.1)', borderTopColor: 'var(--hyu-blue)' }}></div>
-        <p style={{ color: '#64748b', fontSize: '0.875rem' }}>인증 코드를 불러오는 중...</p>
-      </div>
-    );
-  }
-
-  if (status === 'error') {
-    return (
-      <div className="qr-glass-panel" style={{ padding: '3rem 2rem' }}>
-        <p style={{ color: '#ef4444', marginBottom: '1.5rem', fontWeight: 600 }}>오류가 발생했습니다.</p>
-        <button className="qr-refresh-btn" onClick={() => fetchQR(token)}>다시 시도</button>
-        <button className="qr-logout-btn" onClick={onLogout}>로그아웃</button>
-      </div>
-    );
-  }
+  if (status === 'loading') return <div className="qr-glass-panel"><div className="loader-spinner" style={{ borderColor: 'rgba(0,0,0,0.1)', borderTopColor: 'var(--hyu-blue)' }}></div></div>;
+  if (status === 'error') return <div className="qr-glass-panel"><button className="qr-refresh-btn" onClick={() => fetchQR(token)}>다시 시도</button></div>;
 
   return (
-    <div className="qr-glass-panel">
+    <div className="qr-glass-panel" style={{ marginBottom: '80px' }}>
       <h2 className="qr-title">출입증 QR</h2>
       <p className="qr-desc">스캐너에 화면을 인식시켜주세요.</p>
-      
-      <div className="qr-wrapper">
-        <QRCodeSVG value={qrData} size={220} level="M" />
-      </div>
-
-      <div style={{
-          color: timeLeft <= 5 ? '#ef4444' : '#10b981',
-          fontWeight: '700',
-          fontSize: '1rem',
-          marginBottom: '1rem',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: '8px'
-      }}>
-        유효시간: {timeLeft}초
-      </div>
-
+      <div className="qr-wrapper"><QRCodeSVG value={qrData} size={220} level="M" /></div>
+      <div style={{ color: timeLeft <= 5 ? '#ef4444' : '#10b981', fontWeight: '700', fontSize: '1rem', marginBottom: '1rem' }}>유효시간: {timeLeft}초</div>
       {seatData && (
         <div className="seat-info-card">
-          <div className="seat-header">
-            <span className="seat-room">{seatData.room?.name || '열람실'}</span>
-            <span className="seat-number">{seatData.seat}번 좌석</span>
-          </div>
-          <div className="seat-time">
-            <span>만료 예정: {seatData.endTime?.substring(11, 16)}</span>
-            <span className="seat-remaining">(남은 시간: {seatData.remainingTime}분)</span>
-          </div>
+          <div className="seat-header"><span className="seat-room">{seatData.room?.name}</span><span className="seat-number">{seatData.seat}번 좌석</span></div>
+          <div className="seat-time"><span>만료 예정: {seatData.endTime?.substring(11, 16)}</span><span className="seat-remaining">({seatData.remainingTime}분 남음)</span></div>
         </div>
       )}
+      <button className="qr-refresh-btn" onClick={() => fetchQR(token)}><RefreshCw size={16} /> <span>새로고침</span></button>
+      <button className="qr-logout-btn" onClick={onLogout}>로그아웃</button>
+      <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#94a3b8', fontSize: '0.75rem' }}><Smartphone size={14} /> 화면 밝기 최대 권장</div>
+    </div>
+  );
+}
 
-      <button className="qr-refresh-btn" onClick={() => fetchQR(token)}>
-        <RefreshCw size={16} /> <span>새로고침</span>
-      </button>
+function CafeteriaView() {
+  const [date, setDate] = useState(new Date(new Date().getTime() + 9 * 60 * 60 * 1000));
+  const [cafes, setCafes] = useState([]);
+  const [selectedCafeId, setSelectedCafeId] = useState('re15');
+  const [loading, setLoading] = useState(true);
 
-      <button className="qr-logout-btn" onClick={onLogout}>
-        로그아웃
-      </button>
+  const fetchMenus = useCallback(async (targetDate) => {
+    setLoading(true);
+    const dateStr = targetDate.toISOString().split('T')[0].replace(/-/g, '/');
+    try {
+      const res = await fetch(`/api/menu?id=all&date=${dateStr}`);
+      const data = await res.json();
+      if (data.success) setCafes(data.data);
+    } catch (e) { console.error(e); }
+    setLoading(false);
+  }, []);
 
-      {/* Screen Brightness Helper Text */}
-      <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#94a3b8', fontSize: '0.75rem' }}>
-        <Smartphone size={14} /> 화면 밝기를 최대화 해주세요 
+  useEffect(() => { fetchMenus(date); }, [date, fetchMenus]);
+
+  const changeDate = (offset) => {
+    const newDate = new Date(date);
+    newDate.setDate(date.getDate() + offset);
+    setDate(newDate);
+  };
+
+  const selectedCafe = cafes.find(c => c.id === selectedCafeId) || { menus: [] };
+
+  return (
+    <div className="cafe-container">
+      <div className="date-controller">
+        <button className="date-btn" onClick={() => changeDate(-1)}><ChevronLeft /></button>
+        <div className="date-text">{date.toISOString().split('T')[0].replace(/-/g, '.')}</div>
+        <button className="date-btn" onClick={() => changeDate(1)}><ChevronRight /></button>
+      </div>
+
+      <div className="cafe-selector">
+        {cafes.map(cafe => (
+          <div 
+            key={cafe.id} 
+            className={`cafe-chip ${selectedCafeId === cafe.id ? 'active' : ''} ${!cafe.available ? 'disabled' : ''}`}
+            onClick={() => setSelectedCafeId(cafe.id)}
+          >
+            {cafe.name}
+            {cafe.hasJeyuk && <span className="jeyuk-badge">🔥 제육</span>}
+          </div>
+        ))}
+      </div>
+
+      <div className="menu-list">
+        {loading ? (
+          <div className="no-menu"><div className="loader-spinner" style={{ margin: '0 auto 1rem', width: '30px', height: '30px' }}></div>식단표 로딩 중...</div>
+        ) : selectedCafe.menus.length > 0 ? (
+          selectedCafe.menus.map((m, i) => (
+            <div key={i} className="menu-card">
+              <div className="menu-type">{m.type}</div>
+              <div className="menu-items">{m.menu}</div>
+            </div>
+          ))
+        ) : (
+          <div className="no-menu">오늘 등록된 메뉴가 없습니다.</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function BottomNav({ activeTab, setActiveTab }) {
+  return (
+    <div className="bottom-nav">
+      <div className={`nav-item ${activeTab === 'qr' ? 'active' : ''}`} onClick={() => setActiveTab('qr')}>
+        <QrCode size={24} />
+        <span className="nav-item-text">QR 출입증</span>
+      </div>
+      <div className={`nav-item ${activeTab === 'cafe' ? 'active' : ''}`} onClick={() => setActiveTab('cafe')}>
+        <Utensils size={24} />
+        <span className="nav-item-text">오늘의 식단</span>
       </div>
     </div>
   );

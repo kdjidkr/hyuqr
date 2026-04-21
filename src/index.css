@@ -314,3 +314,168 @@ p.subtitle {
   color: var(--hyu-gold);
   font-weight: 700;
 }
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 4rem);
+  max-width: 360px;
+  height: 64px;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 32px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1000;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  padding: 8px 0;
+}
+
+.nav-item.active {
+  color: var(--hyu-blue-light);
+}
+
+.nav-item-text {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* Cafeteria View */
+.cafe-container {
+  padding-bottom: 5rem; /* Space for bottom nav */
+}
+
+.date-controller {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.8rem 1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.date-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: 'Outfit', sans-serif;
+}
+
+.date-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.date-btn:hover {
+  color: var(--text-primary);
+}
+
+.cafe-selector {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0 1rem;
+  margin-bottom: 1rem;
+  scrollbar-width: none;
+}
+
+.cafe-selector::-webkit-scrollbar {
+  display: none;
+}
+
+.cafe-chip {
+  flex: 0 0 auto;
+  padding: 0.6rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.cafe-chip.active {
+  background: var(--hyu-blue);
+  color: white;
+  border-color: var(--hyu-blue-light);
+}
+
+.cafe-chip.disabled {
+  opacity: 0.3;
+}
+
+.jeyuk-badge {
+  position: absolute;
+  top: -8px;
+  right: -5px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+.menu-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.menu-type {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--hyu-gold);
+  background: rgba(234, 179, 8, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 0.8rem;
+  text-transform: uppercase;
+}
+
+.menu-items {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  word-break: keep-all;
+}
+
+.no-menu {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-secondary);
+}
