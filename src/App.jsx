@@ -11,7 +11,7 @@ function App() {
   const [token, setToken] = useState(null);
   const [userData, setUserData] = useState(null);
   const [activeTab, setActiveTab] = useState('qr'); // 'qr' or 'cafe'
-  
+
   // Menu State lifted for pre-fetching
   const [menuDate, setMenuDate] = useState(getKSTDate());
   const [cafes, setCafes] = useState([]);
@@ -83,11 +83,11 @@ function App() {
             <LoginForm onSuccess={handleLoginSuccess} />
           )
         ) : (
-          <CafeteriaView 
-            date={menuDate} 
-            changeDate={changeMenuDate} 
-            cafes={cafes} 
-            loading={menuLoading} 
+          <CafeteriaView
+            date={menuDate}
+            changeDate={changeMenuDate}
+            cafes={cafes}
+            loading={menuLoading}
           />
         )}
       </div>
@@ -155,44 +155,112 @@ function QRView({ token, setToken, onLogout }) {
   const [refreshing, setRefreshing] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30);
 
-  const fetchQR = useCallback(async (currentToken) => {
+  const fetchQR = useCallback(async (currentToken, isRetry = false) => {
     setRefreshing(true);
-    setTimeLeft(30);
+    if (!isRetry) setTimeLeft(30);
+
     try {
       const res = await fetch('/api/qr', { headers: { 'X-Pyxis-Auth-Token': currentToken } });
-      if (res.status === 401) {
-        const creds = localStorage.getItem('pyxisEncryptedCreds');
-        if (!creds) { onLogout(); return; }
-        const reloginRes = await fetch('/api/relogin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ encryptedCredentials: creds })
-        });
-        const reloginData = await reloginRes.json();
-        if (reloginRes.ok && reloginData.success) {
-          localStorage.setItem('pyxisAccessToken', reloginData.accessToken);
-          setToken(reloginData.accessToken);
-          return fetchQR(reloginData.accessToken);
-        } else { onLogout(); }
-        return;
+
+      // Handle non-OK responses (like 401 Unauthorized or stale cache 304/etc)
+      if (!res.ok) {
+        // If it's a first attempt and we have credentials, try automatic relogin
+        if (!isRetry) {
+          const creds = localStorage.getItem('pyxisEncryptedCreds');
+          if (creds) {
+            try {
+              const reloginRes = await fetch('/api/relogin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ encryptedCredentials: creds })
+              });
+              const reloginData = await reloginRes.json();
+              if (reloginRes.ok && reloginData.success) {
+                localStorage.setItem('pyxisAccessToken', reloginData.accessToken);
+                setToken(reloginData.accessToken);
+                // Retry fetch with new token
+                return fetchQR(reloginData.accessToken, true);
+              }
+            } catch (reloginErr) {
+              console.error('Auto-relogin failed:', reloginErr);
+            }
+          }
+        }
+
+        // If relogin failed or wasn't possible, and it's a 401, force logout
+        if (res.status === 401) {
+          onLogout();
+          return;
+        }
+
+        throw new Error(`Fetch failed with status ${res.status}`);
       }
+
       const data = await res.json();
       const mCard = data.data?.membershipCard || data.data?.data?.membershipCard || (typeof data.data === 'string' ? data.data : null);
-      if (mCard) setQrData(mCard);
-      
-      const seatRes = await fetch('/api/seat', { headers: { 'X-Pyxis-Auth-Token': currentToken } });
-      if (seatRes.ok) {
-        const sData = await seatRes.json();
-        if (sData.success && sData.data?.list?.[0]?.seat?.[0]) setSeatData(sData.data.list[0].seat[0]);
-        else setSeatData(null);
+
+      if (mCard) {
+        setQrData(mCard);
+        setStatus('ready');
+      } else {
+        throw new Error('QR data not found in response');
       }
-      setStatus('ready');
-    } catch (err) { 
+
+      // Fetch seat data as well
+      try {
+        const seatRes = await fetch('/api/seat', { headers: { 'X-Pyxis-Auth-Token': currentToken } });
+        if (seatRes.ok) {
+          const sData = await seatRes.json();
+          if (sData.success && sData.data?.list?.[0]?.seat?.[0]) {
+            setSeatData(sData.data.list[0].seat[0]);
+          } else {
+            setSeatData(null);
+          }
+        }
+      } catch (seatErr) {
+        console.error('Failed to fetch seat data:', seatErr);
+      }
+
+    } catch (err) {
+      console.error('QR Fetch Error:', err);
+      // Only set to error state if it's the initial load
       setStatus(prev => prev === 'loading' ? 'error' : prev);
     } finally {
       setRefreshing(false);
     }
-  }, [onLogout, setToken]); // Removed qrData to avoid infinite loop
+  }, [onLogout, setToken]);
+
+  const handleSeatReturn = async () => {
+    if (!seatData) return;
+    
+    const confirmReturn = window.confirm(`${seatData.seat}번 자리를 반납할까요?`);
+    if (!confirmReturn) return;
+
+    setRefreshing(true);
+    try {
+      const res = await fetch('/api/discharge', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Pyxis-Auth-Token': token 
+        },
+        body: JSON.stringify({ seatCharge: seatData.id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('반납되었습니다.');
+        setSeatData(null);
+        fetchQR(token);
+      } else {
+        alert(data.message || '반납 실패');
+      }
+    } catch (err) {
+      console.error('Return error:', err);
+      alert('통신 오류가 발생했습니다.');
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => { if (token) fetchQR(token); }, [token, fetchQR]);
 
@@ -206,7 +274,14 @@ function QRView({ token, setToken, onLogout }) {
   }, [status, timeLeft, token, fetchQR, refreshing]);
 
   if (status === 'loading') return <div className="qr-glass-panel"><div className="loader-spinner" style={{ borderColor: 'rgba(0,0,0,0.1)', borderTopColor: 'var(--hyu-blue)' }}></div><p style={{ color: '#64748b', fontSize: '0.875rem', marginTop: '1rem' }}>인증 코드를 불러오는 중...</p></div>;
-  if (status === 'error') return <div className="qr-glass-panel"><p style={{ color: '#ef4444', marginBottom: '1.5rem' }}>오류가 발생했습니다.</p><button className="qr-refresh-btn" onClick={() => fetchQR(token)}>다시 시도</button></div>;
+  if (status === 'error') return (
+    <div className="qr-glass-panel">
+      <p style={{ color: '#ef4444', fontWeight: '600', marginBottom: '0.5rem' }}>오류가 발생했습니다.</p>
+      <p style={{ color: '#64748b', fontSize: '0.875rem', marginBottom: '1.5rem' }}>인증 세션이 만료되었거나<br />통신 상태가 원활하지 않습니다.</p>
+      <button className="qr-refresh-btn" onClick={() => fetchQR(token)}>다시 시도</button>
+      <button className="qr-logout-btn" onClick={onLogout} style={{ marginTop: '1rem' }}>로그아웃</button>
+    </div>
+  );
 
   return (
     <div className="qr-glass-panel" style={{ opacity: refreshing ? 0.7 : 1, transition: 'opacity 0.2s' }}>
@@ -220,12 +295,24 @@ function QRView({ token, setToken, onLogout }) {
       </div>
       {seatData && (
         <div className="seat-info-card">
-          <div className="seat-header"><span className="seat-room">{seatData.room?.name}</span><span className="seat-number">{seatData.seat}번 좌석</span></div>
-          <div className="seat-time"><span>만료 예정: {seatData.endTime?.substring(11, 16)}</span><span className="seat-remaining">({seatData.remainingTime}분 남음)</span></div>
+          <div className="seat-header">
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+              <span className="seat-room">{seatData.room?.name}</span>
+              <span style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '2px' }}>{seatData.endTime?.substring(0, 10)}</span>
+            </div>
+            <span className="seat-number">{seatData.seat}번 좌석</span>
+          </div>
+          <div className="seat-time">
+            <span>만료 예정: {seatData.endTime?.substring(11, 16)}</span>
+            <span className="seat-remaining">({seatData.remainTime ?? seatData.remainingTime}분 남음)</span>
+          </div>
+          <button className="seat-return-btn" onClick={handleSeatReturn} disabled={refreshing}>
+            좌석 반납하기
+          </button>
         </div>
       )}
       <button className="qr-refresh-btn" onClick={() => fetchQR(token)} disabled={refreshing}>
-        <RefreshCw size={16} className={refreshing ? 'spin-animation' : ''} /> 
+        <RefreshCw size={16} className={refreshing ? 'spin-animation' : ''} />
         <span>{refreshing ? '갱신 중...' : '새로고침'}</span>
       </button>
       <button className="qr-logout-btn" onClick={onLogout}>로그아웃</button>
@@ -255,8 +342,8 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
 
       <div className="cafe-selector" style={{ opacity: loading ? 0.6 : 1, pointerEvents: loading ? 'none' : 'auto' }}>
         {cafes.map(cafe => (
-          <div 
-            key={cafe.id} 
+          <div
+            key={cafe.id}
             className={`cafe-chip ${selectedCafeId === cafe.id ? 'active' : ''} ${!cafe.available ? 'disabled' : ''}`}
             onClick={() => setSelectedCafeId(cafe.id)}
           >
@@ -269,10 +356,10 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
       <div className="menu-list" style={{ position: 'relative', minHeight: '200px' }}>
         {/* Loading Overlay */}
         {loading && (
-          <div style={{ 
-            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, 
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
             background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(4px)',
-            zIndex: 10, borderRadius: '16px', display: 'flex', 
+            zIndex: 10, borderRadius: '16px', display: 'flex',
             justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: '1rem'
           }}>
             <div className="loader-spinner" style={{ width: '40px', height: '40px' }}></div>
