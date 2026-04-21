@@ -137,6 +137,7 @@ function LoginForm({ onSuccess }) {
 
 function QRView({ token, setToken, onLogout }) {
   const [qrData, setQrData] = useState(null);
+  const [seatData, setSeatData] = useState(null);
   const [status, setStatus] = useState('loading'); // loading, ready, error
   const [timeLeft, setTimeLeft] = useState(30);
 
@@ -180,23 +181,36 @@ function QRView({ token, setToken, onLogout }) {
 
       const data = await res.json();
       if (data && data.data && data.data.data) {
-          // The exact API response structure is nested. 
-          // From typical backend payload, membershipCard might be inside data.data or similar
-          // Let's grab it defensively. Usually it's in data.data.data.membershipCard or data.data.membershipCard
           const mCard = data.data.membershipCard || (data.data.data && data.data.data.membershipCard);
           if (mCard) {
             setQrData(mCard);
-            setStatus('ready');
           } else {
             throw new Error('No QR format matched');
           }
       } else if (data && data.success && typeof data.data === 'string') {
-          // just a string format
           setQrData(data.data);
-          setStatus('ready');
       } else {
         throw new Error('Invalid QR payload');
       }
+
+      // Fetch Seat info in parallel
+      try {
+        const seatRes = await fetch('/api/seat', {
+          headers: { 'X-Pyxis-Auth-Token': currentToken }
+        });
+        if (seatRes.ok) {
+          const sData = await seatRes.json();
+          if (sData.success && sData.data?.list?.length > 0 && sData.data.list[0].seat?.length > 0) {
+             setSeatData(sData.data.list[0].seat[0]);
+          } else {
+             setSeatData(null);
+          }
+        }
+      } catch (e) {
+        console.error('Seat fetch failed', e);
+      }
+      
+      setStatus('ready');
       
 
     } catch (err) {
@@ -266,6 +280,19 @@ function QRView({ token, setToken, onLogout }) {
         유효시간: {timeLeft}초
       </div>
 
+      {seatData && (
+        <div className="seat-info-card">
+          <div className="seat-header">
+            <span className="seat-room">{seatData.room?.name || '열람실'}</span>
+            <span className="seat-number">{seatData.seat}번 좌석</span>
+          </div>
+          <div className="seat-time">
+            <span>만료 예정: {seatData.endTime?.substring(11, 16)}</span>
+            <span className="seat-remaining">(남은 시간: {seatData.remainingTime}분)</span>
+          </div>
+        </div>
+      )}
+
       <button className="qr-refresh-btn" onClick={() => fetchQR(token)}>
         <RefreshCw size={16} /> <span>새로고침</span>
       </button>
@@ -275,7 +302,7 @@ function QRView({ token, setToken, onLogout }) {
       </button>
 
       {/* Screen Brightness Helper Text */}
-      <div style={{ marginTop: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#94a3b8', fontSize: '0.75rem' }}>
+      <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#94a3b8', fontSize: '0.75rem' }}>
         <Smartphone size={14} /> 화면 밝기를 최대화 해주세요 
       </div>
     </div>

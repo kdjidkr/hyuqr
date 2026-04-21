@@ -263,3 +263,54 @@ p.subtitle {
   background: var(--bg-dark);
   z-index: 100;
 }
+
+/* Seat Info Card Styles */
+.seat-info-card {
+  background: rgba(14, 74, 132, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.seat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+}
+
+.seat-room {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.seat-number {
+  background: var(--hyu-blue);
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 12px rgba(14, 74, 132, 0.4);
+}
+
+.seat-time {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  padding-top: 0.2rem;
+}
+
+.seat-remaining {
+  color: var(--hyu-gold);
+  font-weight: 700;
+}
