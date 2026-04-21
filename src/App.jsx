@@ -291,12 +291,16 @@ function QRView({ token, setToken, onLogout }) {
   const handleSeatReturn = async () => {
     if (!seatData) return;
     
-    const confirmReturn = window.confirm(`${seatData.seat}번 자리를 반납할까요?`);
-    if (!confirmReturn) return;
+    const isTemp = seatData.state?.code === 'TEMP_CHARGE';
+    const actionText = isTemp ? '예약을 취소하시겠습니까?' : `${seatData.seat || seatData.code}번 자리를 반납할까요?`;
+    
+    const confirmAction = window.confirm(actionText);
+    if (!confirmAction) return;
 
     setRefreshing(true);
     try {
-      const res = await fetch('/api/discharge', {
+      const endpoint = isTemp ? '/api/cancel' : '/api/discharge';
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -306,14 +310,14 @@ function QRView({ token, setToken, onLogout }) {
       });
       const data = await res.json();
       if (data.success) {
-        alert('반납되었습니다.');
+        alert(isTemp ? '예약이 취소되었습니다.' : '반납되었습니다.');
         setSeatData(null);
         fetchQR(token);
       } else {
-        alert(data.message || '반납 실패');
+        alert(data.message || (isTemp ? '취소 실패' : '반납 실패'));
       }
     } catch (err) {
-      console.error('Return error:', err);
+      console.error('Seat action error:', err);
       alert('통신 오류가 발생했습니다.');
     } finally {
       setRefreshing(false);
