@@ -23,30 +23,29 @@ export default async function handler(req, res) {
             body: JSON.stringify({ loginId, password })
         });
 
-        if (!fetchRes.ok) {
-            return res.status(401).json({ message: 'Login failed from Hanyang API' });
+        const responseBody = await fetchRes.json();
+
+        if (!fetchRes.ok || (responseBody.success === false)) {
+            return res.status(401).json({ 
+                message: responseBody.message || 'Login failed from Hanyang API (Check your ID or Password)',
+                details: responseBody 
+            });
         }
 
-        const setCookies = fetchRes.headers.getSetCookie();
-        const pyxisCookieStr = setCookies.find(c => c.startsWith('HYU_PYXIS3='));
-
-        if (!pyxisCookieStr) {
-            return res.status(401).json({ message: 'HYU_PYXIS3 cookie not found, login may have failed.' });
-        }
-
-        const cookieVal = pyxisCookieStr.split(';')[0].substring('HYU_PYXIS3='.length);
-        const decoded = decodeURIComponent(cookieVal);
-        const pyxisData = JSON.parse(decoded);
-        const accessToken = pyxisData.accessToken;
+        const accessToken = responseBody.data?.accessToken;
+        const name = responseBody.data?.name;
 
         if (!accessToken) {
-            return res.status(401).json({ message: 'Access token not found in cookie' });
+            return res.status(401).json({ 
+                message: 'Access token not found in response JSON', 
+                details: responseBody 
+            });
         }
 
         return res.status(200).json({
             success: true,
             accessToken,
-            name: pyxisData.name
+            name
         });
 
     } catch (err) {

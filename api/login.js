@@ -27,24 +27,14 @@ export default async function handler(req, res) {
             });
         }
 
-        const setCookies = fetchRes.headers.getSetCookie();
-        const pyxisCookieStr = setCookies.find(c => c.startsWith('HYU_PYXIS3='));
-
-        if (!pyxisCookieStr) {
-            return res.status(401).json({ 
-                message: responseBody.message || '로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.', 
-                details: responseBody 
-            });
-        }
-
-        // Extract value
-        const cookieVal = pyxisCookieStr.split(';')[0].substring('HYU_PYXIS3='.length);
-        const decoded = decodeURIComponent(cookieVal);
-        const pyxisData = JSON.parse(decoded);
-        const accessToken = pyxisData.accessToken;
+        const accessToken = responseBody.data?.accessToken;
+        const name = responseBody.data?.name;
 
         if (!accessToken) {
-            return res.status(401).json({ message: 'Access token not found in cookie' });
+            return res.status(401).json({ 
+                message: 'Access token not found in response JSON', 
+                details: responseBody 
+            });
         }
 
         const encryptedCredentials = encrypt(JSON.stringify({ loginId, password }));
@@ -52,7 +42,7 @@ export default async function handler(req, res) {
         return res.status(200).json({
             success: true,
             accessToken,
-            name: pyxisData.name,
+            name,
             encryptedCredentials
         });
 
