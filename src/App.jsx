@@ -242,12 +242,18 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
   return (
     <div className="cafe-container">
       <div className="date-controller">
-        <button className="date-btn" onClick={() => changeDate(-1)}><ChevronLeft /></button>
-        <div className="date-text">{date.toISOString().split('T')[0].replace(/-/g, '.')}</div>
-        <button className="date-btn" onClick={() => changeDate(1)}><ChevronRight /></button>
+        <button className="date-btn" onClick={() => changeDate(-1)} disabled={loading}>
+          <ChevronLeft style={{ opacity: loading ? 0.3 : 1 }} />
+        </button>
+        <div className="date-text" style={{ opacity: loading ? 0.5 : 1 }}>
+          {date.toISOString().split('T')[0].replace(/-/g, '.')}
+        </div>
+        <button className="date-btn" onClick={() => changeDate(1)} disabled={loading}>
+          <ChevronRight style={{ opacity: loading ? 0.3 : 1 }} />
+        </button>
       </div>
 
-      <div className="cafe-selector">
+      <div className="cafe-selector" style={{ opacity: loading ? 0.6 : 1, pointerEvents: loading ? 'none' : 'auto' }}>
         {cafes.map(cafe => (
           <div 
             key={cafe.id} 
@@ -260,19 +266,36 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
         ))}
       </div>
 
-      <div className="menu-list">
-        {loading && cafes.length === 0 ? (
-          <div className="no-menu"><div className="loader-spinner" style={{ margin: '0 auto 1rem', width: '30px', height: '30px' }}></div>식단표 로딩 중...</div>
-        ) : selectedCafe.menus.length > 0 ? (
-          selectedCafe.menus.map((m, i) => (
-            <div key={i} className="menu-card">
-              <div className="menu-type">{m.type}</div>
-              <div className="menu-items" style={{ whiteSpace: 'pre-line' }}>{m.menu}</div>
-            </div>
-          ))
-        ) : (
-          <div className="no-menu">오늘 등록된 메뉴가 없습니다.</div>
+      <div className="menu-list" style={{ position: 'relative', minHeight: '200px' }}>
+        {/* Loading Overlay */}
+        {loading && (
+          <div style={{ 
+            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, 
+            background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(4px)',
+            zIndex: 10, borderRadius: '16px', display: 'flex', 
+            justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: '1rem'
+          }}>
+            <div className="loader-spinner" style={{ width: '40px', height: '40px' }}></div>
+            <span style={{ fontSize: '0.85rem', color: 'white', fontWeight: '600' }}>식단 정보를 가져오는 중...</span>
+          </div>
         )}
+
+        <div style={{ filter: loading ? 'blur(2px)' : 'none', transition: 'filter 0.3s ease' }}>
+          {cafes.length > 0 ? (
+            selectedCafe.menus.length > 0 ? (
+              selectedCafe.menus.map((m, i) => (
+                <div key={i} className="menu-card">
+                  <div className="menu-type">{m.type}</div>
+                  <div className="menu-items" style={{ whiteSpace: 'pre-line' }}>{m.menu}</div>
+                </div>
+              ))
+            ) : (
+              <div className="no-menu">해당 식당은 오늘 등록된 메뉴가 없습니다.</div>
+            )
+          ) : !loading && (
+            <div className="no-menu">정보를 불러올 수 없습니다.</div>
+          )}
+        </div>
       </div>
     </div>
   );
