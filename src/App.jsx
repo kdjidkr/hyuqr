@@ -93,7 +93,7 @@ function LoginForm({ onSuccess }) {
 
   return (
     <div className="glass-panel">
-      <h1 className="title">HYU Library</h1>
+      <h1 className="title">HYU QR Pass</h1>
       <p className="subtitle">빠른 입장을 위한 모바일 QR 패스</p>
       
       <form onSubmit={handleSubmit}>
