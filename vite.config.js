@@ -7,13 +7,17 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'icons.svg'],
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        maximumFileSizeToCacheInBytes: 3000000
+      },
       manifest: {
-        name: '문열어냥',
-        short_name: '문열어냥',
+        name: 'HYU QR Pass',
+        short_name: 'HYU QR',
         description: '빠른 한양대 도서관 입장을 위한 QR 패스',
         theme_color: '#0e4a84',
-        background_color: '#0f172a',
+        background_color: '#ffffff',
         display: 'standalone',
         icons: [
           {
