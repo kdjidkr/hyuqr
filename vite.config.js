@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'HYU QR Speed-Pass',
-        short_name: 'HYU Pass',
+        name: '문열어냥',
+        short_name: '문열어냥',
         description: '빠른 한양대 도서관 입장을 위한 QR 패스',
         theme_color: '#0e4a84',
         background_color: '#0f172a',

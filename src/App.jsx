@@ -104,7 +104,7 @@ function LoginForm({ onSuccess }) {
             className="input-field" 
             value={loginId} 
             onChange={e => setLoginId(e.target.value)} 
-            placeholder="학번/교번 입력"
+            placeholder="포털 아이디"
             required
           />
         </div>
