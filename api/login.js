@@ -18,15 +18,23 @@ export default async function handler(req, res) {
             body: JSON.stringify({ loginId, password })
         });
 
-        if (!fetchRes.ok) {
-            return res.status(401).json({ message: 'Login failed from Hanyang API' });
+        const responseBody = await fetchRes.json();
+
+        if (!fetchRes.ok || (responseBody.success === false)) {
+            return res.status(401).json({ 
+                message: responseBody.message || 'Login failed from Hanyang API (Check your ID or Password)',
+                details: responseBody 
+            });
         }
 
         const setCookies = fetchRes.headers.getSetCookie();
         const pyxisCookieStr = setCookies.find(c => c.startsWith('HYU_PYXIS3='));
 
         if (!pyxisCookieStr) {
-            return res.status(401).json({ message: 'HYU_PYXIS3 cookie not found, login may have failed.' });
+            return res.status(401).json({ 
+                message: responseBody.message || '로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.', 
+                details: responseBody 
+            });
         }
 
         // Extract value
