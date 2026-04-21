@@ -29,7 +29,9 @@ async function scrapeCafe(cafeId, dateStr) {
       if (title && !title.includes('원') && !ignoreList.some(ig => title.includes(ig))) {
         let menuText = $(el).next().text().replace(/\s+/g, ' ').trim();
         if (menuText && menuText.length > 5 && !menuText.includes('확인 가능합니다')) {
-          menuText = menuText.replace('메뉴 원산지는 해당 식당에서 확인 가능합니다.', '')
+          // Format multiple menus by inserting blank lines after prices
+          menuText = menuText.replace(/(\d{1,3}(,\d{3})*원)/g, '$1\n\n')
+                             .replace('메뉴 원산지는 해당 식당에서 확인 가능합니다.', '')
                              .replace('식단은 사정에 의해 변경 될 수 있습니다.', '').trim();
           menus.push({ type: title, menu: menuText });
         }

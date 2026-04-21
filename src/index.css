@@ -472,6 +472,7 @@ p.subtitle {
   line-height: 1.6;
   color: var(--text-primary);
   word-break: keep-all;
+  white-space: pre-line;
 }
 
 .no-menu {
