@@ -551,7 +551,7 @@ function ReserveForm({ onReserve, loading }) {
 }
 
 function CafeteriaView({ date, changeDate, cafes, loading }) {
-  const [selectedCafeId, setSelectedCafeId] = useState('re15');
+  const [selectedCafeId, setSelectedCafeId] = useState('re12');
   const [expandedGroups, setExpandedGroups] = useState({});
 
   const selectedCafe = cafes.find(c => c.id === selectedCafeId) || { menus: [] };
