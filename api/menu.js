@@ -35,6 +35,7 @@ async function scrapeCafe(cafeId, dateStr) {
             .split(/\s+/) // Split by spaces
             .filter(item => !/[a-zA-Z]/.test(item)) // Remove items with English characters
             .filter(item => item.trim().length > 0) // Remove empty strings
+            .map(item => (/\d+.*원$/.test(item) ? item + '\n' : item)) // Add extra newline after prices
             .join('\n'); // Join with newlines
           
           menus.push({ type: title, menu: menuText });
