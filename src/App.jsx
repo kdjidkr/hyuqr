@@ -559,11 +559,18 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
   useEffect(() => {
     if (!selectedCafe.menus || selectedCafe.menus.length === 0) return;
     
+    // Check if viewed date is today (KST)
+    const todayKst = new Date(new Date().getTime() + 9 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const viewedDateStr = date.toISOString().split('T')[0];
+    const isToday = todayKst === viewedDateStr;
+
     // Calculate current KST hour (add 9 hours to UTC)
     const kstDate = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
     const currentHour = kstDate.getUTCHours();
 
     const getInitialOpenState = (type) => {
+      if (!isToday) return true; // Expand all if not today
+      
       if (currentHour < 9) {
         return type.includes('조식');
       } else if (currentHour >= 14) {
@@ -581,7 +588,7 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
     });
     
     setExpandedGroups(initialExpanded);
-  }, [selectedCafe.id, cafes]);
+  }, [selectedCafe.id, cafes, date]);
 
   const toggleGroup = (type) => {
     setExpandedGroups(prev => ({ ...prev, [type]: !prev[type] }));
