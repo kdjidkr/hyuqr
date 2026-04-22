@@ -51,25 +51,25 @@ function App() {
     fetchMenus(menuDate);
   }, [menuDate, fetchMenus]);
 
-  const handleLoginSuccess = (accessToken, encryptedCredentials, name) => {
+  const handleLoginSuccess = useCallback((accessToken, encryptedCredentials, name) => {
     localStorage.setItem('pyxisAccessToken', accessToken);
     localStorage.setItem('pyxisEncryptedCreds', encryptedCredentials);
     setToken(accessToken);
     if (name) setUserData({ name });
-  };
+  }, []);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     localStorage.removeItem('pyxisAccessToken');
     localStorage.removeItem('pyxisEncryptedCreds');
     setToken(null);
     setUserData(null);
-  };
+  }, []);
 
-  const changeMenuDate = (offset) => {
+  const changeMenuDate = useCallback((offset) => {
     const newDate = new Date(menuDate);
     newDate.setDate(menuDate.getDate() + offset);
     setMenuDate(newDate);
-  };
+  }, [menuDate]);
 
   if (loading) {
     return (
@@ -273,7 +273,7 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
     } finally {
       setRefreshing(false);
     }
-  }, [onLogout, setToken]);
+  }, [onLogout, setToken, setUserData]);
 
   const handleReserve = async (seatId) => {
     setRefreshing(true);
