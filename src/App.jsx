@@ -555,6 +555,15 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
 
   const selectedCafe = cafes.find(c => c.id === selectedCafeId) || { menus: [] };
 
+  const getMenuIcon = (type) => {
+    if (type.includes('조식')) return '☀️';
+    if (type.includes('중식')) return '🍴';
+    if (type.includes('석식')) return '🌙';
+    if (type.includes('분식')) return '🍜';
+    if (type.includes('천원')) return '💰';
+    return '🍚';
+  };
+
   return (
     <div className="cafe-container">
       <div className="date-controller">
@@ -576,6 +585,7 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
             className={`cafe-chip ${selectedCafeId === cafe.id ? 'active' : ''} ${!cafe.available ? 'disabled' : ''}`}
             onClick={() => setSelectedCafeId(cafe.id)}
           >
+            <Utensils size={14} style={{ opacity: 0.7 }} />
             {cafe.name}
             {cafe.hasJeyuk && <span className="jeyuk-badge">🔥 제육</span>}
           </div>
@@ -601,7 +611,10 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
             selectedCafe.menus.length > 0 ? (
               selectedCafe.menus.map((m, i) => (
                 <div key={i} className="menu-card">
-                  <div className="menu-type">{m.type}</div>
+                  <div className="menu-type-container">
+                    <span className="menu-icon">{getMenuIcon(m.type)}</span>
+                    <div className="menu-type">{m.type}</div>
+                  </div>
                   <div className="menu-items" style={{ whiteSpace: 'pre-line' }}>{m.menu}</div>
                 </div>
               ))
