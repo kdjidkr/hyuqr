@@ -168,9 +168,38 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
   const [refreshing, setRefreshing] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30);
 
-  const fetchQR = useCallback(async (currentToken, isRetry = false) => {
+  const fetchQR = useCallback(async (currentToken, isRetry = false, forceRelogin = false) => {
     setRefreshing(true);
     if (!isRetry) setTimeLeft(30);
+
+    // If force relogin is requested (e.g. from error screen), try relogin immediately
+    if (forceRelogin && !isRetry) {
+      const creds = localStorage.getItem('pyxisEncryptedCreds');
+      if (creds) {
+        try {
+          const reloginRes = await fetch('/api/relogin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ encryptedCredentials: creds })
+          });
+          
+          if (reloginRes.ok) {
+            const reloginData = await reloginRes.json();
+            if (reloginData.success) {
+              localStorage.setItem('pyxisAccessToken', reloginData.accessToken);
+              setToken(reloginData.accessToken);
+              return fetchQR(reloginData.accessToken, true);
+            }
+          }
+          // If relogin fails even when forced, just logout
+          onLogout();
+          return;
+        } catch (e) {
+          onLogout();
+          return;
+        }
+      }
+    }
 
     try {
       const res = await fetch('/api/qr', { headers: { 'X-Pyxis-Auth-Token': currentToken } });
@@ -237,6 +266,28 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
 
         setStatus('ready');
       } else {
+        // If data is invalid but status was 200, it might be a silent session expiry.
+        // Try relogin if we haven't already.
+        if (!isRetry) {
+          const creds = localStorage.getItem('pyxisEncryptedCreds');
+          if (creds) {
+            try {
+              const reloginRes = await fetch('/api/relogin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ encryptedCredentials: creds })
+              });
+              if (reloginRes.ok) {
+                const reloginData = await reloginRes.json();
+                if (reloginData.success) {
+                  localStorage.setItem('pyxisAccessToken', reloginData.accessToken);
+                  setToken(reloginData.accessToken);
+                  return fetchQR(reloginData.accessToken, true);
+                }
+              }
+            } catch (e) { /* ignore and let it throw below */ }
+          }
+        }
         throw new Error('QR data not found or invalid in response');
       }
 
@@ -367,7 +418,7 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
     <div className="qr-glass-panel">
       <p style={{ color: '#ef4444', fontWeight: '600', marginBottom: '0.5rem' }}>오류가 발생했습니다.</p>
       <p style={{ color: '#64748b', fontSize: '0.875rem', marginBottom: '1.5rem' }}>인증 세션이 만료되었거나<br />통신 상태가 원활하지 않습니다.</p>
-      <button className="qr-refresh-btn" onClick={() => fetchQR(token)}>다시 시도</button>
+      <button className="qr-refresh-btn" onClick={() => fetchQR(token, false, true)}>다시 시도</button>
       <button className="qr-logout-btn" onClick={onLogout} style={{ marginTop: '1rem' }}>로그아웃</button>
     </div>
   );
