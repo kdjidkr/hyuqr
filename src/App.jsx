@@ -552,17 +552,55 @@ function ReserveForm({ onReserve, loading }) {
 
 function CafeteriaView({ date, changeDate, cafes, loading }) {
   const [selectedCafeId, setSelectedCafeId] = useState('re15');
+  const [expandedGroups, setExpandedGroups] = useState({});
 
   const selectedCafe = cafes.find(c => c.id === selectedCafeId) || { menus: [] };
 
+  useEffect(() => {
+    if (!selectedCafe.menus || selectedCafe.menus.length === 0) return;
+    
+    // Calculate current KST hour (add 9 hours to UTC)
+    const kstDate = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
+    const currentHour = kstDate.getUTCHours();
+
+    const getInitialOpenState = (type) => {
+      if (currentHour < 9) {
+        return type.includes('조식');
+      } else if (currentHour >= 14) {
+        return type.includes('석식');
+      } else {
+        return !type.includes('조식') && !type.includes('석식');
+      }
+    };
+
+    const initialExpanded = {};
+    selectedCafe.menus.forEach(m => {
+      if (initialExpanded[m.type] === undefined) {
+        initialExpanded[m.type] = getInitialOpenState(m.type);
+      }
+    });
+    
+    setExpandedGroups(initialExpanded);
+  }, [selectedCafe.id, cafes]);
+
+  const toggleGroup = (type) => {
+    setExpandedGroups(prev => ({ ...prev, [type]: !prev[type] }));
+  };
+
   const getMenuIcon = (type) => {
     if (type.includes('조식')) return '☀️';
-    if (type.includes('중식')) return '🍴';
+    if (type.includes('중식') || type.includes('일품') || type.includes('분식')) return '🍴';
     if (type.includes('석식')) return '🌙';
-    if (type.includes('분식')) return '🍜';
     if (type.includes('천원')) return '💰';
     return '🍚';
   };
+
+  // Group menus by type
+  const groupedMenus = selectedCafe.menus.reduce((acc, m) => {
+    if (!acc[m.type]) acc[m.type] = [];
+    acc[m.type].push(m);
+    return acc;
+  }, {});
 
   return (
     <div className="cafe-container">
@@ -608,17 +646,35 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
 
         <div style={{ filter: loading ? 'blur(2px)' : 'none', transition: 'filter 0.3s ease' }}>
           {cafes.length > 0 ? (
-            selectedCafe.menus.length > 0 ? (
-              selectedCafe.menus.map((m, i) => (
-                <div key={i} className="menu-card">
-                  <div className="menu-type-container">
-                    <span className="menu-icon">{getMenuIcon(m.type)}</span>
-                    <div className="menu-type">{m.type}</div>
+            Object.keys(groupedMenus).length > 0 ? (
+              Object.entries(groupedMenus).map(([type, menus]) => {
+                const isExpanded = expandedGroups[type];
+                return (
+                  <div key={type} className="accordion-group">
+                    <div className={`accordion-header ${isExpanded ? 'expanded' : ''}`} onClick={() => toggleGroup(type)}>
+                      <div className="accordion-title-area">
+                        <span className="menu-icon">{getMenuIcon(type)}</span>
+                        <span className="accordion-title">{type}</span>
+                        <span className="accordion-count">{menus.length}개 메뉴</span>
+                      </div>
+                      <div className="accordion-chevron">
+                        <ChevronRight style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }} size={20} color="#94a3b8" />
+                      </div>
+                    </div>
+                    
+                    <div className={`accordion-content ${isExpanded ? 'expanded' : ''}`}>
+                      <div className="accordion-inner">
+                        {menus.map((m, i) => (
+                          <div key={i} className="menu-card">
+                            <div className="menu-items">{m.menu}</div>
+                            {m.price && <div className="menu-price">{m.price}</div>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <div className="menu-items">{m.menu}</div>
-                  {m.price && <div className="menu-price">{m.price}</div>}
-                </div>
-              ))
+                );
+              })
             ) : (
               <div className="no-menu">해당 식당은 오늘 등록된 메뉴가 없습니다.</div>
             )

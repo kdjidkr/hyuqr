@@ -626,3 +626,70 @@ p.subtitle {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* Accordion UI */
+.accordion-group {
+  margin-bottom: 1.5rem;
+}
+
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  transition: all 0.2s ease;
+  margin-bottom: 0.75rem;
+}
+
+.accordion-header:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.accordion-title-area {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.accordion-title {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+}
+
+.accordion-count {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  background: var(--hyu-blue-light);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.accordion-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.accordion-content.expanded {
+  grid-template-rows: 1fr;
+}
+
+.accordion-inner {
+  overflow: hidden;
+}
+
+.accordion-inner .menu-card {
+  margin-bottom: 1rem;
+}
+
+.accordion-inner .menu-card:last-child {
+  margin-bottom: 0;
+}
