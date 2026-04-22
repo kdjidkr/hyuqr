@@ -35,17 +35,35 @@ async function scrapeCafe(cafeId, dateStr) {
             .filter(item => !/[a-zA-Z]/.test(item)) // Remove items with English characters
             .filter(item => item.trim().length > 0); // Remove empty strings
           
-          // Find price more robustly: any item containing digits and '원'
-          const priceIdx = rawItems.findIndex(item => /\d+.*원/.test(item));
-          let price = '';
-          if (priceIdx !== -1) {
-            price = rawItems[priceIdx];
-            // Remove the price from the items list
-            rawItems.splice(priceIdx, 1);
+          const parsedSets = [];
+          let currentItems = [];
+
+          rawItems.forEach(item => {
+            if (/\d+.*원/.test(item)) {
+              // It's a price. Finalize the current set.
+              parsedSets.push({
+                items: currentItems.join('\n'),
+                price: item
+              });
+              currentItems = []; // Reset for next set
+            } else {
+              currentItems.push(item);
+            }
+          });
+
+          // If there are leftover items (e.g. no price at the end)
+          if (currentItems.length > 0) {
+            parsedSets.push({
+              items: currentItems.join('\n'),
+              price: ''
+            });
           }
-          
-          const items = rawItems.join('\n');
-          menus.push({ type: title, menu: items, price: price });
+
+          parsedSets.forEach(set => {
+            if (set.items.trim().length > 0) {
+              menus.push({ type: title, menu: set.items, price: set.price });
+            }
+          });
         }
       }
     });
