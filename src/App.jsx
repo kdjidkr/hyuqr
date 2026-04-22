@@ -85,7 +85,13 @@ function App() {
       <div className="main-content">
         {activeTab === 'qr' ? (
           token ? (
-            <QRView token={token} setToken={setToken} onLogout={handleLogout} />
+            <QRView 
+              token={token} 
+              setToken={setToken} 
+              onLogout={handleLogout} 
+              userData={userData} 
+              setUserData={setUserData} 
+            />
           ) : (
             <LoginForm onSuccess={handleLoginSuccess} />
           )
@@ -155,7 +161,7 @@ function LoginForm({ onSuccess }) {
   );
 }
 
-function QRView({ token, setToken, onLogout }) {
+function QRView({ token, setToken, onLogout, userData, setUserData }) {
   const [qrData, setQrData] = useState(null);
   const [seatData, setSeatData] = useState(null);
   const [status, setStatus] = useState('loading'); // 'loading', 'ready', 'error'
@@ -208,6 +214,13 @@ function QRView({ token, setToken, onLogout }) {
 
       if (mCard && mCard !== "null" && mCard !== "undefined" && mCard.trim() !== "") {
         setQrData(mCard);
+        
+        // Extract name from patron object if available
+        const name = data.data?.patron?.name || data.data?.data?.patron?.name;
+        if (name && setUserData) {
+          setUserData(prev => ({ ...prev, name }));
+        }
+
         setStatus('ready');
       } else {
         throw new Error('QR data not found or invalid in response');
@@ -348,13 +361,24 @@ function QRView({ token, setToken, onLogout }) {
   return (
     <div className="qr-glass-panel" style={{ opacity: refreshing ? 0.7 : 1, transition: 'opacity 0.2s' }}>
       <h2 className="qr-title">출입증 QR</h2>
+      {userData?.name && (
+        <div style={{ marginBottom: '0.25rem', fontSize: '1.1rem', fontWeight: '600', color: 'var(--text-primary)' }}>
+          {userData.name}님 안녕하세요!
+        </div>
+      )}
       <p className="qr-desc">스캐너에 화면을 인식시켜주세요.</p>
       <div className="qr-wrapper" style={{ filter: refreshing ? 'blur(2px)' : 'none' }}>
         <QRCodeSVG value={qrData} size={220} level="M" />
       </div>
-      <div style={{ color: timeLeft <= 5 ? '#ef4444' : '#10b981', fontWeight: '700', fontSize: '1rem', marginBottom: '1rem' }}>
+      <div style={{ color: timeLeft <= 5 ? '#ef4444' : '#10b981', fontWeight: '700', fontSize: '1rem', marginBottom: '0.5rem' }}>
         {refreshing ? '갱신 중...' : `유효시간: ${timeLeft}초`}
       </div>
+
+      <button className="qr-refresh-btn" onClick={() => fetchQR(token)} disabled={refreshing} style={{ marginBottom: '1.5rem' }}>
+        <RefreshCw size={16} className={refreshing ? 'spin-animation' : ''} />
+        <span>{refreshing ? '갱신 중...' : 'QR 새로고침'}</span>
+      </button>
+
       {seatData ? (
         <div className={`seat-info-card ${seatData.state?.code === 'TEMP_CHARGE' ? 'is-temp' : 'is-confirmed'}`}>
           <div className="seat-header">
@@ -397,11 +421,8 @@ function QRView({ token, setToken, onLogout }) {
       ) : (
         <ReserveForm onReserve={handleReserve} loading={refreshing} />
       )}
-      <button className="qr-refresh-btn" onClick={() => fetchQR(token)} disabled={refreshing}>
-        <RefreshCw size={16} className={refreshing ? 'spin-animation' : ''} />
-        <span>{refreshing ? '갱신 중...' : '새로고침'}</span>
-      </button>
-      <button className="qr-logout-btn" onClick={onLogout}>로그아웃</button>
+      
+      <button className="qr-logout-btn" onClick={onLogout} style={{ marginTop: '1rem' }}>로그아웃</button>
       <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#94a3b8', fontSize: '0.75rem' }}><Smartphone size={14} /> 화면 밝기 최대 권장</div>
     </div>
   );
