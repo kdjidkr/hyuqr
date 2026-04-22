@@ -35,11 +35,17 @@ async function scrapeCafe(cafeId, dateStr) {
             .filter(item => !/[a-zA-Z]/.test(item)) // Remove items with English characters
             .filter(item => item.trim().length > 0); // Remove empty strings
           
-          // Separate price (ends with '원' and contains digits)
-          const price = rawItems.find(item => /\d+.*원$/.test(item));
-          const items = rawItems.filter(item => !/\d+.*원$/.test(item)).join('\n');
+          // Find price more robustly: any item containing digits and '원'
+          const priceIdx = rawItems.findIndex(item => /\d+.*원/.test(item));
+          let price = '';
+          if (priceIdx !== -1) {
+            price = rawItems[priceIdx];
+            // Remove the price from the items list
+            rawItems.splice(priceIdx, 1);
+          }
           
-          menus.push({ type: title, menu: items, price: price || '' });
+          const items = rawItems.join('\n');
+          menus.push({ type: title, menu: items, price: price });
         }
       }
     });
