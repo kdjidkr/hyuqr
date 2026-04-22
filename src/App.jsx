@@ -206,11 +206,11 @@ function QRView({ token, setToken, onLogout }) {
       const data = await res.json();
       const mCard = data.data?.membershipCard || data.data?.data?.membershipCard || (typeof data.data === 'string' ? data.data : null);
 
-      if (mCard) {
+      if (mCard && mCard !== "null" && mCard !== "undefined" && mCard.trim() !== "") {
         setQrData(mCard);
         setStatus('ready');
       } else {
-        throw new Error('QR data not found in response');
+        throw new Error('QR data not found or invalid in response');
       }
 
       // Fetch seat data as well
@@ -255,8 +255,8 @@ function QRView({ token, setToken, onLogout }) {
 
     } catch (err) {
       console.error('QR Fetch Error:', err);
-      // Only set to error state if it's the initial load
-      setStatus(prev => prev === 'loading' ? 'error' : prev);
+      // Set to error state so the user knows something went wrong, instead of showing a stale QR
+      setStatus('error');
     } finally {
       setRefreshing(false);
     }
