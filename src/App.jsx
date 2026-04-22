@@ -615,7 +615,8 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
                     <span className="menu-icon">{getMenuIcon(m.type)}</span>
                     <div className="menu-type">{m.type}</div>
                   </div>
-                  <div className="menu-items" style={{ whiteSpace: 'pre-line' }}>{m.menu}</div>
+                  <div className="menu-items">{m.menu}</div>
+                  {m.price && <div className="menu-price">{m.price}</div>}
                 </div>
               ))
             ) : (

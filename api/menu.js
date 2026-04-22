@@ -29,16 +29,17 @@ async function scrapeCafe(cafeId, dateStr) {
       if (title && !title.includes('원') && !ignoreList.some(ig => title.includes(ig))) {
         let menuText = $(el).next().text().replace(/\s+/g, ' ').trim();
         if (menuText && menuText.length > 5 && !menuText.includes('확인 가능합니다')) {
-          // Remove double quotes, split by space, filter out English, and join with newlines
-          menuText = menuText
+          const rawItems = menuText
             .replace(/"/g, '') // Remove double quotes
             .split(/\s+/) // Split by spaces
             .filter(item => !/[a-zA-Z]/.test(item)) // Remove items with English characters
-            .filter(item => item.trim().length > 0) // Remove empty strings
-            .map(item => (/\d+.*원$/.test(item) ? item + '\n' : item)) // Add extra newline after prices
-            .join('\n'); // Join with newlines
+            .filter(item => item.trim().length > 0); // Remove empty strings
           
-          menus.push({ type: title, menu: menuText });
+          // Separate price (ends with '원' and contains digits)
+          const price = rawItems.find(item => /\d+.*원$/.test(item));
+          const items = rawItems.filter(item => !/\d+.*원$/.test(item)).join('\n');
+          
+          menus.push({ type: title, menu: items, price: price || '' });
         }
       }
     });
