@@ -594,6 +594,29 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
     setExpandedGroups(prev => ({ ...prev, [type]: !prev[type] }));
   };
 
+  const formatDate = (targetDate) => {
+    const days = ['일', '월', '화', '수', '목', '금', '토'];
+    const month = targetDate.getMonth() + 1;
+    const day = targetDate.getDate();
+    const dayName = days[targetDate.getDay()];
+    
+    const base = `${month}월 ${day}일 (${dayName})`;
+    
+    // Compare dates (ignoring time) to determine 어제/오늘/내일
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const target = new Date(targetDate);
+    target.setHours(0, 0, 0, 0);
+    
+    const diffTime = target - today;
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return `${base} 오늘`;
+    if (diffDays === 1) return `${base} 내일`;
+    if (diffDays === -1) return `${base} 어제`;
+    return base;
+  };
+
   const getMenuIcon = (type) => {
     if (type.includes('조식')) return '☀️';
     if (type.includes('중식') || type.includes('일품') || type.includes('분식')) return '🍴';
@@ -616,7 +639,7 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
           <ChevronLeft style={{ opacity: loading ? 0.3 : 1 }} />
         </button>
         <div className="date-text" style={{ opacity: loading ? 0.5 : 1 }}>
-          {date.toISOString().split('T')[0].replace(/-/g, '.')}
+          {formatDate(date)}
         </div>
         <button className="date-btn" onClick={() => changeDate(1)} disabled={loading}>
           <ChevronRight style={{ opacity: loading ? 0.3 : 1 }} />
