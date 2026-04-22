@@ -187,21 +187,35 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ encryptedCredentials: creds })
               });
+              
+              if (!reloginRes.ok) {
+                // Relogin API failed (e.g., 500 or 401). 
+                // The stored credentials are likely invalid.
+                onLogout();
+                return;
+              }
+
               const reloginData = await reloginRes.json();
-              if (reloginRes.ok && reloginData.success) {
+              if (reloginData.success) {
                 localStorage.setItem('pyxisAccessToken', reloginData.accessToken);
                 setToken(reloginData.accessToken);
                 // Retry fetch with new token
                 return fetchQR(reloginData.accessToken, true);
+              } else {
+                // Server returned success:false for relogin
+                onLogout();
+                return;
               }
             } catch (reloginErr) {
               console.error('Auto-relogin failed:', reloginErr);
+              onLogout(); // Crash during relogin -> logout for safety
+              return;
             }
           }
         }
 
-        // If relogin failed or wasn't possible, and it's a 401, force logout
-        if (res.status === 401) {
+        // If relogin failed or wasn't possible, and it's a 401/403, force logout
+        if (res.status === 401 || res.status === 403) {
           onLogout();
           return;
         }
