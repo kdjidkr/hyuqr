@@ -556,20 +556,42 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
 
   const selectedCafe = cafes.find(c => c.id === selectedCafeId) || { menus: [] };
 
+  const formatDate = (targetDate) => {
+    const days = ['일', '월', '화', '수', '목', '금', '토'];
+    // targetDate is a shifted KST object, so UTC methods return KST values
+    const month = targetDate.getUTCMonth() + 1;
+    const day = targetDate.getUTCDate();
+    const dayName = days[targetDate.getUTCDay()];
+    
+    const base = `${month}월 ${day}일 (${dayName})`;
+    
+    const nowKst = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
+    const todayStr = nowKst.toISOString().split('T')[0];
+    const targetStr = targetDate.toISOString().split('T')[0];
+    
+    if (todayStr === targetStr) return `${base} 오늘`;
+    
+    const tomorrowKst = new Date(nowKst.getTime() + 24 * 60 * 60 * 1000);
+    if (tomorrowKst.toISOString().split('T')[0] === targetStr) return `${base} 내일`;
+    
+    const yesterdayKst = new Date(nowKst.getTime() - 24 * 60 * 60 * 1000);
+    if (yesterdayKst.toISOString().split('T')[0] === targetStr) return `${base} 어제`;
+    
+    return base;
+  };
+
   useEffect(() => {
     if (!selectedCafe.menus || selectedCafe.menus.length === 0) return;
     
-    // Check if viewed date is today (KST)
-    const todayKst = new Date(new Date().getTime() + 9 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const nowKst = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
+    const todayStr = nowKst.toISOString().split('T')[0];
     const viewedDateStr = date.toISOString().split('T')[0];
-    const isToday = todayKst === viewedDateStr;
+    const isToday = todayStr === viewedDateStr;
 
-    // Calculate current KST hour (add 9 hours to UTC)
-    const kstDate = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
-    const currentHour = kstDate.getUTCHours();
+    const currentHour = nowKst.getUTCHours();
 
     const getInitialOpenState = (type) => {
-      if (!isToday) return true; // Expand all if not today
+      if (!isToday) return true; // Not today? Expand all.
       
       if (currentHour < 9) {
         return type.includes('조식');
@@ -592,29 +614,6 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
 
   const toggleGroup = (type) => {
     setExpandedGroups(prev => ({ ...prev, [type]: !prev[type] }));
-  };
-
-  const formatDate = (targetDate) => {
-    const days = ['일', '월', '화', '수', '목', '금', '토'];
-    const month = targetDate.getMonth() + 1;
-    const day = targetDate.getDate();
-    const dayName = days[targetDate.getDay()];
-    
-    const base = `${month}월 ${day}일 (${dayName})`;
-    
-    // Compare dates (ignoring time) to determine 어제/오늘/내일
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const target = new Date(targetDate);
-    target.setHours(0, 0, 0, 0);
-    
-    const diffTime = target - today;
-    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 0) return `${base} 오늘`;
-    if (diffDays === 1) return `${base} 내일`;
-    if (diffDays === -1) return `${base} 어제`;
-    return base;
   };
 
   const getMenuIcon = (type) => {
