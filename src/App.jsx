@@ -999,10 +999,15 @@ function InstagramListView({ onBack }) {
       </div>
     );
 
+    const getProxyUrl = (originalUrl) => {
+      if (!originalUrl || originalUrl.includes('ui-avatars.com')) return originalUrl;
+      return `/api/insta-proxy?url=${encodeURIComponent(originalUrl)}`;
+    };
+
     return (
       <div key={acc.username} className="insta-item">
         <div className="insta-user-info">
-          <img src={d.profilePicUrl} alt={acc.username} className="insta-avatar" />
+          <img src={getProxyUrl(d.profilePicUrl)} alt={acc.username} className="insta-avatar" />
           <div className="insta-text">
             <span className="insta-username">{acc.username}</span>
             <span className="insta-fullname">{acc.desc} {d.fullName !== acc.username ? `(${d.fullName})` : ''}</span>

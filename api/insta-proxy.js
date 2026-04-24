@@ -16,7 +16,6 @@ try {
 
 const fetchInstagramData = (username) => {
   return new Promise((resolve, reject) => {
-    // Attempt 1: Web Profile Info API (Most reliable)
     const apiUrl = `https://www.instagram.com/api/v1/users/web_profile_info/?username=${username}`;
     const options = {
       headers: {
@@ -46,36 +45,40 @@ const fetchInstagramData = (username) => {
             }
           } catch (e) {}
         }
-        
-        // Attempt 2: HTML Scraping Fallback
-        const pageUrl = `https://www.instagram.com/${username}/`;
-        https.get(pageUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (res2) => {
-          let html = '';
-          res2.on('data', c => html += c);
-          res2.on('end', () => {
-            const ogImageMatch = html.match(/property="og:image"\s+content="([^"]+)"/i);
-            const titleMatch = html.match(/<title>(.*?)<\/title>/i);
-            
-            let profilePicUrl = ogImageMatch ? ogImageMatch[1].replace(/&amp;/g, '&') : null;
-            let fullName = null;
-            if (titleMatch && titleMatch[1].includes('(@')) {
-              fullName = titleMatch[1].split('(@')[0].trim();
-            }
-
-            resolve({
-              username,
-              fullName: fullName || username,
-              profilePicUrl: profilePicUrl || `https://ui-avatars.com/api/?name=${username}&background=random`
-            });
-          });
-        }).on('error', () => reject(new Error('HTML Fetch Failed')));
+        resolve({
+          username,
+          fullName: username,
+          profilePicUrl: `https://ui-avatars.com/api/?name=${username}&background=random`
+        });
       });
     }).on('error', reject);
   });
 };
 
 export default async function handler(req, res) {
-  const { username } = req.query;
+  const { username, url } = req.query;
+
+  // Image Proxy Mode
+  if (url) {
+    if (!url.includes('cdninstagram.com')) {
+      return res.status(403).send('Invalid image URL');
+    }
+
+    return new Promise((resolve, reject) => {
+      https.get(url, (imgRes) => {
+        res.setHeader('Content-Type', imgRes.headers['content-type'] || 'image/jpeg');
+        res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 1 day
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        imgRes.pipe(res);
+        imgRes.on('end', resolve);
+      }).on('error', (err) => {
+        res.status(500).send('Failed to proxy image');
+        resolve();
+      });
+    });
+  }
+
+  // Data Proxy Mode
   if (!username) return res.status(400).send('Username is required');
 
   const cachePath = path.join(CACHE_DIR, `${username}.json`);
@@ -93,6 +96,13 @@ export default async function handler(req, res) {
   try {
     const result = await fetchInstagramData(username);
     
+    // Add proxy prefix to the profilePicUrl if it's an Instagram CDN URL
+    if (result.profilePicUrl && result.profilePicUrl.includes('cdninstagram.com')) {
+      // result.profilePicUrl = `/api/insta-proxy?url=${encodeURIComponent(result.profilePicUrl)}`;
+      // Wait, it's better to keep the raw URL in data and wrap it in frontend
+      // OR we can do it here. Let's do it here for convenience.
+    }
+
     try {
       fs.writeFileSync(cachePath, JSON.stringify(result));
     } catch (e) {}
