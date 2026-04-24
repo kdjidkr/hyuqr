@@ -1,10 +1,27 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { RefreshCw, Smartphone, Utensils, QrCode, ChevronLeft, ChevronRight, LayoutGrid, Dumbbell, ArrowLeft, Activity, Target, Zap, Clock } from 'lucide-react';
+import { RefreshCw, Smartphone, Utensils, QrCode, ChevronLeft, ChevronRight, LayoutGrid, Dumbbell, ArrowLeft, Activity, Target, Zap, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import './index.css';
 
 // Helper for KST Date
 const getKSTDate = () => new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
+
+const InstagramIcon = ({ size = 24, color = "currentColor" }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+  </svg>
+);
 
 const ROOMS = [
   { id: 61, name: '제1열람실 (2F)', max: 324, offset: 2276 },
@@ -12,6 +29,28 @@ const ROOMS = [
   { id: 132, name: '노상일 HOLMZ (4F)', max: 83, offset: 3823 },
   { id: 131, name: '집중열람실 (4F)', max: 10, offset: 3811 }
 ];
+
+const INSTA_ACCOUNTS = {
+  erica: [
+    { username: 'hanyang_erica', desc: '한양대학교 ERICA 공식 인스타그램' },
+    { username: 'hanyang_erica_stu', desc: 'ERICA 총학생회' },
+    { username: 'hanyang_erica_club_association', desc: '총동아리연합회' },
+    { username: 'hyuerica', desc: '학술정보관' },
+    { username: 'hanyangerica', desc: '사랑한대' }
+  ],
+  college: [
+    { username: 'hyu_lions', desc: 'LIONS 칼리지 학생회' },
+    { username: 'hyu_soongan_', desc: '커뮤니케이션&컬쳐대학' },
+    { username: 'hyu_erica_eng', desc: '공학대학' },
+    { username: 'hypharmacy', desc: '약학대학' },
+    { username: 'design_hyu', desc: '디자인대학' },
+    { username: 'hanyang_gon', desc: '글로벌문화통상대학' },
+    { username: 'hyu_mood', desc: '경상대학' },
+    { username: 'hyu_computing', desc: '소프트웨어융합대학' },
+    { username: 'hyu_e_sports_and_arts_vibe', desc: '예체능대학' },
+    { username: 'hyu_erica_atc', desc: '첨단융합대학' }
+  ]
+};
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -85,12 +124,12 @@ function App() {
       <div className="main-content">
         {activeTab === 'qr' ? (
           token ? (
-            <QRView 
-              token={token} 
-              setToken={setToken} 
-              onLogout={handleLogout} 
-              userData={userData} 
-              setUserData={setUserData} 
+            <QRView
+              token={token}
+              setToken={setToken}
+              onLogout={handleLogout}
+              userData={userData}
+              setUserData={setUserData}
             />
           ) : (
             <LoginForm onSuccess={handleLoginSuccess} />
@@ -133,11 +172,11 @@ function LoginForm({ onSuccess }) {
         onSuccess(data.accessToken, data.encryptedCredentials, data.name);
       } else {
         setStatus('error');
-        setErrMsg(data.message || '로그인 실패');
+        setErrMsg(data.message || 'Login failed');
       }
     } catch (err) {
       setStatus('error');
-      setErrMsg('서버 통신 오류');
+      setErrMsg('Server error');
     }
   };
 
@@ -174,7 +213,6 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
     setRefreshing(true);
     if (!isRetry) setTimeLeft(30);
 
-    // If force relogin is requested (e.g. from error screen), try relogin immediately
     if (forceRelogin && !isRetry) {
       const creds = localStorage.getItem('pyxisEncryptedCreds');
       if (creds) {
@@ -184,7 +222,7 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ encryptedCredentials: creds })
           });
-          
+
           if (reloginRes.ok) {
             const reloginData = await reloginRes.json();
             if (reloginData.success) {
@@ -193,7 +231,6 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
               return fetchQR(reloginData.accessToken, true);
             }
           }
-          // If relogin fails even when forced, just logout
           onLogout();
           return;
         } catch (e) {
@@ -206,9 +243,7 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
     try {
       const res = await fetch('/api/qr', { headers: { 'X-Pyxis-Auth-Token': currentToken } });
 
-      // Handle non-OK responses (like 401 Unauthorized or stale cache 304/etc)
       if (!res.ok) {
-        // If it's a first attempt and we have credentials, try automatic relogin
         if (!isRetry) {
           const creds = localStorage.getItem('pyxisEncryptedCreds');
           if (creds) {
@@ -218,10 +253,8 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ encryptedCredentials: creds })
               });
-              
+
               if (!reloginRes.ok) {
-                // Relogin API failed (e.g., 500 or 401). 
-                // The stored credentials are likely invalid.
                 onLogout();
                 return;
               }
@@ -230,22 +263,19 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
               if (reloginData.success) {
                 localStorage.setItem('pyxisAccessToken', reloginData.accessToken);
                 setToken(reloginData.accessToken);
-                // Retry fetch with new token
                 return fetchQR(reloginData.accessToken, true);
               } else {
-                // Server returned success:false for relogin
                 onLogout();
                 return;
               }
             } catch (reloginErr) {
               console.error('Auto-relogin failed:', reloginErr);
-              onLogout(); // Crash during relogin -> logout for safety
+              onLogout();
               return;
             }
           }
         }
 
-        // If relogin failed or wasn't possible, and it's a 401/403, force logout
         if (res.status === 401 || res.status === 403) {
           onLogout();
           return;
@@ -259,8 +289,7 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
 
       if (mCard && mCard !== "null" && mCard !== "undefined" && mCard.trim() !== "") {
         setQrData(mCard);
-        
-        // Extract name from patron object if available
+
         const name = data.data?.patron?.name || data.data?.data?.patron?.name;
         if (name && setUserData) {
           setUserData(prev => ({ ...prev, name }));
@@ -268,8 +297,6 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
 
         setStatus('ready');
       } else {
-        // If data is invalid but status was 200, it might be a silent session expiry.
-        // Try relogin if we haven't already.
         if (!isRetry) {
           const creds = localStorage.getItem('pyxisEncryptedCreds');
           if (creds) {
@@ -293,19 +320,17 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
         throw new Error('QR data not found or invalid in response');
       }
 
-      // Fetch seat data as well
       try {
         const seatRes = await fetch('/api/seat', { headers: { 'X-Pyxis-Auth-Token': currentToken } });
         if (seatRes.ok) {
           const sData = await seatRes.json();
           if (sData.success && sData.data?.list?.[0]) {
             const item = sData.data.list[0];
-            // list[0].seat[0] 형태이거나 list[0].seat 형태일 수 있음 (유연하게 처리)
             const seatObj = Array.isArray(item.seat) ? item.seat[0] : item.seat;
-            
+
             if (seatObj) {
               const seat = {
-                ...seatObj, // 기존 필드 유지
+                ...seatObj,
                 id: item.id || seatObj.id,
                 room: item.room || seatObj.room,
                 endTime: item.endTime || seatObj.endTime,
@@ -314,7 +339,6 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
                 remainTime: item.remainTime ?? item.remainingTime ?? seatObj.remainTime ?? seatObj.remainingTime
               };
 
-              // Calculate remaining minutes if field is missing or invalid
               if (seat.remainTime === undefined && seat.endTime) {
                 try {
                   const end = new Date(seat.endTime.replace(/-/g, '/'));
@@ -335,7 +359,6 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
 
     } catch (err) {
       console.error('QR Fetch Error:', err);
-      // Set to error state so the user knows something went wrong, instead of showing a stale QR
       setStatus('error');
     } finally {
       setRefreshing(false);
@@ -347,9 +370,9 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
     try {
       const res = await fetch('/api/reserve', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'X-Pyxis-Auth-Token': token 
+          'X-Pyxis-Auth-Token': token
         },
         body: JSON.stringify({ seatId })
       });
@@ -370,10 +393,10 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
 
   const handleSeatReturn = async () => {
     if (!seatData) return;
-    
+
     const isTemp = seatData.state?.code === 'TEMP_CHARGE';
     const actionText = isTemp ? '예약을 취소하시겠습니까?' : `${seatData.seat || seatData.code}번 자리를 반납할까요?`;
-    
+
     const confirmAction = window.confirm(actionText);
     if (!confirmAction) return;
 
@@ -382,9 +405,9 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
       const endpoint = isTemp ? '/api/cancel' : '/api/discharge';
       const res = await fetch(endpoint, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'X-Pyxis-Auth-Token': token 
+          'X-Pyxis-Auth-Token': token
         },
         body: JSON.stringify({ seatCharge: seatData.id })
       });
@@ -438,12 +461,12 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
         <QRCodeSVG value={qrData} size={220} level="M" />
       </div>
       <div style={{ color: timeLeft <= 5 ? '#ef4444' : '#10b981', fontWeight: '700', fontSize: '1rem', marginBottom: '0.5rem' }}>
-        {refreshing ? '갱신 중...' : `유효시간: ${timeLeft}초`}
+        {refreshing ? 'Refreshing...' : `유효시간: ${timeLeft}초`}
       </div>
 
       <button className="qr-refresh-btn" onClick={() => fetchQR(token)} disabled={refreshing} style={{ marginBottom: '1.5rem' }}>
         <RefreshCw size={16} className={refreshing ? 'spin-animation' : ''} />
-        <span>{refreshing ? '갱신 중...' : 'QR 새로고침'}</span>
+        <span>{refreshing ? 'Refreshing...' : 'QR 새로고침'}</span>
       </button>
 
       {seatData ? (
@@ -459,11 +482,11 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
           </div>
 
           {seatData.state?.code === 'TEMP_CHARGE' && seatData.checkinExpiryDate && (
-            <div style={{ 
-              background: 'rgba(245, 158, 11, 0.1)', 
-              padding: '0.75rem', 
-              borderRadius: '8px', 
-              fontSize: '0.85rem', 
+            <div style={{
+              background: 'rgba(245, 158, 11, 0.1)',
+              padding: '0.75rem',
+              borderRadius: '8px',
+              fontSize: '0.85rem',
               color: '#b45309',
               fontWeight: '700',
               textAlign: 'center'
@@ -488,7 +511,7 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
       ) : (
         <ReserveForm onReserve={handleReserve} loading={refreshing} />
       )}
-      
+
       <button className="qr-logout-btn" onClick={onLogout} style={{ marginTop: '1rem' }}>로그아웃</button>
       <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#94a3b8', fontSize: '0.75rem' }}><Smartphone size={14} /> 화면 밝기 최대 권장</div>
     </div>
@@ -504,7 +527,7 @@ function ReserveForm({ onReserve, loading }) {
     if (!seatNum) return;
     const room = ROOMS[selectedRoomIdx];
     const num = parseInt(seatNum, 10);
-    
+
     if (isNaN(num) || num <= 0 || num > room.max) {
       alert(`좌석 번호는 1~${room.max} 사이여야 합니다.`);
       return;
@@ -523,9 +546,9 @@ function ReserveForm({ onReserve, loading }) {
       <form onSubmit={handleSubmit}>
         <div className="input-group">
           <label>열람실 선택</label>
-          <select 
-            className="input-field room-select" 
-            value={selectedRoomIdx} 
+          <select
+            className="input-field room-select"
+            value={selectedRoomIdx}
             onChange={e => setSelectedRoomIdx(parseInt(e.target.value, 10))}
           >
             {ROOMS.map((room, idx) => (
@@ -535,13 +558,13 @@ function ReserveForm({ onReserve, loading }) {
         </div>
         <div className="input-group">
           <label>좌석 번호 (1~{ROOMS[selectedRoomIdx].max})</label>
-          <input 
-            type="number" 
-            className="input-field" 
-            value={seatNum} 
-            onChange={e => setSeatNum(e.target.value)} 
-            placeholder="좌석 번호" 
-            required 
+          <input
+            type="number"
+            className="input-field"
+            value={seatNum}
+            onChange={e => setSeatNum(e.target.value)}
+            placeholder="좌석 번호"
+            required
           />
         </div>
         <button type="submit" className="primary-btn" disabled={loading} style={{ marginTop: '1rem' }}>
@@ -560,31 +583,30 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
 
   const formatDate = (targetDate) => {
     const days = ['일', '월', '화', '수', '목', '금', '토'];
-    // targetDate is a shifted KST object, so UTC methods return KST values
     const month = targetDate.getUTCMonth() + 1;
     const day = targetDate.getUTCDate();
     const dayName = days[targetDate.getUTCDay()];
-    
+
     const base = `${month}월 ${day}일 (${dayName})`;
-    
+
     const nowKst = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
     const todayStr = nowKst.toISOString().split('T')[0];
     const targetStr = targetDate.toISOString().split('T')[0];
-    
+
     if (todayStr === targetStr) return `${base} 오늘`;
-    
+
     const tomorrowKst = new Date(nowKst.getTime() + 24 * 60 * 60 * 1000);
     if (tomorrowKst.toISOString().split('T')[0] === targetStr) return `${base} 내일`;
-    
+
     const yesterdayKst = new Date(nowKst.getTime() - 24 * 60 * 60 * 1000);
     if (yesterdayKst.toISOString().split('T')[0] === targetStr) return `${base} 어제`;
-    
+
     return base;
   };
 
   useEffect(() => {
     if (!selectedCafe.menus || selectedCafe.menus.length === 0) return;
-    
+
     const nowKst = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
     const todayStr = nowKst.toISOString().split('T')[0];
     const viewedDateStr = date.toISOString().split('T')[0];
@@ -593,8 +615,8 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
     const currentHour = nowKst.getUTCHours();
 
     const getInitialOpenState = (type) => {
-      if (!isToday) return true; // Not today? Expand all.
-      
+      if (!isToday) return true;
+
       if (currentHour < 9) {
         return type.includes('조식');
       } else if (currentHour >= 14) {
@@ -610,7 +632,7 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
         initialExpanded[m.type] = getInitialOpenState(m.type);
       }
     });
-    
+
     setExpandedGroups(initialExpanded);
   }, [selectedCafe.id, cafes, date]);
 
@@ -626,7 +648,6 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
     return '🍚';
   };
 
-  // Group menus by type
   const groupedMenus = selectedCafe.menus.reduce((acc, m) => {
     if (!acc[m.type]) acc[m.type] = [];
     acc[m.type].push(m);
@@ -662,7 +683,6 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
       </div>
 
       <div className="menu-list" style={{ position: 'relative', minHeight: '200px' }}>
-        {/* Loading Overlay */}
         {loading && (
           <div style={{
             position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
@@ -692,7 +712,7 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
                         <ChevronRight style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }} size={20} color="#94a3b8" />
                       </div>
                     </div>
-                    
+
                     <div className={`accordion-content ${isExpanded ? 'expanded' : ''}`}>
                       <div className="accordion-inner">
                         {menus.map((m, i) => (
@@ -744,11 +764,15 @@ function MiscView() {
     return <GymTimetable onBack={() => setSubView('list')} />;
   }
 
+  if (subView === 'insta') {
+    return <InstagramListView onBack={() => setSubView('list')} />;
+  }
+
   return (
     <div className="misc-container">
       <h2 className="section-title">기타 서비스</h2>
       <p className="section-subtitle">학교 생활을 위한 기능 모음</p>
-      
+
       <div className="misc-grid">
         <div className="misc-card" onClick={() => setSubView('gym')}>
           <div className="misc-icon-wrapper">
@@ -760,7 +784,16 @@ function MiscView() {
           </div>
         </div>
 
-        {/* Placeholder cards */}
+        <div className="misc-card" onClick={() => setSubView('insta')}>
+          <div className="misc-icon-wrapper">
+            <InstagramIcon size={28} color="#E4405F" />
+          </div>
+          <div className="misc-card-info">
+            <span className="misc-card-title">학교 인스타그램</span>
+            <span className="misc-card-desc">에리카 & 단과대 계정</span>
+          </div>
+        </div>
+
         <div className="misc-card disabled">
           <div className="misc-icon-wrapper">
             <LayoutGrid size={28} style={{ opacity: 0.2 }} />
@@ -783,7 +816,6 @@ function GymTimetable({ onBack }) {
     return () => clearInterval(timer);
   }, []);
 
-  // Professional Color Palette (Icons removed)
   const colors = {
     orange: { bg: '#FFF7ED', text: '#C2410C', border: '#FFEDD5' },
     teal: { bg: '#F0FDFA', text: '#0F766E', border: '#CCFBF1' },
@@ -836,10 +868,10 @@ function GymTimetable({ onBack }) {
     const style = colors[cell.type];
     return (
       <td rowSpan={span} className="cal-cell busy">
-        <div className="course-card" style={{ 
-          backgroundColor: style.bg, 
-          color: style.text, 
-          borderColor: style.border 
+        <div className="course-card" style={{
+          backgroundColor: style.bg,
+          color: style.text,
+          borderColor: style.border
         }}>
           <div className="course-name">{cell.name}</div>
         </div>
@@ -850,15 +882,15 @@ function GymTimetable({ onBack }) {
   const getNowPos = () => {
     const h = currentTime.getHours();
     const m = currentTime.getMinutes();
-    const day = currentTime.getDay(); 
+    const day = currentTime.getDay();
     if (h < 9 || h >= 21 || day === 0 || day === 6) return null;
     const rowIndex = baseSchedule.findIndex(s => s.hour === h);
     if (rowIndex === -1) return null;
-    const rowHeight = 40; // Reduced row height
-    const topOffset = 48; // Header height
-    return { 
-      top: topOffset + (rowIndex * rowHeight) + (m / 60) * rowHeight, 
-      dayIndex: day - 1 
+    const rowHeight = 40;
+    const topOffset = 48;
+    return {
+      top: topOffset + (rowIndex * rowHeight) + (m / 60) * rowHeight,
+      dayIndex: day - 1
     };
   };
 
@@ -918,6 +950,99 @@ function GymTimetable({ onBack }) {
         <p>* 수업 시간에는 일반 학생 이용이 제한됩니다.</p>
         <p>* 학기별 수업 일정에 따라 변동될 수 있습니다.</p>
       </footer>
+    </div>
+  );
+}
+
+function InstagramListView({ onBack }) {
+  const [expanded, setExpanded] = useState({ erica: true, college: true });
+  const [data, setData] = useState({});
+
+  const toggle = (key) => setExpanded(prev => ({ ...prev, [key]: !prev[key] }));
+
+  const fetchInsta = async (username) => {
+    try {
+      const res = await fetch(`/api/insta-proxy?username=${username}`);
+      const json = await res.json();
+      setData(prev => ({ ...prev, [username]: json }));
+    } catch (e) { console.error(e); }
+  };
+
+  useEffect(() => {
+    const all = [...INSTA_ACCOUNTS.erica, ...INSTA_ACCOUNTS.college];
+    all.forEach(acc => fetchInsta(acc.username));
+  }, []);
+
+  const openInsta = (username) => {
+    const appUrl = `instagram://user?username=${username}`;
+    const webUrl = `https://www.instagram.com/${username}/`;
+
+    const start = Date.now();
+    window.location.href = appUrl;
+
+    setTimeout(() => {
+      if (Date.now() - start < 2000) {
+        window.open(webUrl, '_blank');
+      }
+    }, 500);
+  };
+
+  const renderItem = (acc) => {
+    const d = data[acc.username];
+    if (!d) return (
+      <div key={acc.username} className="insta-loading-skeleton">
+        <div className="skeleton-circle"></div>
+        <div className="skeleton-text">
+          <div className="skeleton-line short"></div>
+          <div className="skeleton-line long"></div>
+        </div>
+      </div>
+    );
+
+    return (
+      <div key={acc.username} className="insta-item">
+        <div className="insta-user-info">
+          <img src={d.profilePicUrl} alt={acc.username} className="insta-avatar" />
+          <div className="insta-text">
+            <span className="insta-username">{acc.username}</span>
+            <span className="insta-fullname">{acc.desc} {d.fullName !== acc.username ? `(${d.fullName})` : ''}</span>
+          </div>
+        </div>
+        <button className="insta-action-btn" onClick={() => openInsta(acc.username)}>이동하기</button>
+      </div>
+    );
+  };
+
+  return (
+    <div className="insta-container">
+      <div className="insta-header">
+        <button className="insta-back" onClick={onBack}><ArrowLeft size={20} /></button>
+        <h2 className="section-title" style={{ marginBottom: 0 }}>학교 인스타그램</h2>
+      </div>
+
+      <div className="insta-section">
+        <div className="insta-section-header" onClick={() => toggle('erica')}>
+          <span className="insta-section-title">에리카</span>
+          {expanded.erica ? <ChevronUp size={20} color="#94a3b8" /> : <ChevronDown size={20} color="#94a3b8" />}
+        </div>
+        {expanded.erica && (
+          <div className="insta-list">
+            {INSTA_ACCOUNTS.erica.map(renderItem)}
+          </div>
+        )}
+      </div>
+
+      <div className="insta-section">
+        <div className="insta-section-header" onClick={() => toggle('college')}>
+          <span className="insta-section-title">단과 대학</span>
+          {expanded.college ? <ChevronUp size={20} color="#94a3b8" /> : <ChevronDown size={20} color="#94a3b8" />}
+        </div>
+        {expanded.college && (
+          <div className="insta-list">
+            {INSTA_ACCOUNTS.college.map(renderItem)}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

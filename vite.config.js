@@ -38,6 +38,42 @@ export default defineConfig({
           }
         ]
       }
-    })
+    }),
+    {
+      name: 'api-emulator',
+      configureServer(server) {
+        server.middlewares.use(async (req, res, next) => {
+          if (req.url.startsWith('/api/')) {
+            const [urlPath, queryStr] = req.url.split('?');
+            const apiFilePath = `./api${urlPath.substring(4)}.js`;
+            
+            try {
+              // Dynamically import the API handler
+              const module = await server.ssrLoadModule(apiFilePath);
+              const handler = module.default;
+
+              // Minimal request/response mocking
+              req.query = Object.fromEntries(new URLSearchParams(queryStr));
+              
+              res.status = (code) => {
+                res.statusCode = code;
+                return res;
+              };
+              res.json = (data) => {
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify(data));
+              };
+              res.send = (data) => res.end(data);
+
+              await handler(req, res);
+              return;
+            } catch (err) {
+              console.error(`API Emulator Error (${req.url}):`, err);
+            }
+          }
+          next();
+        });
+      }
+    }
   ]
 })
