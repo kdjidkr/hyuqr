@@ -1,15 +1,20 @@
-import fs from 'fs';
-import path from 'path';
-import https from 'https';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as https from 'https';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const CACHE_DIR = path.join(process.cwd(), 'api', 'cache', 'insta');
+// Vercel handles /tmp as a writable directory
+const CACHE_DIR = path.join('/tmp', 'insta-cache');
 
-if (!fs.existsSync(CACHE_DIR)) {
-  fs.mkdirSync(CACHE_DIR, { recursive: true });
+try {
+  if (!fs.existsSync(CACHE_DIR)) {
+    fs.mkdirSync(CACHE_DIR, { recursive: true });
+  }
+} catch (e) {
+  console.error('Failed to create cache dir:', e.message);
 }
 
 const fetchWithRedirects = (url, depth = 0) => {
@@ -27,7 +32,7 @@ const fetchWithRedirects = (url, depth = 0) => {
         return resolve(fetchWithRedirects(res.headers.location, depth + 1));
       }
       if (res.statusCode !== 200) {
-        return reject(new Error(`Failed with status ${res.statusCode}`));
+        return reject(new Error(`Status ${res.statusCode}`));
       }
       let data = '';
       res.on('data', chunk => data += chunk);
@@ -42,24 +47,28 @@ export default async function handler(req, res) {
 
   const cachePath = path.join(CACHE_DIR, `${username}.json`);
 
-  if (fs.existsSync(cachePath)) {
-    const stats = fs.statSync(cachePath);
-    if (new Date().getTime() - new Date(stats.mtime).getTime() < 24 * 60 * 60 * 1000) {
-      try {
+  // Try reading from cache
+  try {
+    if (fs.existsSync(cachePath)) {
+      const stats = fs.statSync(cachePath);
+      if (new Date().getTime() - new Date(stats.mtime).getTime() < 24 * 60 * 60 * 1000) {
         const cachedData = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
         return res.status(200).json(cachedData);
-      } catch (e) {}
+      }
     }
+  } catch (e) {
+    console.error('Cache read error:', e.message);
   }
 
   try {
     const html = await fetchWithRedirects(`https://www.instagram.com/${username}/`);
     
-    // Try to find image and name
+    // OG Image extraction
     const ogImageMatch = html.match(/property="og:image"\s+content="([^"]+)"/i) || 
                          html.match(/content="([^"]+)"\s+property="og:image"/i);
     let profilePicUrl = ogImageMatch ? ogImageMatch[1].replace(/&amp;/g, '&') : null;
 
+    // Full Name extraction
     const titleMatch = html.match(/<title>(.*?)<\/title>/i);
     let fullName = null;
     if (titleMatch) {
@@ -74,10 +83,17 @@ export default async function handler(req, res) {
       profilePicUrl: profilePicUrl || `https://ui-avatars.com/api/?name=${username}&background=random`
     };
 
-    fs.writeFileSync(cachePath, JSON.stringify(result));
+    // Try saving to cache
+    try {
+      fs.writeFileSync(cachePath, JSON.stringify(result));
+    } catch (e) {
+      console.error('Cache write error:', e.message);
+    }
+
     res.status(200).json(result);
   } catch (error) {
     console.error(`Insta Proxy Error for ${username}:`, error.message);
+    // Return fallback even on error to keep UI alive
     res.status(200).json({
       username,
       fullName: username,
