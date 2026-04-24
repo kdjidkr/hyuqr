@@ -14,7 +14,7 @@ try {
   }
 } catch (e) {}
 
-const fetchInstagramData = (username) => {
+const fetchWithRetry = (username, retries = 2) => {
   return new Promise((resolve, reject) => {
     const apiUrl = `https://www.instagram.com/api/v1/users/web_profile_info/?username=${username}`;
     const options = {
@@ -28,28 +28,43 @@ const fetchInstagramData = (username) => {
       }
     };
 
-    https.get(apiUrl, options, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        if (res.statusCode === 200) {
-          try {
-            const json = JSON.parse(data);
-            const user = json.data.user;
-            if (user) {
-              return resolve({
-                username,
-                fullName: user.full_name || username,
-                profilePicUrl: user.profile_pic_url_hd || user.profile_pic_url,
-                fromCache: false,
-                success: true
-              });
-            }
-          } catch (e) {}
+    const performFetch = (attempt) => {
+      https.get(apiUrl, options, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          if (res.statusCode === 200) {
+            try {
+              const json = JSON.parse(data);
+              const user = json.data?.user;
+              if (user) {
+                return resolve({
+                  username,
+                  fullName: user.full_name || username,
+                  profilePicUrl: user.profile_pic_url_hd || user.profile_pic_url,
+                  success: true
+                });
+              }
+            } catch (e) {}
+          }
+          
+          if (attempt < retries) {
+            console.log(`Retrying ${username} (Attempt ${attempt + 1})...`);
+            setTimeout(() => performFetch(attempt + 1), 500 * (attempt + 1));
+          } else {
+            reject(new Error(`Status ${res.statusCode}`));
+          }
+        });
+      }).on('error', (err) => {
+        if (attempt < retries) {
+          setTimeout(() => performFetch(attempt + 1), 500 * (attempt + 1));
+        } else {
+          reject(err);
         }
-        reject(new Error(`Fetch failed with status ${res.statusCode}`));
       });
-    }).on('error', reject);
+    };
+
+    performFetch(0);
   });
 };
 
@@ -75,34 +90,37 @@ export default async function handler(req, res) {
   // Data Proxy Mode
   if (!username) return res.status(400).send('Username required');
 
-  // Vercel Edge Caching Header (Proper way to cache on Vercel)
-  res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate=3600');
-
   const cachePath = path.join(CACHE_DIR, `${username}.json`);
 
-  // Local Instance Cache (Best effort)
+  // 1. Try local cache
   try {
     if (fs.existsSync(cachePath)) {
       const stats = fs.statSync(cachePath);
       if (new Date().getTime() - new Date(stats.mtime).getTime() < 24 * 60 * 60 * 1000) {
         const cachedData = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
+        res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate=3600');
         return res.status(200).json({ ...cachedData, fromCache: true });
       }
     }
   } catch (e) {}
 
   try {
-    const result = await fetchInstagramData(username);
+    // 2. Fetch with retry
+    const result = await fetchWithRetry(username);
     
-    // Only write to cache if we got real data
+    // 3. If successful, set long cache and save
+    res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate=3600');
     try {
       fs.writeFileSync(cachePath, JSON.stringify(result));
     } catch (e) {}
 
     res.status(200).json(result);
   } catch (error) {
-    console.error(`Insta Proxy Error (${username}):`, error.message);
-    // DO NOT cache the fallback
+    console.error(`Insta Proxy Final Error for ${username}:`, error.message);
+    
+    // 4. IMPORTANT: Do NOT set long cache for failures
+    // This allows the browser to try again on next refresh
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.status(200).json({
       username,
       fullName: username,
