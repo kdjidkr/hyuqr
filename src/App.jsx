@@ -988,6 +988,11 @@ function InstagramListView({ onBack }) {
   };
 
   const renderItem = (acc) => {
+    const getProxyUrl = (originalUrl) => {
+      if (!originalUrl || originalUrl.includes('ui-avatars.com')) return originalUrl;
+      return `/api/insta-proxy?url=${encodeURIComponent(originalUrl)}`;
+    };
+
     const d = data[acc.username];
     if (!d) return (
       <div key={acc.username} className="insta-loading-skeleton">
@@ -999,18 +1004,13 @@ function InstagramListView({ onBack }) {
       </div>
     );
 
-    const getProxyUrl = (originalUrl) => {
-      if (!originalUrl || originalUrl.includes('ui-avatars.com')) return originalUrl;
-      return `/api/insta-proxy?url=${encodeURIComponent(originalUrl)}`;
-    };
-
     return (
       <div key={acc.username} className="insta-item">
         <div className="insta-user-info">
           <img src={getProxyUrl(d.profilePicUrl)} alt={acc.username} className="insta-avatar" />
           <div className="insta-text">
-            <span className="insta-username">{acc.username}</span>
-            <span className="insta-fullname">{acc.desc} {d.fullName !== acc.username ? `(${d.fullName})` : ''}</span>
+            <span className="insta-fullname">{acc.desc}</span>
+            <span className="insta-username">@{acc.username}</span>
           </div>
         </div>
         <button className="insta-action-btn" onClick={() => openInsta(acc.username)}>이동하기</button>

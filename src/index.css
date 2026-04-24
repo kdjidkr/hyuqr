@@ -1087,11 +1087,14 @@ p.subtitle {
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 0.4rem 1rem;
-  font-size: 0.85rem;
-  font-weight: 600;
+  padding: 0.4rem 0;
+  width: 72px; /* Fixed width for uniform alignment */
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
   cursor: pointer;
   transition: opacity 0.2s;
+  flex-shrink: 0;
 }
 
 .insta-action-btn:hover {
