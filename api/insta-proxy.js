@@ -40,16 +40,14 @@ const fetchInstagramData = (username) => {
               return resolve({
                 username,
                 fullName: user.full_name || username,
-                profilePicUrl: user.profile_pic_url_hd || user.profile_pic_url
+                profilePicUrl: user.profile_pic_url_hd || user.profile_pic_url,
+                fromCache: false,
+                success: true
               });
             }
           } catch (e) {}
         }
-        resolve({
-          username,
-          fullName: username,
-          profilePicUrl: `https://ui-avatars.com/api/?name=${username}&background=random`
-        });
+        reject(new Error(`Fetch failed with status ${res.statusCode}`));
       });
     }).on('error', reject);
   });
@@ -60,35 +58,35 @@ export default async function handler(req, res) {
 
   // Image Proxy Mode
   if (url) {
-    if (!url.includes('cdninstagram.com')) {
-      return res.status(403).send('Invalid image URL');
-    }
-
-    return new Promise((resolve, reject) => {
+    if (!url.includes('cdninstagram.com')) return res.status(403).send('Invalid URL');
+    res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=3600');
+    return new Promise((resolve) => {
       https.get(url, (imgRes) => {
         res.setHeader('Content-Type', imgRes.headers['content-type'] || 'image/jpeg');
-        res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 1 day
-        res.setHeader('Access-Control-Allow-Origin', '*');
         imgRes.pipe(res);
         imgRes.on('end', resolve);
-      }).on('error', (err) => {
-        res.status(500).send('Failed to proxy image');
+      }).on('error', () => {
+        res.status(500).send('Proxy error');
         resolve();
       });
     });
   }
 
   // Data Proxy Mode
-  if (!username) return res.status(400).send('Username is required');
+  if (!username) return res.status(400).send('Username required');
+
+  // Vercel Edge Caching Header (Proper way to cache on Vercel)
+  res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate=3600');
 
   const cachePath = path.join(CACHE_DIR, `${username}.json`);
 
+  // Local Instance Cache (Best effort)
   try {
     if (fs.existsSync(cachePath)) {
       const stats = fs.statSync(cachePath);
       if (new Date().getTime() - new Date(stats.mtime).getTime() < 24 * 60 * 60 * 1000) {
         const cachedData = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
-        return res.status(200).json(cachedData);
+        return res.status(200).json({ ...cachedData, fromCache: true });
       }
     }
   } catch (e) {}
@@ -96,24 +94,21 @@ export default async function handler(req, res) {
   try {
     const result = await fetchInstagramData(username);
     
-    // Add proxy prefix to the profilePicUrl if it's an Instagram CDN URL
-    if (result.profilePicUrl && result.profilePicUrl.includes('cdninstagram.com')) {
-      // result.profilePicUrl = `/api/insta-proxy?url=${encodeURIComponent(result.profilePicUrl)}`;
-      // Wait, it's better to keep the raw URL in data and wrap it in frontend
-      // OR we can do it here. Let's do it here for convenience.
-    }
-
+    // Only write to cache if we got real data
     try {
       fs.writeFileSync(cachePath, JSON.stringify(result));
     } catch (e) {}
 
     res.status(200).json(result);
   } catch (error) {
+    console.error(`Insta Proxy Error (${username}):`, error.message);
+    // DO NOT cache the fallback
     res.status(200).json({
       username,
       fullName: username,
       profilePicUrl: `https://ui-avatars.com/api/?name=${username}&background=random`,
-      error: true
+      error: true,
+      success: false
     });
   }
 }
