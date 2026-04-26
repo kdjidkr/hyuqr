@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   const hour = new Date().getHours();
 
   // Only query the API between 06:00–23:00 (shuttle operating hours)
-  if (hour < 6 || hour >= 23) {
+  if (hour < 6 || hour >= 24) {
     return res.status(200).json({ arrivals: [], offPeak: true });
   }
 
