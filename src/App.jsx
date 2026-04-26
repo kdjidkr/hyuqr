@@ -349,7 +349,7 @@ function App() {
   return (
     <div className="app-container">
       <div className="main-content">
-        ) : activeTab === 'qr' ? (
+        {activeTab === 'qr' ? (
           token ? (
             <QRView
               token={token}
