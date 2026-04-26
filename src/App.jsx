@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { RefreshCw, Smartphone, Utensils, QrCode, ChevronLeft, ChevronRight, LayoutGrid, Dumbbell, ArrowLeft, Activity, Target, Zap, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { RefreshCw, Smartphone, Utensils, QrCode, ChevronLeft, ChevronRight, LayoutGrid, Dumbbell, ArrowLeft, Activity, Target, Zap, Clock, ChevronDown, ChevronUp, Bus } from 'lucide-react';
 import './index.css';
+import ShuttleView from './ShuttleView';
 
 // Helper for KST Date
 const getKSTDate = () => new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
@@ -381,6 +382,8 @@ function App() {
             cafes={cafes}
             loading={menuLoading}
           />
+        ) : activeTab === 'shuttle' ? (
+          <ShuttleView />
         ) : (
           <MiscView />
         )}
@@ -790,6 +793,10 @@ function BottomNav({ activeTab, setActiveTab }) {
       <div className={`nav-item ${activeTab === 'qr' ? 'active' : ''}`} onClick={() => setActiveTab('qr')}>
         <QrCode size={24} />
         <span className="nav-item-text">QR 출입증</span>
+      </div>
+      <div className={`nav-item ${activeTab === 'shuttle' ? 'active' : ''}`} onClick={() => setActiveTab('shuttle')}>
+        <Bus size={24} />
+        <span className="nav-item-text">셔틀·지하철</span>
       </div>
       <div className={`nav-item ${activeTab === 'misc' ? 'active' : ''}`} onClick={() => setActiveTab('misc')}>
         <LayoutGrid size={24} />
