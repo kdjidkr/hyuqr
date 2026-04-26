@@ -56,7 +56,19 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(null);
   const [userData, setUserData] = useState(null);
-  const [activeTab, setActiveTab] = useState('cafe'); // Default to 'cafe'
+  const [activeTab, setActiveTab] = useState(() => {
+    const saved = localStorage.getItem('lastActiveTab');
+    return (saved === 'cafe' || saved === 'qr') ? saved : 'cafe';
+  });
+
+  // Persist activeTab (excluding 'misc')
+  useEffect(() => {
+    if (activeTab === 'cafe' || activeTab === 'qr') {
+      localStorage.setItem('lastActiveTab', activeTab);
+    } else if (activeTab === 'misc') {
+      localStorage.removeItem('lastActiveTab');
+    }
+  }, [activeTab]);
   const [menuDate, setMenuDate] = useState(getKSTDate());
   const [cafes, setCafes] = useState([]);
   const [menuLoading, setMenuLoading] = useState(false);
@@ -618,7 +630,14 @@ function ReserveForm({ onReserve, loading }) {
 }
 
 function CafeteriaView({ date, changeDate, cafes, loading }) {
-  const [selectedCafeId, setSelectedCafeId] = useState('re12');
+  const [selectedCafeId, setSelectedCafeId] = useState(() => {
+    return localStorage.getItem('lastSelectedCafeId') || 're12';
+  });
+
+  // Persist selected cafe
+  useEffect(() => {
+    localStorage.setItem('lastSelectedCafeId', selectedCafeId);
+  }, [selectedCafeId]);
   const [expandedGroups, setExpandedGroups] = useState({});
 
   const selectedCafe = cafes.find(c => c.id === selectedCafeId) || { menus: [] };
