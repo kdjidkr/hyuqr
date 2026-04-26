@@ -57,11 +57,16 @@ function App() {
   const [token, setToken] = useState(null);
   const [userData, setUserData] = useState(null);
   const [activeTab, setActiveTab] = useState('cafe'); // Default to 'cafe'
-
-  // Menu State lifted for pre-fetching
   const [menuDate, setMenuDate] = useState(getKSTDate());
   const [cafes, setCafes] = useState([]);
   const [menuLoading, setMenuLoading] = useState(false);
+
+  // QR & Seat State lifted for pre-fetching
+  const [qrData, setQrData] = useState(null);
+  const [seatData, setSeatData] = useState(null);
+  const [qrStatus, setQrStatus] = useState('idle'); // 'idle', 'loading', 'ready', 'error'
+  const [qrRefreshing, setQrRefreshing] = useState(false);
+  const [qrTimeLeft, setQrTimeLeft] = useState(30);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('pyxisAccessToken');
@@ -71,6 +76,26 @@ function App() {
     }
     setLoading(false);
   }, []);
+
+  const handleLogout = useCallback(() => {
+    localStorage.removeItem('pyxisAccessToken');
+    localStorage.removeItem('pyxisEncryptedCreds');
+    setToken(null);
+    setUserData(null);
+  }, []);
+
+  const handleLoginSuccess = useCallback((accessToken, encryptedCredentials, name) => {
+    localStorage.setItem('pyxisAccessToken', accessToken);
+    localStorage.setItem('pyxisEncryptedCreds', encryptedCredentials);
+    setToken(accessToken);
+    if (name) setUserData({ name });
+  }, []);
+
+  const changeMenuDate = useCallback((offset) => {
+    const newDate = new Date(menuDate);
+    newDate.setDate(menuDate.getDate() + offset);
+    setMenuDate(newDate);
+  }, [menuDate]);
 
   const fetchMenus = useCallback(async (targetDate) => {
     setMenuLoading(true);
@@ -117,7 +142,7 @@ function App() {
     }
 
     try {
-      if (qrStatus === 'idle') setQrStatus('loading');
+      setQrStatus(prev => prev === 'idle' ? 'loading' : prev);
       const res = await fetch('/api/qr', { headers: { 'X-Pyxis-Auth-Token': currentToken } });
 
       if (!res.ok) {
@@ -240,7 +265,7 @@ function App() {
     } finally {
       setQrRefreshing(false);
     }
-  }, [handleLogout, qrStatus]);
+  }, [handleLogout]);
 
   const handleReserve = useCallback(async (seatId) => {
     if (!token) return;
@@ -315,27 +340,8 @@ function App() {
     if (token && qrStatus === 'idle') {
       fetchQR(token);
     }
-  }, [token, qrStatus, fetchQR]);
+  }, [token, qrStatus]); // Removed fetchQR from dependencies to avoid loop if it re-creates
 
-  const handleLoginSuccess = useCallback((accessToken, encryptedCredentials, name) => {
-    localStorage.setItem('pyxisAccessToken', accessToken);
-    localStorage.setItem('pyxisEncryptedCreds', encryptedCredentials);
-    setToken(accessToken);
-    if (name) setUserData({ name });
-  }, []);
-
-  const handleLogout = useCallback(() => {
-    localStorage.removeItem('pyxisAccessToken');
-    localStorage.removeItem('pyxisEncryptedCreds');
-    setToken(null);
-    setUserData(null);
-  }, []);
-
-  const changeMenuDate = useCallback((offset) => {
-    const newDate = new Date(menuDate);
-    newDate.setDate(menuDate.getDate() + offset);
-    setMenuDate(newDate);
-  }, [menuDate]);
 
   if (loading) {
     return (
@@ -349,7 +355,7 @@ function App() {
   return (
     <div className="app-container">
       <div className="main-content">
-        ) : activeTab === 'qr' ? (
+        {activeTab === 'qr' ? (
           token ? (
             <QRView
               token={token}
@@ -494,7 +500,7 @@ function QRView({
       )}
       <p className="qr-desc">스캐너에 화면을 인식시켜주세요.</p>
       <div className="qr-wrapper" style={{ filter: refreshing ? 'blur(2px)' : 'none' }}>
-        <QRCodeSVG value={qrData} size={220} level="M" />
+        {qrData && <QRCodeSVG value={qrData} size={220} level="M" />}
       </div>
       <div style={{ color: timeLeft <= 5 ? '#ef4444' : '#10b981', fontWeight: '700', fontSize: '1rem', marginBottom: '0.5rem' }}>
         {refreshing ? 'Refreshing...' : `유효시간: ${timeLeft}초`}
