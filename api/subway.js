@@ -11,8 +11,8 @@ export default async function handler(req, res) {
   const nowMs = Date.now();
   const hour = new Date().getHours();
 
-  // Only query the API between 06:00–12:00
-  if (hour < 6 || hour >= 12) {
+  // Only query the API between 06:00–23:00 (shuttle operating hours)
+  if (hour < 6 || hour >= 23) {
     return res.status(200).json({ arrivals: [], offPeak: true });
   }
 
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
   if (!key) return res.status(500).json({ error: 'SUBWAY_KEY env var not configured' });
 
   try {
-    const url = `http://swopenAPI.seoul.go.kr/api/subway/${key}/json/realtimeStationArrival/0/100/한대앞`;
+    const url = `http://swopenAPI.seoul.go.kr/api/subway/${key}/json/realtimeStationArrival/0/100/${encodeURIComponent('한대앞')}`;
     const fetchRes = await fetch(url, { signal: AbortSignal.timeout(5000) });
     if (!fetchRes.ok) throw new Error(`API responded with ${fetchRes.status}`);
 
