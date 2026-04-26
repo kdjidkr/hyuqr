@@ -56,7 +56,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(null);
   const [userData, setUserData] = useState(null);
-  const [activeTab, setActiveTab] = useState('qr'); // 'qr', 'cafe', 'misc'
+  const [activeTab, setActiveTab] = useState('cafe'); // Default to 'cafe'
 
   // Menu State lifted for pre-fetching
   const [menuDate, setMenuDate] = useState(getKSTDate());
@@ -85,10 +85,237 @@ function App() {
     setMenuLoading(false);
   }, []);
 
+  const fetchQR = useCallback(async (currentToken, isRetry = false, forceRelogin = false) => {
+    setQrRefreshing(true);
+    if (!isRetry) setQrTimeLeft(30);
+
+    if (forceRelogin && !isRetry) {
+      const creds = localStorage.getItem('pyxisEncryptedCreds');
+      if (creds) {
+        try {
+          const reloginRes = await fetch('/api/relogin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ encryptedCredentials: creds })
+          });
+
+          if (reloginRes.ok) {
+            const reloginData = await reloginRes.json();
+            if (reloginData.success) {
+              localStorage.setItem('pyxisAccessToken', reloginData.accessToken);
+              setToken(reloginData.accessToken);
+              return fetchQR(reloginData.accessToken, true);
+            }
+          }
+          handleLogout();
+          return;
+        } catch (e) {
+          handleLogout();
+          return;
+        }
+      }
+    }
+
+    try {
+      if (qrStatus === 'idle') setQrStatus('loading');
+      const res = await fetch('/api/qr', { headers: { 'X-Pyxis-Auth-Token': currentToken } });
+
+      if (!res.ok) {
+        if (!isRetry) {
+          const creds = localStorage.getItem('pyxisEncryptedCreds');
+          if (creds) {
+            try {
+              const reloginRes = await fetch('/api/relogin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ encryptedCredentials: creds })
+              });
+
+              if (!reloginRes.ok) {
+                handleLogout();
+                return;
+              }
+
+              const reloginData = await reloginRes.json();
+              if (reloginData.success) {
+                localStorage.setItem('pyxisAccessToken', reloginData.accessToken);
+                setToken(reloginData.accessToken);
+                return fetchQR(reloginData.accessToken, true);
+              } else {
+                handleLogout();
+                return;
+              }
+            } catch (reloginErr) {
+              console.error('Auto-relogin failed:', reloginErr);
+              handleLogout();
+              return;
+            }
+          }
+        }
+
+        if (res.status === 401 || res.status === 403) {
+          handleLogout();
+          return;
+        }
+
+        throw new Error(`Fetch failed with status ${res.status}`);
+      }
+
+      const data = await res.json();
+      const mCard = data.data?.membershipCard || data.data?.data?.membershipCard || (typeof data.data === 'string' ? data.data : null);
+
+      if (mCard && mCard !== "null" && mCard !== "undefined" && mCard.trim() !== "") {
+        setQrData(mCard);
+
+        const name = data.data?.patron?.name || data.data?.data?.patron?.name;
+        if (name) {
+          setUserData(prev => ({ ...prev, name }));
+        }
+
+        setQrStatus('ready');
+      } else {
+        if (!isRetry) {
+          const creds = localStorage.getItem('pyxisEncryptedCreds');
+          if (creds) {
+            try {
+              const reloginRes = await fetch('/api/relogin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ encryptedCredentials: creds })
+              });
+              if (reloginRes.ok) {
+                const reloginData = await reloginRes.json();
+                if (reloginData.success) {
+                  localStorage.setItem('pyxisAccessToken', reloginData.accessToken);
+                  setToken(reloginData.accessToken);
+                  return fetchQR(reloginData.accessToken, true);
+                }
+              }
+            } catch (e) { /* ignore and let it throw below */ }
+          }
+        }
+        throw new Error('QR data not found or invalid in response');
+      }
+
+      try {
+        const seatRes = await fetch('/api/seat', { headers: { 'X-Pyxis-Auth-Token': currentToken } });
+        if (seatRes.ok) {
+          const sData = await seatRes.json();
+          if (sData.success && sData.data?.list?.[0]) {
+            const item = sData.data.list[0];
+            const seatObj = Array.isArray(item.seat) ? item.seat[0] : item.seat;
+
+            if (seatObj) {
+              const seat = {
+                ...seatObj,
+                id: item.id || seatObj.id,
+                room: item.room || seatObj.room,
+                endTime: item.endTime || seatObj.endTime,
+                state: item.state || seatObj.state,
+                checkinExpiryDate: item.checkinExpiryDate || seatObj.checkinExpiryDate,
+                remainTime: item.remainTime ?? item.remainingTime ?? seatObj.remainTime ?? seatObj.remainingTime
+              };
+
+              if (seat.remainTime === undefined && seat.endTime) {
+                try {
+                  const end = new Date(seat.endTime.replace(/-/g, '/'));
+                  const now = new Date();
+                  const diff = Math.floor((end - now) / 60000);
+                  seat.remainTime = Math.max(0, diff);
+                } catch (e) { console.error('Time calc error', e); }
+              }
+              setSeatData(seat);
+            } else {
+              setSeatData(null);
+            }
+          } else {
+            setSeatData(null);
+          }
+        }
+      } catch (e) { console.error('Seat check failed', e); }
+
+    } catch (err) {
+      console.error('QR Fetch Error:', err);
+      setQrStatus('error');
+    } finally {
+      setQrRefreshing(false);
+    }
+  }, [handleLogout, qrStatus]);
+
+  const handleReserve = useCallback(async (seatId) => {
+    if (!token) return;
+    setQrRefreshing(true);
+    try {
+      const res = await fetch('/api/reserve', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Pyxis-Auth-Token': token
+        },
+        body: JSON.stringify({ seatId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('예약되었습니다.');
+        fetchQR(token);
+      } else {
+        alert(data.message || '예약 실패');
+      }
+    } catch (err) {
+      console.error('Reserve error:', err);
+      alert('통신 오류가 발생했습니다.');
+    } finally {
+      setQrRefreshing(false);
+    }
+  }, [token, fetchQR]);
+
+  const handleSeatReturn = useCallback(async () => {
+    if (!token || !seatData) return;
+
+    const isTemp = seatData.state?.code === 'TEMP_CHARGE';
+    const actionText = isTemp ? '예약을 취소하시겠습니까?' : `${seatData.seat || seatData.code}번 자리를 반납할까요?`;
+
+    const confirmAction = window.confirm(actionText);
+    if (!confirmAction) return;
+
+    setQrRefreshing(true);
+    try {
+      const endpoint = isTemp ? '/api/cancel' : '/api/discharge';
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Pyxis-Auth-Token': token
+        },
+        body: JSON.stringify({ seatCharge: seatData.id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(isTemp ? '예약이 취소되었습니다.' : '반납되었습니다.');
+        setSeatData(null);
+        fetchQR(token);
+      } else {
+        alert(data.message || (isTemp ? '취소 실패' : '반납 실패'));
+      }
+    } catch (err) {
+      console.error('Seat action error:', err);
+      alert('통신 오류가 발생했습니다.');
+    } finally {
+      setQrRefreshing(false);
+    }
+  }, [token, seatData, fetchQR]);
+
   // Pre-fetch effect: Runs on mount and whenever menuDate changes
   useEffect(() => {
     fetchMenus(menuDate);
   }, [menuDate, fetchMenus]);
+
+  // Pre-fetch QR: Runs as soon as token is available
+  useEffect(() => {
+    if (token && qrStatus === 'idle') {
+      fetchQR(token);
+    }
+  }, [token, qrStatus, fetchQR]);
 
   const handleLoginSuccess = useCallback((accessToken, encryptedCredentials, name) => {
     localStorage.setItem('pyxisAccessToken', accessToken);
@@ -122,14 +349,21 @@ function App() {
   return (
     <div className="app-container">
       <div className="main-content">
-        {activeTab === 'qr' ? (
+        ) : activeTab === 'qr' ? (
           token ? (
             <QRView
               token={token}
-              setToken={setToken}
               onLogout={handleLogout}
               userData={userData}
-              setUserData={setUserData}
+              qrData={qrData}
+              seatData={seatData}
+              status={qrStatus}
+              refreshing={qrRefreshing}
+              timeLeft={qrTimeLeft}
+              setTimeLeft={setQrTimeLeft}
+              onRefresh={() => fetchQR(token)}
+              onReserve={handleReserve}
+              onReturn={handleSeatReturn}
             />
           ) : (
             <LoginForm onSuccess={handleLoginSuccess} />
@@ -202,251 +436,53 @@ function LoginForm({ onSuccess }) {
   );
 }
 
-function QRView({ token, setToken, onLogout, userData, setUserData }) {
-  const [qrData, setQrData] = useState(null);
-  const [seatData, setSeatData] = useState(null);
-  const [status, setStatus] = useState('loading'); // 'loading', 'ready', 'error'
-  const [refreshing, setRefreshing] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(30);
-
-  const fetchQR = useCallback(async (currentToken, isRetry = false, forceRelogin = false) => {
-    setRefreshing(true);
-    if (!isRetry) setTimeLeft(30);
-
-    if (forceRelogin && !isRetry) {
-      const creds = localStorage.getItem('pyxisEncryptedCreds');
-      if (creds) {
-        try {
-          const reloginRes = await fetch('/api/relogin', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ encryptedCredentials: creds })
-          });
-
-          if (reloginRes.ok) {
-            const reloginData = await reloginRes.json();
-            if (reloginData.success) {
-              localStorage.setItem('pyxisAccessToken', reloginData.accessToken);
-              setToken(reloginData.accessToken);
-              return fetchQR(reloginData.accessToken, true);
-            }
-          }
-          onLogout();
-          return;
-        } catch (e) {
-          onLogout();
-          return;
-        }
-      }
-    }
-
-    try {
-      const res = await fetch('/api/qr', { headers: { 'X-Pyxis-Auth-Token': currentToken } });
-
-      if (!res.ok) {
-        if (!isRetry) {
-          const creds = localStorage.getItem('pyxisEncryptedCreds');
-          if (creds) {
-            try {
-              const reloginRes = await fetch('/api/relogin', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ encryptedCredentials: creds })
-              });
-
-              if (!reloginRes.ok) {
-                onLogout();
-                return;
-              }
-
-              const reloginData = await reloginRes.json();
-              if (reloginData.success) {
-                localStorage.setItem('pyxisAccessToken', reloginData.accessToken);
-                setToken(reloginData.accessToken);
-                return fetchQR(reloginData.accessToken, true);
-              } else {
-                onLogout();
-                return;
-              }
-            } catch (reloginErr) {
-              console.error('Auto-relogin failed:', reloginErr);
-              onLogout();
-              return;
-            }
-          }
-        }
-
-        if (res.status === 401 || res.status === 403) {
-          onLogout();
-          return;
-        }
-
-        throw new Error(`Fetch failed with status ${res.status}`);
-      }
-
-      const data = await res.json();
-      const mCard = data.data?.membershipCard || data.data?.data?.membershipCard || (typeof data.data === 'string' ? data.data : null);
-
-      if (mCard && mCard !== "null" && mCard !== "undefined" && mCard.trim() !== "") {
-        setQrData(mCard);
-
-        const name = data.data?.patron?.name || data.data?.data?.patron?.name;
-        if (name && setUserData) {
-          setUserData(prev => ({ ...prev, name }));
-        }
-
-        setStatus('ready');
-      } else {
-        if (!isRetry) {
-          const creds = localStorage.getItem('pyxisEncryptedCreds');
-          if (creds) {
-            try {
-              const reloginRes = await fetch('/api/relogin', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ encryptedCredentials: creds })
-              });
-              if (reloginRes.ok) {
-                const reloginData = await reloginRes.json();
-                if (reloginData.success) {
-                  localStorage.setItem('pyxisAccessToken', reloginData.accessToken);
-                  setToken(reloginData.accessToken);
-                  return fetchQR(reloginData.accessToken, true);
-                }
-              }
-            } catch (e) { /* ignore and let it throw below */ }
-          }
-        }
-        throw new Error('QR data not found or invalid in response');
-      }
-
-      try {
-        const seatRes = await fetch('/api/seat', { headers: { 'X-Pyxis-Auth-Token': currentToken } });
-        if (seatRes.ok) {
-          const sData = await seatRes.json();
-          if (sData.success && sData.data?.list?.[0]) {
-            const item = sData.data.list[0];
-            const seatObj = Array.isArray(item.seat) ? item.seat[0] : item.seat;
-
-            if (seatObj) {
-              const seat = {
-                ...seatObj,
-                id: item.id || seatObj.id,
-                room: item.room || seatObj.room,
-                endTime: item.endTime || seatObj.endTime,
-                state: item.state || seatObj.state,
-                checkinExpiryDate: item.checkinExpiryDate || seatObj.checkinExpiryDate,
-                remainTime: item.remainTime ?? item.remainingTime ?? seatObj.remainTime ?? seatObj.remainingTime
-              };
-
-              if (seat.remainTime === undefined && seat.endTime) {
-                try {
-                  const end = new Date(seat.endTime.replace(/-/g, '/'));
-                  const now = new Date();
-                  const diff = Math.floor((end - now) / 60000);
-                  seat.remainTime = Math.max(0, diff);
-                } catch (e) { console.error('Time calc error', e); }
-              }
-              setSeatData(seat);
-            }
-          } else {
-            setSeatData(null);
-          }
-        }
-      } catch (seatErr) {
-        console.error('Failed to fetch seat data:', seatErr);
-      }
-
-    } catch (err) {
-      console.error('QR Fetch Error:', err);
-      setStatus('error');
-    } finally {
-      setRefreshing(false);
-    }
-  }, [onLogout, setToken, setUserData]);
-
-  const handleReserve = async (seatId) => {
-    setRefreshing(true);
-    try {
-      const res = await fetch('/api/reserve', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Pyxis-Auth-Token': token
-        },
-        body: JSON.stringify({ seatId })
-      });
-      const data = await res.json();
-      if (data.success) {
-        alert('예약되었습니다.');
-        fetchQR(token);
-      } else {
-        alert(data.message || '예약 실패');
-      }
-    } catch (err) {
-      console.error('Reserve error:', err);
-      alert('통신 오류가 발생했습니다.');
-    } finally {
-      setRefreshing(false);
-    }
-  };
-
-  const handleSeatReturn = async () => {
-    if (!seatData) return;
-
-    const isTemp = seatData.state?.code === 'TEMP_CHARGE';
-    const actionText = isTemp ? '예약을 취소하시겠습니까?' : `${seatData.seat || seatData.code}번 자리를 반납할까요?`;
-
-    const confirmAction = window.confirm(actionText);
-    if (!confirmAction) return;
-
-    setRefreshing(true);
-    try {
-      const endpoint = isTemp ? '/api/cancel' : '/api/discharge';
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Pyxis-Auth-Token': token
-        },
-        body: JSON.stringify({ seatCharge: seatData.id })
-      });
-      const data = await res.json();
-      if (data.success) {
-        alert(isTemp ? '예약이 취소되었습니다.' : '반납되었습니다.');
-        setSeatData(null);
-        fetchQR(token);
-      } else {
-        alert(data.message || (isTemp ? '취소 실패' : '반납 실패'));
-      }
-    } catch (err) {
-      console.error('Seat action error:', err);
-      alert('통신 오류가 발생했습니다.');
-    } finally {
-      setRefreshing(false);
-    }
-  };
-
-  useEffect(() => { if (token) fetchQR(token); }, [token, fetchQR]);
-
+function QRView({
+  token,
+  onLogout,
+  userData,
+  qrData,
+  seatData,
+  status,
+  refreshing,
+  timeLeft,
+  setTimeLeft,
+  onRefresh,
+  onReserve,
+  onReturn
+}) {
   useEffect(() => {
-    if (status !== 'ready' || timeLeft <= 0 || refreshing) {
-      if (timeLeft === 0 && !refreshing) fetchQR(token);
-      return;
-    }
-    const timer = setInterval(() => setTimeLeft(p => p - 1), 1000);
+    if (status !== 'ready') return;
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          onRefresh();
+          return 30;
+        }
+        return prev - 1;
+      });
+    }, 1000);
     return () => clearInterval(timer);
-  }, [status, timeLeft, token, fetchQR, refreshing]);
+  }, [status, onRefresh, setTimeLeft]);
 
-  if (status === 'loading') return <div className="qr-glass-panel"><div className="loader-spinner" style={{ borderColor: 'rgba(0,0,0,0.1)', borderTopColor: 'var(--hyu-blue)' }}></div><p style={{ color: '#64748b', fontSize: '0.875rem', marginTop: '1rem' }}>인증 코드를 불러오는 중...</p></div>;
-  if (status === 'error') return (
-    <div className="qr-glass-panel">
-      <p style={{ color: '#ef4444', fontWeight: '600', marginBottom: '0.5rem' }}>오류가 발생했습니다.</p>
-      <p style={{ color: '#64748b', fontSize: '0.875rem', marginBottom: '1.5rem' }}>인증 세션이 만료되었거나<br />통신 상태가 원활하지 않습니다.</p>
-      <button className="qr-refresh-btn" onClick={() => fetchQR(token, false, true)}>다시 시도</button>
-      <button className="qr-logout-btn" onClick={onLogout} style={{ marginTop: '1rem' }}>로그아웃</button>
-    </div>
-  );
+  if (status === 'loading' || (status === 'idle' && token)) {
+    return (
+      <div className="qr-glass-panel">
+        <div className="loader-spinner" style={{ borderColor: 'rgba(0,0,0,0.1)', borderTopColor: 'var(--hyu-blue)' }}></div>
+        <p style={{ color: '#64748b', fontSize: '0.875rem', marginTop: '1rem' }}>인증 코드를 불러오는 중...</p>
+      </div>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="qr-glass-panel">
+        <p style={{ color: '#ef4444', fontWeight: '600', marginBottom: '0.5rem' }}>오류가 발생했습니다.</p>
+        <p style={{ color: '#64748b', fontSize: '0.875rem', marginBottom: '1.5rem' }}>인증 세션이 만료되었거나<br />통신 상태가 원활하지 않습니다.</p>
+        <button className="qr-refresh-btn" onClick={() => onRefresh()}>다시 시도</button>
+        <button className="qr-logout-btn" onClick={onLogout} style={{ marginTop: '1rem' }}>로그아웃</button>
+      </div>
+    );
+  }
 
   return (
     <div className="qr-glass-panel" style={{ opacity: refreshing ? 0.7 : 1, transition: 'opacity 0.2s' }}>
@@ -464,7 +500,7 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
         {refreshing ? 'Refreshing...' : `유효시간: ${timeLeft}초`}
       </div>
 
-      <button className="qr-refresh-btn" onClick={() => fetchQR(token)} disabled={refreshing} style={{ marginBottom: '1.5rem' }}>
+      <button className="qr-refresh-btn" onClick={onRefresh} disabled={refreshing} style={{ marginBottom: '1.5rem' }}>
         <RefreshCw size={16} className={refreshing ? 'spin-animation' : ''} />
         <span>{refreshing ? 'Refreshing...' : 'QR 새로고침'}</span>
       </button>
@@ -504,12 +540,12 @@ function QRView({ token, setToken, onLogout, userData, setUserData }) {
             </div>
           )}
 
-          <button className="seat-return-btn" onClick={handleSeatReturn} disabled={refreshing}>
+          <button className="seat-return-btn" onClick={onReturn} disabled={refreshing}>
             {seatData.state?.code === 'TEMP_CHARGE' ? '예약 취소하기' : '좌석 반납하기'}
           </button>
         </div>
       ) : (
-        <ReserveForm onReserve={handleReserve} loading={refreshing} />
+        <ReserveForm onReserve={onReserve} loading={refreshing} />
       )}
 
       <button className="qr-logout-btn" onClick={onLogout} style={{ marginTop: '1rem' }}>로그아웃</button>
@@ -741,13 +777,13 @@ function CafeteriaView({ date, changeDate, cafes, loading }) {
 function BottomNav({ activeTab, setActiveTab }) {
   return (
     <div className="bottom-nav">
-      <div className={`nav-item ${activeTab === 'qr' ? 'active' : ''}`} onClick={() => setActiveTab('qr')}>
-        <QrCode size={24} />
-        <span className="nav-item-text">QR 출입증</span>
-      </div>
       <div className={`nav-item ${activeTab === 'cafe' ? 'active' : ''}`} onClick={() => setActiveTab('cafe')}>
         <Utensils size={24} />
         <span className="nav-item-text">식단</span>
+      </div>
+      <div className={`nav-item ${activeTab === 'qr' ? 'active' : ''}`} onClick={() => setActiveTab('qr')}>
+        <QrCode size={24} />
+        <span className="nav-item-text">QR 출입증</span>
       </div>
       <div className={`nav-item ${activeTab === 'misc' ? 'active' : ''}`} onClick={() => setActiveTab('misc')}>
         <LayoutGrid size={24} />
