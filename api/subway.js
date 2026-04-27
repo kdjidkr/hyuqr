@@ -111,15 +111,23 @@ export default async function handler(req, res) {
     // Add timetable entries that are NOT in realtime and are in the future
     const nowHHMM = `${String(hour).padStart(2, '0')}:${String(nowKst.getMinutes()).padStart(2, '0')}`;
     timetableCache.data.forEach(tt => {
-      const key = `${tt.subwayId}-${tt.updnLine}-${tt.arrTime}`;
-      // Also check for +/- 1 minute to avoid showing the same train with slightly different times
+      const keyPrefix = `${tt.subwayId}-${tt.updnLine}-`;
+      const key = `${keyPrefix}${tt.arrTime}`;
+      
       const [h, m] = tt.arrTime.split(':').map(Number);
-      const mMinus = `${h}:${String(m - 1).padStart(2, '0')}`;
-      const mPlus  = `${h}:${String(m + 1).padStart(2, '0')}`;
+      const toKey = (hh, mm) => {
+        let finalH = hh, finalM = mm;
+        if (finalM < 0) { finalM = 59; finalH--; }
+        if (finalM > 59) { finalM = 0; finalH++; }
+        return `${keyPrefix}${String(finalH).padStart(2, '0')}:${String(finalM).padStart(2, '0')}`;
+      };
+
+      const mMinus = toKey(h, m - 1);
+      const mPlus  = toKey(h, m + 1);
 
       if (!rtKeys.has(key) && !rtKeys.has(mMinus) && !rtKeys.has(mPlus) && tt.arrTime >= nowHHMM) {
         combined.push(tt);
-        rtKeys.add(key); // Also add to rtKeys to prevent further duplicates from timetable
+        rtKeys.add(key);
       }
     });
 
