@@ -56,10 +56,10 @@ function arrivalInfo(displayStop, route) {
 
 // ── Subway line options ───────────────────────────────────────────────────────
 const OPTS = [
-  { id: 'line4-oido',  line: '4호선',    color: '#33AADF', dest: '오이도행', dir: '하행', shortDest: '오이도', subwayId: '1004', updnLine: '하행' },
   { id: 'line4-bulam', line: '4호선',    color: '#33AADF', dest: '불암산행', dir: '상행', shortDest: '불암산', subwayId: '1004', updnLine: '상행' },
-  { id: 'sb-incheon',  line: '수인분당선', color: '#F5A623', dest: '인천행',   dir: '하행', shortDest: '인천',   subwayId: '1075', updnLine: '하행' },
+  { id: 'line4-oido',  line: '4호선',    color: '#33AADF', dest: '오이도행', dir: '하행', shortDest: '오이도', subwayId: '1004', updnLine: '하행' },
   { id: 'sb-wang',     line: '수인분당선', color: '#F5A623', dest: '왕십리행', dir: '상행', shortDest: '왕십리', subwayId: '1075', updnLine: '상행' },
+  { id: 'sb-incheon',  line: '수인분당선', color: '#F5A623', dest: '인천행',   dir: '하행', shortDest: '인천',   subwayId: '1075', updnLine: '하행' },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -311,7 +311,7 @@ function TimetableRow({ row, lineId, isNext, subwayArrivals, subwayOffPeak }) {
 // ── Main component ────────────────────────────────────────────────────────────
 export default function ShuttleView() {
   const [stop, setStop] = useState(() => localStorage.getItem('shuttle_stop') || '기숙사');
-  const [lineId, setLineId] = useState(() => localStorage.getItem('shuttle_lineId') || 'line4-oido');
+  const [lineId, setLineId] = useState(() => localStorage.getItem('shuttle_lineId') || 'line4-bulam');
   const [allData,        setAllData]        = useState(null);
   const [subwayArrivals, setSubwayArrivals] = useState([]);
   const [subwayOffPeak,  setSubwayOffPeak]  = useState(false);
