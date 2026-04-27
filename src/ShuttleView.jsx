@@ -34,12 +34,10 @@ function depOffset(displayStop, route) {
 function arrivalInfo(displayStop, route) {
   switch (displayStop) {
     case '기숙사':
-      if (route === 'DY') return { label: '예술인', min: 25, subway: false };
+      if (route === 'DY') return { label: '예술인', min: 15, subway: false };
       return { label: '한대앞역', min: 15, subway: true };
     case '셔틀콕':
-      // DY only appears in 창의인재원 data, so this branch rarely fires,
-      // but kept for correctness.
-      if (route === 'DY') return { label: '예술인', min: 20, subway: false };
+      if (route === 'DY') return { label: '예술인', min: 10, subway: false };
       return { label: '한대앞역', min: 10, subway: true };
     case '한대앞':
       if (route === '중앙역') return { label: '학교', min: 6,  subway: false };
@@ -246,6 +244,14 @@ function SubwayDropdown({ selected, onChange }) {
   );
 }
 
+const ROUTE_LABEL = {
+  'DH':  '직행',
+  'D':   '직행',
+  'DY':  '예술인\n직행',
+  'C':   '순환',
+  '중앙역': '순환',
+};
+
 // ── TimetableRow ──────────────────────────────────────────────────────────────
 function TimetableRow({ row, lineId, isNext, subwayArrivals, subwayOffPeak }) {
   const opt    = OPTS.find(o => o.id === lineId);
@@ -257,22 +263,28 @@ function TimetableRow({ row, lineId, isNext, subwayArrivals, subwayOffPeak }) {
     ? (subwayOffPeak ? '운행 시간 외' : '연결 열차 없음')
     : null;
 
+  const rLabel = ROUTE_LABEL[row.route] || row.route;
+  const routeClass = row.route === 'DY' ? 'dy' : (row.route === 'C' || row.route === '중앙역' ? 'c' : 'd');
+
   return (
     <div className={`stt-trow${isNext ? ' next' : ''}`}>
       {isNext && <div className="stt-next-tag">다음 셔틀</div>}
 
-      <div className="stt-shuttle-col" style={{ paddingTop: isNext ? 26 : 16 }}>
-        <div>
-          <span className={`stt-time-big${past ? ' past' : ''}`}>{row.dep}</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginTop: 5 }}>
-            <svg width={9} height={9} viewBox="0 0 24 24" fill="none"
-              stroke={past ? '#cbd5e1' : '#94a3b8'} strokeWidth={2.5} strokeLinecap="round"
-              style={{ flexShrink: 0 }}>
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-            <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>
-              {row.arrLabel} {row.arr}
-            </span>
+      <div className="stt-shuttle-col" style={{ paddingTop: isNext ? 26 : 16, flex: '0 0 52%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <span className={`stt-route-label ${routeClass}`}>{rLabel}</span>
+          <div>
+            <span className={`stt-time-big${past ? ' past' : ''}`}>{row.dep}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginTop: 2 }}>
+              <svg width={9} height={9} viewBox="0 0 24 24" fill="none"
+                stroke={past ? '#cbd5e1' : '#94a3b8'} strokeWidth={2.5} strokeLinecap="round"
+                style={{ flexShrink: 0 }}>
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+              <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>
+                {row.arrLabel} {row.arr}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -298,13 +310,21 @@ function TimetableRow({ row, lineId, isNext, subwayArrivals, subwayOffPeak }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 export default function ShuttleView() {
-  const [stop,           setStop]           = useState('기숙사');
-  const [lineId,         setLineId]         = useState('line4-oido');
+  const [stop, setStop] = useState(() => localStorage.getItem('shuttle_stop') || '기숙사');
+  const [lineId, setLineId] = useState(() => localStorage.getItem('shuttle_lineId') || 'line4-oido');
   const [allData,        setAllData]        = useState(null);
   const [subwayArrivals, setSubwayArrivals] = useState([]);
   const [subwayOffPeak,  setSubwayOffPeak]  = useState(false);
   const [now,            setNow]            = useState(curMin());
   const [loadErr,        setLoadErr]        = useState(null);
+
+  useEffect(() => {
+    localStorage.setItem('shuttle_stop', stop);
+  }, [stop]);
+
+  useEffect(() => {
+    localStorage.setItem('shuttle_lineId', lineId);
+  }, [lineId]);
 
   // Load shuttle schedule once
   useEffect(() => {
@@ -389,10 +409,10 @@ export default function ShuttleView() {
         </div>
 
         <div className="stt-col-header">
-          <span className="stt-col-label" style={{ flex: '0 0 150px', paddingLeft: 16 }}>출발 시간</span>
-          <span className="stt-col-label" style={{ flex: 1, paddingLeft: 20 }}>
+          <div style={{ flex: '0 0 52%', paddingLeft: 16 }} className="stt-col-label">출발 시간</div>
+          <div style={{ flex: 1, paddingLeft: 4 }} className="stt-col-label">
             {showSubwayPicker ? '연결 지하철' : '도착'}
-          </span>
+          </div>
         </div>
 
         <div className="stt-tcard">

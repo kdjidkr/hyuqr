@@ -1491,3 +1491,24 @@ p.subtitle {
   border-radius: 50%;
   background: var(--hyu-blue);
 }
+
+.stt-route-label {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 58px;
+  min-height: 34px;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 0;
+  border-radius: 8px;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  white-space: pre-line;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.stt-route-label.d  { background: rgba(14, 74, 132, 0.08); color: var(--hyu-blue); }
+.stt-route-label.c  { background: rgba(16, 185, 129, 0.08); color: #059669; }
+.stt-route-label.dy { background: rgba(245, 158, 11, 0.08); color: #d97706; font-size: 9px; letter-spacing: -0.2px; }
