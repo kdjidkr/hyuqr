@@ -47,14 +47,17 @@ export default async function handler(req, res) {
       let secsLeft = parseInt(tr.barvlDt || '0', 10);
       if (secsLeft === 0) {
         const msg = tr.arvlMsg2 || '';
-        if (msg.includes('진입')) secsLeft = 40;
-        else if (msg.includes('도착')) secsLeft = 80;
-        else if (msg.includes('출발')) secsLeft = 120;
-        else if (tr.arvlCd === '5') secsLeft = 180;
-        else if (tr.arvlCd === '4') secsLeft = 240;
+        if (msg.includes('진입')) secsLeft = 30;
+        else if (msg.includes('도착')) secsLeft = 60;
+        else if (msg.includes('출발')) secsLeft = 90;
+        else if (tr.arvlCd === '5') secsLeft = 120; // Previous station departed
+        else if (tr.arvlCd === '4') secsLeft = 180; // Previous station arrived
         else {
           const match = msg.match(/\[(\d+)\]번째 전역/);
-          if (match) secsLeft = parseInt(match[1], 10) * 180;
+          if (match) {
+            // Ansan/Suin lines usually take about 2 mins (120s) per station
+            secsLeft = parseInt(match[1], 10) * 120;
+          }
         }
       }
       const arrDateKst = new Date(nowKst.getTime() + secsLeft * 1000);
