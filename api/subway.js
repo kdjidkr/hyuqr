@@ -105,29 +105,42 @@ export default async function handler(req, res) {
 
     // 3. Merge: Realtime takes precedence, then add future timetable entries
     const combined = [...rtArrivals];
-    // For deduplication, we use subwayId-updnLine-HH:MM
-    const rtKeys = new Set(rtArrivals.map(a => `${a.subwayId}-${a.updnLine}-${a.arrTime}`));
+    // For deduplication, we use:
+    // 1. Time-based keys (with +/- 1 min fuzzy match)
+    // 2. Train ID based keys
+    const rtTimeKeys = new Set(rtArrivals.map(a => `${a.subwayId}-${a.updnLine}-${a.arrTime}`));
+    const rtTrainKeys = new Set(rtArrivals.map(a => `${a.subwayId}-${a.updnLine}-${a.btrainNo}`));
     
     // Add timetable entries that are NOT in realtime and are in the future
     const nowHHMM = `${String(hour).padStart(2, '0')}:${String(nowKst.getMinutes()).padStart(2, '0')}`;
     timetableCache.data.forEach(tt => {
       const keyPrefix = `${tt.subwayId}-${tt.updnLine}-`;
-      const key = `${keyPrefix}${tt.arrTime}`;
+      const timeKey = `${keyPrefix}${tt.arrTime}`;
+      const trainKey = `${keyPrefix}${tt.trainNo}`;
       
       const [h, m] = tt.arrTime.split(':').map(Number);
-      const toKey = (hh, mm) => {
+      const toTimeKey = (hh, mm) => {
         let finalH = hh, finalM = mm;
         if (finalM < 0) { finalM = 59; finalH--; }
         if (finalM > 59) { finalM = 0; finalH++; }
         return `${keyPrefix}${String(finalH).padStart(2, '0')}:${String(finalM).padStart(2, '0')}`;
       };
 
-      const mMinus = toKey(h, m - 1);
-      const mPlus  = toKey(h, m + 1);
+      const mMinus = toTimeKey(h, m - 1);
+      const mPlus  = toTimeKey(h, m + 1);
 
-      if (!rtKeys.has(key) && !rtKeys.has(mMinus) && !rtKeys.has(mPlus) && tt.arrTime >= nowHHMM) {
+      // Skip if:
+      // - Same Train ID exists in realtime
+      // - Same Time (or +/- 1 min) exists in realtime
+      const isDuplicate = rtTrainKeys.has(trainKey) || 
+                          rtTimeKeys.has(timeKey) || 
+                          rtTimeKeys.has(mMinus) || 
+                          rtTimeKeys.has(mPlus);
+
+      if (!isDuplicate && tt.arrTime >= nowHHMM) {
         combined.push(tt);
-        rtKeys.add(key);
+        rtTimeKeys.add(timeKey);
+        rtTrainKeys.add(trainKey);
       }
     });
 
