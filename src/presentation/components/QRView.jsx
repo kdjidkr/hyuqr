@@ -24,8 +24,8 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
   if (status === 'loading') {
     return (
       <div className="qr-glass-panel">
-        <div className="loader-spinner" style={{ borderColor: 'rgba(0,0,0,0.1)', borderTopColor: 'var(--hyu-blue)' }} />
-        <p style={{ color: '#64748b', fontSize: '0.875rem', marginTop: '1rem' }}>인증 코드를 불러오는 중...</p>
+        <div className="loader-spinner" style={{ borderColor: 'rgba(0,0,0,0.1)', borderTopColor: 'var(--color-primary)' }} />
+        <p style={{ color: 'var(--color-text-sub)', fontSize: '0.875rem', marginTop: '1rem' }}>인증 코드를 불러오는 중...</p>
       </div>
     );
   }
@@ -33,8 +33,8 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
   if (status === 'error') {
     return (
       <div className="qr-glass-panel">
-        <p style={{ color: '#ef4444', fontWeight: '600', marginBottom: '0.5rem' }}>오류가 발생했습니다.</p>
-        <p style={{ color: '#64748b', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+        <p style={{ color: 'var(--color-error)', fontWeight: '600', marginBottom: '0.5rem' }}>오류가 발생했습니다.</p>
+        <p style={{ color: 'var(--color-text-sub)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
           인증 세션이 만료되었거나<br />통신 상태가 원활하지 않습니다.
         </p>
         <button className="qr-refresh-btn" onClick={refresh}>다시 시도</button>
@@ -57,7 +57,7 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
         <QRCodeSVG value={qrData} size={220} level="M" />
       </div>
 
-      <div style={{ color: timeLeft <= 5 ? '#ef4444' : '#10b981', fontWeight: '700', fontSize: '1rem', marginBottom: '0.5rem' }}>
+      <div style={{ color: timeLeft <= 5 ? 'var(--color-error)' : 'var(--color-success)', fontWeight: '700', fontSize: '1rem', marginBottom: '0.5rem' }}>
         {refreshing ? 'Refreshing...' : `유효시간: ${timeLeft}초`}
       </div>
 
@@ -82,7 +82,7 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
       )}
 
       <button className="qr-logout-btn" onClick={onLogout} style={{ marginTop: '1rem' }}>로그아웃</button>
-      <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#94a3b8', fontSize: '0.75rem' }}>
+      <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-text-hint)', fontSize: '0.75rem' }}>
         <Smartphone size={14} /> 화면 밝기 최대 권장
       </div>
     </div>
@@ -104,7 +104,7 @@ function SeatInfoCard({ seatData, onReturn, loading }) {
       </div>
 
       {isTemp && seatData.checkinExpiryDate && (
-        <div style={{ background: 'rgba(245,158,11,0.1)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.85rem', color: '#b45309', fontWeight: '700', textAlign: 'center' }}>
+        <div style={{ background: 'rgba(243,156,18,0.1)', padding: '0.75rem', borderRadius: 'var(--radius-sm)', fontSize: '0.85rem', color: 'var(--color-warning-dark)', fontWeight: '700', textAlign: 'center' }}>
           ⚠️ {seatData.checkinExpiryDate.substring(11, 16)}까지 좌석 배정을 완료해주세요
         </div>
       )}

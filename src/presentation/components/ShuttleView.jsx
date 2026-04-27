@@ -121,10 +121,10 @@ function TimetableRow({ row, lineId, isNext, subwayArrivals, subwayOffPeak }) {
           <div>
             <span className="stt-time-big">{row.dep}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginTop: 2 }}>
-              <svg width={9} height={9} viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth={2.5} strokeLinecap="round" style={{ flexShrink: 0 }}>
+              <svg width={9} height={9} viewBox="0 0 24 24" fill="none" stroke="var(--color-text-hint)" strokeWidth={2.5} strokeLinecap="round" style={{ flexShrink: 0 }}>
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
-              <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>
+              <span style={{ fontSize: 12, color: 'var(--color-text-hint)', fontWeight: 600 }}>
                 {row.arrLabel} {row.arr}
               </span>
             </div>

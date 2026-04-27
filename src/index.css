@@ -1,17 +1,120 @@
-@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap');
+
+/* ═══════════════════════════════════════════════════════════
+   HYU QR — 디자인 시스템 가이드
+   ───────────────────────────────────────────────────────────
+   이 파일이 곧 디자인 시스템입니다.
+   새 기능·컴포넌트를 만들 때 반드시 아래 규칙을 따르세요.
+
+   앱 특성
+   • 모바일 전용 PWA — 콘텐츠 최대 너비 440px
+   • 글래스모피즘 배경 (backdrop-filter: blur)
+   • 바텀 내비게이션 고정 (하단 여백 5rem 확보 필요)
+   • 서체: Pretendard (400 · 500 · 600 · 700)
+
+   새 컴포넌트 개발 규칙
+   ✅ 색상   → 반드시 var(--color-*) 사용
+   ✅ 간격   → var(--space-*) 기준으로 설정
+   ✅ 곡률   → var(--radius-*) 3종 중 선택
+   ✅ 글자   → var(--font-size-*) + var(--font-weight-*) 사용
+   ✅ 재사용 → 파일 하단 "재사용 클래스 목록" 먼저 확인
+   ❌ 임의의 hex 색상 하드코딩 금지
+   ❌ 4px·8px·12px·20px·24px 외 간격 신규 도입 지양
+   ❌ 12px·4px·999px 외 곡률 신규 도입 지양
+
+   의도적 예외 (하드코딩 허용)
+   • #0095f6              Instagram 브랜드 버튼색
+   • #E4405F              Instagram 아이콘 핑크
+   • #33AADF · #F5A623    수도권 전철 노선 색
+   • #e2e8f0 · #cbd5e1    중립 테두리·구분선 (디자인 시스템 외)
+   • GymTimetable 강의색  운동 종목 구분용 도메인 색상
+   ═══════════════════════════════════════════════════════════ */
 
 :root {
-  --hyu-blue: #0e4a84;
-  --hyu-blue-glow: rgba(14, 74, 132, 0.2);
-  --hyu-blue-light: #3b82f6;
-  --bg-light: #f1f5f9;
+  /* ─────────────────────────────────────────────────────────
+     🎨 브랜드 컬러 (Brand Colors)
+     primary   : 메인 버튼, 강조 아이콘, 탭 활성 상태
+     secondary : 포인트 컬러, 알림 배지 (에리카 골드)
+     success      : QR 승인 완료, 정상 상태 표시 (그린)
+     success-dark : success 색 위에 텍스트 → 뱃지·배너 글자색
+     warning      : 셔틀 지연, 만료 임박 알림 (오렌지)
+     warning-dark : warning 색 위에 텍스트 → 뱃지·배너 글자색
+     error        : 오류 메시지, 삭제·반납 버튼 (레드)
+     surface      : 전체 페이지 배경 (눈 편한 오프화이트)
+     text-main    : 제목, 본문 등 주요 텍스트
+     text-sub     : 날짜, 플레이스홀더 등 보조 텍스트
+     text-hint    : 아이콘 옆 설명, 비활성·뮤티드 텍스트
+     ───────────────────────────────────────────────────────── */
+  --color-primary: #0E4A84;
+  --color-primary-glow: rgba(14, 74, 132, 0.2);
+  --color-secondary: #AB863F;
+  --color-success: #27AE60;
+  --color-success-dark: #1a7a42;
+  --color-warning: #F39C12;
+  --color-warning-dark: #9a6200;
+  --color-error: #ef4444;
+  --color-surface: #F8F9FA;
+  --color-text-main: #212529;
+  --color-text-sub: #6C757D;
+  --color-text-hint: #94a3b8;
+
+  /* ─────────────────────────────────────────────────────────
+     📏 간격 — 8pt Grid System
+     page    : 화면 좌우 여백 (20px)
+     section : 큰 영역 간 간격, 카드 사이 (24px)
+     element : 컴포넌트 내부 간격 (12px)
+     sm      : 아이콘·뱃지·칩 사이 최소 간격 (8px)
+     ───────────────────────────────────────────────────────── */
+  --space-page: 20px;
+  --space-section: 24px;
+  --space-element: 12px;
+  --space-sm: 8px;
+
+  /* ─────────────────────────────────────────────────────────
+     🔲 곡률 (Border Radius)
+     card : 카드·버튼·인풋 기본 곡률 (12px)
+     sm   : 태그·뱃지·라벨 등 작은 요소 (4px)
+     full : 알약 모양 버튼·칩·바텀 내비 (999px)
+     ───────────────────────────────────────────────────────── */
+  --radius-card: 12px;
+  --radius-sm: 4px;
+  --radius-full: 999px;
+
+  /* ─────────────────────────────────────────────────────────
+     ✍️ 타이포그래피 (Typography) — 서체: Pretendard
+     사용법: font-size: var(--font-size-h1); font-weight: var(--font-weight-h1);
+     H1     : 24px / 700  → 메인 제목 ("안녕하세요, OO님")
+     H2     : 18px / 600  → 섹션·카드 제목
+     Body1  : 16px / 400  → 본문·리스트 항목
+     Body2  : 14px / 500  → 보조 정보·버튼 텍스트
+     Caption: 12px / 400  → 하단 설명, 작은 텍스트
+     ───────────────────────────────────────────────────────── */
+  --font-size-h1: 24px;
+  --font-size-h2: 18px;
+  --font-size-body1: 16px;
+  --font-size-body2: 14px;
+  --font-size-caption: 12px;
+
+  --font-weight-h1: 700;
+  --font-weight-h2: 600;
+  --font-weight-body1: 400;
+  --font-weight-body2: 500;
+  --font-weight-caption: 400;
+
+  /* ─── 글래스모피즘 ─── */
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(255, 255, 255, 0.5);
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --accent: #2563eb;
-  --warning: #f59e0b;
-  --success: #10b981;
+
+  /* ─── 하위호환 별칭 (기존 var() 참조 유지) ─── */
+  --hyu-blue: var(--color-primary);
+  --hyu-blue-glow: var(--color-primary-glow);
+  --hyu-blue-light: #3b82f6;
+  --bg-light: var(--color-surface);
+  --text-primary: var(--color-text-main);
+  --text-secondary: var(--color-text-sub);
+  --accent: var(--color-primary);
+  --warning: var(--color-warning);
+  --success: var(--color-success);
 }
 
 * {
@@ -22,13 +125,13 @@
 
 body {
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--bg-light);
-  color: var(--text-primary);
+  background-color: var(--color-surface);
+  color: var(--color-text-main);
   margin: 0;
   min-height: 100vh;
-  background-image: 
+  background-image:
     radial-gradient(circle at 10% 20%, rgba(14, 74, 132, 0.05), transparent 30%),
-    radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.05), transparent 30%);
+    radial-gradient(circle at 90% 80%, rgba(14, 74, 132, 0.03), transparent 30%);
 }
 
 .app-container {
@@ -36,7 +139,7 @@ body {
   width: 100%;
   max-width: 440px;
   min-height: 100vh;
-  padding: 1.5rem;
+  padding: var(--space-section) var(--space-page);
   display: flex;
   flex-direction: column;
 }
@@ -46,22 +149,22 @@ body {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
-  border-radius: 24px;
+  border-radius: var(--radius-card);
   padding: 2rem;
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .qr-glass-panel {
-  background: white; /* Bright background for QR scan */
+  background: white;
   padding: 2.5rem 2rem;
-  border-radius: 24px;
-  box-shadow: 0 0 30px var(--hyu-blue-glow);
+  border-radius: var(--radius-card);
+  box-shadow: 0 0 30px var(--color-primary-glow);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  color: #1e293b;
+  color: var(--color-text-main);
   animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -69,14 +172,15 @@ h1.title {
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #fff, #94a3b8);
+  background: linear-gradient(135deg, #fff, var(--color-text-hint));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   text-align: center;
 }
 
 p.subtitle {
-  color: var(--text-secondary);
+  color: var(--color-text-sub);
   font-size: 0.875rem;
   text-align: center;
   margin-bottom: 2rem;
@@ -90,7 +194,7 @@ p.subtitle {
   display: block;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--color-text-sub);
   margin-bottom: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -100,9 +204,9 @@ p.subtitle {
   width: 100%;
   background: white;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   padding: 0.875rem 1rem;
-  color: #1e293b;
+  color: var(--color-text-main);
   font-size: 1rem;
   transition: all 0.2s ease;
   font-family: inherit;
@@ -110,7 +214,7 @@ p.subtitle {
 
 .input-field.room-select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236C757D'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 1rem center;
   background-size: 1.25rem;
@@ -119,22 +223,22 @@ p.subtitle {
 
 .input-field:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-glow);
 }
 
 .primary-btn {
   width: 100%;
-  background: linear-gradient(135deg, var(--hyu-blue), #1e5fa0);
+  background: linear-gradient(135deg, var(--color-primary), #1e5fa0);
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   padding: 1rem;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 14px 0 var(--hyu-blue-glow);
+  box-shadow: 0 4px 14px 0 var(--color-primary-glow);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -143,7 +247,7 @@ p.subtitle {
 
 .primary-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px 0 var(--hyu-blue-glow);
+  box-shadow: 0 6px 20px 0 var(--color-primary-glow);
 }
 
 .primary-btn:active {
@@ -171,13 +275,13 @@ p.subtitle {
   height: 40px;
   border: 3px solid rgba(255,255,255,0.1);
   border-radius: 50%;
-  border-top-color: var(--accent);
+  border-top-color: var(--color-primary);
   animation: spin 0.8s linear infinite;
   margin-bottom: 1rem;
 }
 
 .error-msg {
-  color: #ef4444;
+  color: var(--color-error);
   font-size: 0.875rem;
   text-align: center;
   margin-top: 1rem;
@@ -189,19 +293,19 @@ p.subtitle {
   font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
-  color: #0f172a;
+  color: var(--color-text-main);
 }
 
 .qr-desc {
   font-size: 0.875rem;
-  color: #64748b;
+  color: var(--color-text-sub);
   margin-bottom: 2rem;
 }
 
 .qr-wrapper {
   background: white;
   padding: 1rem;
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   box-shadow: 0 4px 20px rgba(0,0,0,0.05);
   margin-bottom: 2rem;
   display: flex;
@@ -212,8 +316,8 @@ p.subtitle {
 .qr-refresh-btn {
   background: transparent;
   border: 1px solid #cbd5e1;
-  color: #475569;
-  border-radius: 20px;
+  color: var(--color-text-sub);
+  border-radius: var(--radius-full);
   padding: 0.5rem 1.25rem;
   font-size: 0.875rem;
   font-weight: 600;
@@ -225,13 +329,13 @@ p.subtitle {
 }
 
 .qr-refresh-btn:hover {
-  background: #f1f5f9;
+  background: var(--color-surface);
 }
 
 .qr-logout-btn {
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: var(--color-text-hint);
   font-size: 0.875rem;
   cursor: pointer;
   margin-top: 1.5rem;
@@ -279,7 +383,7 @@ p.subtitle {
 .seat-info-card {
   background: white;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   padding: 1.25rem;
   margin-bottom: 1.5rem;
   display: flex;
@@ -290,32 +394,32 @@ p.subtitle {
 }
 
 .seat-info-card.is-temp {
-  background: linear-gradient(to right, rgba(245, 158, 11, 0.05), white);
+  background: linear-gradient(to right, rgba(243, 156, 18, 0.05), white);
 }
 
 .seat-info-card.is-confirmed {
-  border-left: 4px solid var(--success);
-  background: linear-gradient(to right, rgba(16, 185, 129, 0.05), white);
+  border-left: 4px solid var(--color-success);
+  background: linear-gradient(to right, rgba(39, 174, 96, 0.05), white);
 }
 
 .status-badge {
   font-size: 0.7rem;
   font-weight: 800;
   padding: 2px 8px;
-  border-radius: 20px;
+  border-radius: var(--radius-full);
   text-transform: uppercase;
   margin-bottom: 4px;
   display: inline-block;
 }
 
 .status-badge.temp {
-  background: rgba(245, 158, 11, 0.1);
-  color: #b45309;
+  background: rgba(243, 156, 18, 0.12);
+  color: var(--color-warning-dark);
 }
 
 .status-badge.confirmed {
-  background: rgba(16, 185, 129, 0.1);
-  color: #047857;
+  background: rgba(39, 174, 96, 0.12);
+  color: var(--color-success-dark);
 }
 
 .seat-header {
@@ -328,15 +432,15 @@ p.subtitle {
 
 .seat-room {
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--color-text-main);
   font-size: 0.95rem;
 }
 
 .seat-number {
-  background: var(--hyu-blue);
+  background: var(--color-primary);
   color: white;
   padding: 0.2rem 0.6rem;
-  border-radius: 20px;
+  border-radius: var(--radius-full);
   font-weight: 700;
   font-size: 0.85rem;
   box-shadow: 0 4px 12px rgba(14, 74, 132, 0.4);
@@ -347,12 +451,12 @@ p.subtitle {
   justify-content: space-between;
   align-items: center;
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: var(--color-text-sub);
   padding-top: 0.2rem;
 }
 
 .seat-remaining {
-  color: #10b981;
+  color: var(--color-success);
   font-weight: 700;
 }
 
@@ -360,8 +464,8 @@ p.subtitle {
   width: 100%;
   background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.2);
-  color: #ef4444;
-  border-radius: 8px;
+  color: var(--color-error);
+  border-radius: var(--radius-card);
   padding: 0.6rem;
   font-size: 0.85rem;
   font-weight: 600;
@@ -384,7 +488,7 @@ p.subtitle {
 .reserve-panel {
   background: white;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   padding: 1.5rem;
   margin-bottom: 2rem;
   width: 100%;
@@ -400,13 +504,13 @@ p.subtitle {
 .reserve-title {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--hyu-blue);
+  color: var(--color-primary);
   margin-bottom: 0.25rem;
 }
 
 .reserve-subtitle {
   font-size: 0.8rem;
-  color: var(--text-secondary);
+  color: var(--color-text-sub);
 }
 
 
@@ -423,7 +527,7 @@ p.subtitle {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 32px;
+  border-radius: var(--radius-full);
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -436,7 +540,7 @@ p.subtitle {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  color: #94a3b8;
+  color: var(--color-text-hint);
   cursor: pointer;
   transition: all 0.3s ease;
   flex: 1;
@@ -454,7 +558,7 @@ p.subtitle {
 
 /* Cafeteria View */
 .cafe-container {
-  padding-bottom: 5rem; /* Space for bottom nav */
+  padding-bottom: 5rem;
 }
 
 .date-controller {
@@ -464,7 +568,7 @@ p.subtitle {
   margin-bottom: 1.5rem;
   background: white;
   padding: 0.75rem 1.25rem;
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   border: 1px solid #e2e8f0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
@@ -472,14 +576,14 @@ p.subtitle {
 .date-text {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--color-text-main);
   font-family: 'Outfit', sans-serif;
 }
 
 .date-btn {
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: var(--color-text-sub);
   cursor: pointer;
   padding: 4px;
   display: flex;
@@ -489,12 +593,12 @@ p.subtitle {
 }
 
 .date-btn:hover {
-  color: var(--text-primary);
+  color: var(--color-text-main);
 }
 
 .cafe-selector {
   display: flex;
-  gap: 8px;
+  gap: var(--space-sm);
   overflow-x: auto;
   padding: 4px 0 1rem;
   margin-bottom: 1rem;
@@ -510,10 +614,10 @@ p.subtitle {
   padding: 0.5rem 1rem;
   background: white;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--color-text-sub);
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -524,12 +628,12 @@ p.subtitle {
 
 .cafe-chip:hover {
   border-color: var(--hyu-blue-light);
-  color: var(--hyu-blue);
+  color: var(--color-primary);
   transform: translateY(-1px);
 }
 
 .cafe-chip.active {
-  background: var(--hyu-blue);
+  background: var(--color-primary);
   color: white;
   border-color: var(--hyu-blue-light);
 }
@@ -542,25 +646,25 @@ p.subtitle {
   position: absolute;
   top: -8px;
   right: -5px;
-  background: #ef4444;
+  background: var(--color-error);
   color: white;
   font-size: 0.65rem;
   padding: 2px 6px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-weight: 800;
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
 }
 
 .menu-card {
   background: white;
-  border-radius: 20px;
+  border-radius: var(--radius-card);
   padding: 1.5rem;
   margin-bottom: 1.25rem;
   border: 1px solid #e2e8f0;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
   text-align: left;
   transition: transform 0.2s ease;
-  position: relative; /* For floating price */
+  position: relative;
 }
 
 .menu-card:active {
@@ -577,10 +681,10 @@ p.subtitle {
 .menu-type {
   font-size: 0.75rem;
   font-weight: 800;
-  color: var(--hyu-blue);
+  color: var(--color-primary);
   background: rgba(14, 74, 132, 0.08);
   padding: 4px 10px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
@@ -592,29 +696,29 @@ p.subtitle {
 .menu-items {
   font-size: 0.95rem;
   line-height: 1.8;
-  color: #334155;
+  color: var(--color-text-main);
   word-break: keep-all;
   white-space: pre-line;
   padding-left: 0.25rem;
-  padding-bottom: 1.5rem; /* Room for price */
+  padding-bottom: 1.5rem;
 }
 
 .menu-price {
   position: absolute;
   bottom: 1.25rem;
   right: 1.25rem;
-  color: var(--hyu-blue);
+  color: var(--color-primary);
   font-weight: 800;
   font-size: 1.05rem;
   background: rgba(14, 74, 132, 0.05);
   padding: 4px 10px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
 }
 
 .no-menu {
   text-align: center;
   padding: 3rem 1rem;
-  color: var(--text-secondary);
+  color: var(--color-text-sub);
 }
 
 /* Refresh Spin Animation */
@@ -638,7 +742,7 @@ p.subtitle {
   align-items: center;
   padding: 1rem 1.25rem;
   background: white;
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   border: 1px solid #e2e8f0;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0,0,0,0.02);
@@ -647,7 +751,7 @@ p.subtitle {
 }
 
 .accordion-header:hover {
-  background: #f8fafc;
+  background: var(--color-surface);
   border-color: #cbd5e1;
 }
 
@@ -660,7 +764,7 @@ p.subtitle {
 .accordion-title {
   font-weight: 800;
   font-size: 1.05rem;
-  color: var(--text-primary);
+  color: var(--color-text-main);
 }
 
 .accordion-count {
@@ -669,7 +773,7 @@ p.subtitle {
   color: white;
   background: var(--hyu-blue-light);
   padding: 2px 8px;
-  border-radius: 12px;
+  border-radius: var(--radius-card);
 }
 
 .accordion-content {
@@ -702,14 +806,14 @@ p.subtitle {
 
 .section-title {
   font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--text-primary);
+  font-weight: 700;
+  color: var(--color-text-main);
   margin-bottom: 0.25rem;
 }
 
 .section-subtitle {
   font-size: 0.9rem;
-  color: var(--text-secondary);
+  color: var(--color-text-sub);
   margin-bottom: 2rem;
 }
 
@@ -722,7 +826,7 @@ p.subtitle {
 .misc-card {
   background: white;
   border: 1px solid #e2e8f0;
-  border-radius: 20px;
+  border-radius: var(--radius-card);
   padding: 1.25rem;
   display: flex;
   align-items: center;
@@ -745,7 +849,7 @@ p.subtitle {
 .misc-card.disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  background: #f8fafc;
+  background: var(--color-surface);
 }
 
 .misc-card.disabled:hover {
@@ -756,8 +860,8 @@ p.subtitle {
 .misc-icon-wrapper {
   width: 56px;
   height: 56px;
-  background: var(--bg-light);
-  border-radius: 16px;
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -771,20 +875,20 @@ p.subtitle {
 .misc-card-title {
   font-size: 1.1rem;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--color-text-main);
 }
 
 .misc-card-desc {
   font-size: 0.8rem;
-  color: var(--text-secondary);
+  color: var(--color-text-sub);
 }
 
 /* Gym Timetable */
 .gym-container {
   padding: 1.25rem;
-  background: #f8fafc;
+  background: var(--color-surface);
   min-height: 100vh;
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: 'Pretendard', -apple-system, sans-serif;
 }
 
 .gym-header {
@@ -797,13 +901,13 @@ p.subtitle {
 .gym-back {
   width: 40px;
   height: 40px;
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   background: white;
   border: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #64748b;
+  color: var(--color-text-sub);
   box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
 
@@ -820,24 +924,24 @@ p.subtitle {
 
 .gym-title-main h1 {
   font-size: 1.25rem;
-  font-weight: 800;
-  color: #1e293b;
+  font-weight: 700;
+  color: var(--color-text-main);
   margin: 0;
 }
 
 .gym-badge {
-  background: #e0e7ff;
-  color: #4338ca;
+  background: rgba(14, 74, 132, 0.1);
+  color: var(--color-primary);
   font-size: 0.65rem;
   font-weight: 800;
   padding: 2px 8px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   text-transform: uppercase;
 }
 
 .gym-subtitle {
   font-size: 0.8rem;
-  color: #64748b;
+  color: var(--color-text-sub);
   font-weight: 500;
   margin: 0;
 }
@@ -848,7 +952,7 @@ p.subtitle {
 
 .cal-card {
   background: white;
-  border-radius: 24px;
+  border-radius: var(--radius-card);
   border: 1px solid #e2e8f0;
   box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03), 0 8px 10px -6px rgba(0,0,0,0.03);
   overflow: hidden;
@@ -865,7 +969,7 @@ p.subtitle {
   padding: 0.75rem 0.25rem;
   font-size: 0.7rem;
   font-weight: 700;
-  color: #94a3b8;
+  color: var(--color-text-hint);
   border-bottom: 1px solid #f1f5f9;
   text-align: center;
 }
@@ -876,25 +980,25 @@ p.subtitle {
   font-weight: 700;
   color: #cbd5e1;
   text-align: center;
-  border-right: 1px solid #f8fafc;
+  border-right: 1px solid var(--color-surface);
 }
 
 .cal-cell {
   height: 40px;
-  border-bottom: 1px solid #f8fafc;
-  border-right: 1px solid #f8fafc;
+  border-bottom: 1px solid var(--color-surface);
+  border-right: 1px solid var(--color-surface);
   padding: 2px;
   position: relative;
 }
 
 .cal-cell.empty {
-  background-image: radial-gradient(#f1f5f9 0.4px, transparent 0.4px);
+  background-image: radial-gradient(#e2e8f0 0.4px, transparent 0.4px);
   background-size: 8px 8px;
 }
 
 .course-card {
   height: 100%;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border-left: 2.5px solid;
   padding: 2px 4px;
   display: flex;
@@ -911,6 +1015,7 @@ p.subtitle {
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
@@ -926,7 +1031,7 @@ p.subtitle {
 
 .cal-now-line {
   height: 1.5px;
-  background: #ef4444;
+  background: var(--color-error);
   width: 100%;
   opacity: 0.2;
 }
@@ -935,10 +1040,10 @@ p.subtitle {
   position: absolute;
   top: 0;
   transform: translate(-50%, -50%);
-  background: #ef4444;
+  background: var(--color-error);
   color: white;
   padding: 1px 6px;
-  border-radius: 20px;
+  border-radius: var(--radius-full);
   font-size: 0.55rem;
   font-weight: 900;
   box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
@@ -971,7 +1076,7 @@ p.subtitle {
 
 .gym-footer p {
   font-size: 0.7rem;
-  color: #94a3b8;
+  color: var(--color-text-hint);
   margin: 0;
   font-weight: 500;
 }
@@ -992,19 +1097,19 @@ p.subtitle {
 .insta-back {
   width: 40px;
   height: 40px;
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   background: white;
   border: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--text-primary);
+  color: var(--color-text-main);
   transition: all 0.2s;
 }
 
 .insta-back:hover {
-  background: #f1f5f9;
+  background: var(--color-surface);
 }
 
 .insta-section {
@@ -1024,7 +1129,7 @@ p.subtitle {
 .insta-section-title {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--color-text-main);
 }
 
 .insta-list {
@@ -1068,7 +1173,7 @@ p.subtitle {
 .insta-username {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #262626;
+  color: var(--color-text-main);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1076,7 +1181,7 @@ p.subtitle {
 
 .insta-fullname {
   font-size: 0.85rem;
-  color: #8e8e8e;
+  color: var(--color-text-sub);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1086,9 +1191,9 @@ p.subtitle {
   background: #0095f6;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   padding: 0.4rem 0;
-  width: 72px; /* Fixed width for uniform alignment */
+  width: 72px;
   text-align: center;
   font-size: 0.8rem;
   font-weight: 700;
@@ -1130,7 +1235,7 @@ p.subtitle {
 .skeleton-line {
   height: 12px;
   background: #e2e8f0;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   animation: pulse 1.5s infinite;
 }
 
@@ -1146,60 +1251,132 @@ p.subtitle {
 /* ── Shuttle & Subway View ────────────────────────────── */
 .stt-container { padding-bottom: 5rem; animation: slideUp 0.4s ease-out; }
 .stt-section { margin-bottom: 1.5rem; }
-.stt-sec-label { font-size: 1.1rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.75rem; }
+.stt-sec-label { font-size: 1.1rem; font-weight: 800; color: var(--color-text-main); margin-bottom: 0.75rem; }
 .stt-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-.stt-stops-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.stt-stop-chip { padding: 11px 8px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 4px; border: 1.5px solid #e2e8f0; border-radius: 20px; background: white; font-size: 13px; font-weight: 600; color: var(--text-secondary); cursor: pointer; white-space: nowrap; overflow: visible; transition: all 0.15s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-.stt-stop-chip.active { background: var(--hyu-blue); color: white; border-color: var(--hyu-blue); box-shadow: 0 4px 12px rgba(14,74,132,0.22); }
-.stt-stop-chip:hover:not(.active) { background: #f8fafc; border-color: #cbd5e1; }
+.stt-stops-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-sm); }
+.stt-stop-chip { padding: 11px 8px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 4px; border: 1.5px solid #e2e8f0; border-radius: var(--radius-full); background: white; font-size: 13px; font-weight: 600; color: var(--color-text-sub); cursor: pointer; white-space: nowrap; overflow: visible; transition: all 0.15s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+.stt-stop-chip.active { background: var(--color-primary); color: white; border-color: var(--color-primary); box-shadow: 0 4px 12px rgba(14,74,132,0.22); }
+.stt-stop-chip:hover:not(.active) { background: var(--color-surface); border-color: #cbd5e1; }
 .stt-col-header { display: flex; padding: 0 0 6px; border-bottom: 1px solid #f1f5f9; }
 .stt-col-label { font-size: 10px; font-weight: 700; color: #cbd5e1; letter-spacing: 0.04em; }
-.stt-tcard { background: white; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); overflow: hidden; }
+.stt-tcard { background: white; border: 1px solid #e2e8f0; border-radius: var(--radius-card); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); overflow: hidden; }
 .stt-trow { display: flex; align-items: stretch; border-bottom: 1px solid #f1f5f9; position: relative; }
 .stt-trow:last-child { border-bottom: none; }
 .stt-trow.next { background: rgba(14,74,132,0.03); }
 .stt-shuttle-col { flex: 1; display: flex; align-items: center; padding: 16px 0 16px 16px; }
-.stt-time-big { font-family: 'Inter', -apple-system, sans-serif; font-size: 28px; font-weight: 900; line-height: 1; letter-spacing: -1px; color: var(--text-primary); }
-.stt-time-big.past { color: #94a3b8; }
+.stt-time-big { font-family: 'Inter', -apple-system, sans-serif; font-size: 28px; font-weight: 900; line-height: 1; letter-spacing: -1px; color: var(--color-text-main); }
+.stt-time-big.past { color: var(--color-text-hint); }
 .stt-subway-col { flex: 1; display: flex; flex-direction: column; gap: 2px; justify-content: center; padding: 14px 14px 14px 4px; }
 .stt-subway-row { display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 6px; }
-.stt-subway-dest { font-size: 13px; font-weight: 700; color: var(--text-primary); }
-.stt-subway-time { font-family: 'Inter', -apple-system, sans-serif; font-size: 13px; font-weight: 700; color: var(--text-secondary); }
+.stt-subway-dest { font-size: 13px; font-weight: 700; color: var(--color-text-main); }
+.stt-subway-time { font-family: 'Inter', -apple-system, sans-serif; font-size: 13px; font-weight: 700; color: var(--color-text-sub); }
 .stt-no-train { font-size: 12px; color: #cbd5e1; font-weight: 500; }
-.stt-next-tag { position: absolute; top: 0; left: 0; font-size: 9px; font-weight: 800; color: white; background: var(--hyu-blue); padding: 2px 8px; border-radius: 0 0 8px 0; }
-.stt-empty { padding: 32px 0; text-align: center; color: var(--text-secondary); font-weight: 600; }
+.stt-next-tag { position: absolute; top: 0; left: 0; font-size: 9px; font-weight: 800; color: white; background: var(--color-primary); padding: 2px 8px; border-radius: 0 0 var(--radius-sm) 0; }
+.stt-empty { padding: 32px 0; text-align: center; color: var(--color-text-sub); font-weight: 600; }
 .stt-lb { border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .stt-lb-4 { font-family: 'Inter', -apple-system, sans-serif; font-weight: 900; color: white; }
 .stt-lb-sb { font-weight: 900; color: white; text-align: center; line-height: 1.1; font-size: 7px; }
 .stt-dd-wrap { position: relative; user-select: none; }
-.stt-dd-trigger { display: flex; align-items: center; gap: 8px; padding: 7px 10px 7px 8px; background: white; border: 1.5px solid #e2e8f0; border-radius: 16px; cursor: pointer; transition: all 0.15s; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-.stt-dd-trigger.open { border-color: var(--hyu-blue); box-shadow: 0 0 0 3px rgba(14,74,132,0.1); }
+.stt-dd-trigger { display: flex; align-items: center; gap: 8px; padding: 7px 10px 7px 8px; background: white; border: 1.5px solid #e2e8f0; border-radius: var(--radius-card); cursor: pointer; transition: all 0.15s; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.stt-dd-trigger.open { border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-glow); }
 .stt-dd-trigger-text { display: flex; flex-direction: column; gap: 1px; }
-.stt-dd-trigger-line { font-size: 9px; font-weight: 700; color: #94a3b8; letter-spacing: 0.04em; }
-.stt-dd-trigger-dest { font-size: 13px; font-weight: 800; color: var(--text-primary); }
-.stt-dd-arrow { color: #94a3b8; transition: transform 0.2s; flex-shrink: 0; }
+.stt-dd-trigger-line { font-size: 9px; font-weight: 700; color: var(--color-text-hint); letter-spacing: 0.04em; }
+.stt-dd-trigger-dest { font-size: 13px; font-weight: 800; color: var(--color-text-main); }
+.stt-dd-arrow { color: var(--color-text-hint); transition: transform 0.2s; flex-shrink: 0; }
 .stt-dd-arrow.open { transform: rotate(180deg); }
-.stt-dd-panel { position: absolute; top: calc(100% + 6px); right: 0; width: 232px; background: white; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 16px 40px rgba(0,0,0,0.14); overflow: hidden; z-index: 200; animation: sttDropIn 0.18s cubic-bezier(0.16,1,0.3,1); }
+.stt-dd-panel { position: absolute; top: calc(100% + 6px); right: 0; width: 232px; background: white; border: 1px solid #e2e8f0; border-radius: var(--radius-card); box-shadow: 0 16px 40px rgba(0,0,0,0.14); overflow: hidden; z-index: 200; animation: sttDropIn 0.18s cubic-bezier(0.16,1,0.3,1); }
 @keyframes sttDropIn { from { opacity: 0; transform: translateY(-6px) scale(0.97); } to { opacity: 1; transform: none; } }
-.stt-dd-group-label { display: flex; align-items: center; gap: 7px; padding: 9px 14px 6px; font-size: 10px; font-weight: 700; color: #94a3b8; letter-spacing: 0.05em; border-top: 1px solid #f8fafc; }
+.stt-dd-group-label { display: flex; align-items: center; gap: 7px; padding: 9px 14px 6px; font-size: 10px; font-weight: 700; color: var(--color-text-hint); letter-spacing: 0.05em; border-top: 1px solid var(--color-surface); }
 .stt-dd-group-label:first-child { border-top: none; }
 .stt-dd-opt { display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; transition: background 0.1s; }
-.stt-dd-opt:hover { background: #f8fafc; }
+.stt-dd-opt:hover { background: var(--color-surface); }
 .stt-dd-opt.sel { background: rgba(14,74,132,0.04); }
 .stt-dd-opt-info { flex: 1; }
-.stt-dd-opt-main { font-size: 13px; font-weight: 700; color: var(--text-primary); margin: 0; }
-.stt-dd-opt-sub { font-size: 11px; color: #94a3b8; margin: 2px 0 0; }
+.stt-dd-opt-main { font-size: 13px; font-weight: 700; color: var(--color-text-main); margin: 0; }
+.stt-dd-opt-sub { font-size: 11px; color: var(--color-text-hint); margin: 2px 0 0; }
 .stt-dd-radio { width: 17px; height: 17px; border-radius: 50%; border: 2px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: border-color 0.15s; }
-.stt-dd-radio.sel { border-color: var(--hyu-blue); }
-.stt-dd-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--hyu-blue); }
-.stt-route-label { display: inline-flex; justify-content: center; align-items: center; width: 58px; min-height: 34px; font-size: 10px; font-weight: 800; padding: 4px 0; border-radius: 8px; flex-shrink: 0; transition: all 0.2s; white-space: pre-line; line-height: 1.1; text-align: center; }
-.stt-route-label.d  { background: rgba(14,74,132,0.08); color: var(--hyu-blue); }
-.stt-route-label.c  { background: rgba(16,185,129,0.08); color: #059669; }
-.stt-route-label.dy { background: rgba(245,158,11,0.08); color: #d97706; font-size: 9px; letter-spacing: -0.2px; }
-.stt-tooltip { position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); background: rgba(30,41,59,0.9); color: white; padding: 10px 14px; border-radius: 14px; font-size: 11px; font-weight: 700; white-space: nowrap; box-shadow: 0 12px 24px -6px rgba(0,0,0,0.3); z-index: 500; display: flex; align-items: center; pointer-events: none; animation: tooltipPop 0.4s cubic-bezier(0.175,0.885,0.32,1.275); backdrop-filter: blur(4px); }
+.stt-dd-radio.sel { border-color: var(--color-primary); }
+.stt-dd-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-primary); }
+.stt-route-label { display: inline-flex; justify-content: center; align-items: center; width: 58px; min-height: 34px; font-size: 10px; font-weight: 800; padding: 4px 0; border-radius: var(--radius-sm); flex-shrink: 0; transition: all 0.2s; white-space: pre-line; line-height: 1.1; text-align: center; }
+.stt-route-label.d  { background: rgba(14,74,132,0.08); color: var(--color-primary); }
+.stt-route-label.c  { background: rgba(39,174,96,0.08); color: var(--color-success); }
+.stt-route-label.dy { background: rgba(243,156,18,0.08); color: var(--color-warning-dark); font-size: 9px; letter-spacing: -0.2px; }
+.stt-tooltip { position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); background: rgba(33,37,41,0.9); color: white; padding: 10px 14px; border-radius: var(--radius-card); font-size: 11px; font-weight: 700; white-space: nowrap; box-shadow: 0 12px 24px -6px rgba(0,0,0,0.3); z-index: 500; display: flex; align-items: center; pointer-events: none; animation: tooltipPop 0.4s cubic-bezier(0.175,0.885,0.32,1.275); backdrop-filter: blur(4px); }
 .stt-tooltip.bottom { top: calc(100% + 12px); bottom: auto; animation: tooltipPopDown 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
 .stt-tooltip::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); border: 6px solid transparent; }
-.stt-tooltip.top::after { top: 100%; border-top-color: rgba(30,41,59,0.9); }
-.stt-tooltip.bottom::after { bottom: 100%; border-bottom-color: rgba(30,41,59,0.9); }
+.stt-tooltip.top::after { top: 100%; border-top-color: rgba(33,37,41,0.9); }
+.stt-tooltip.bottom::after { bottom: 100%; border-bottom-color: rgba(33,37,41,0.9); }
 @keyframes tooltipPop { 0% { opacity: 0; transform: translateX(-50%) translateY(10px) scale(0.9); } 100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
 @keyframes tooltipPopDown { 0% { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(0.9); } 100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
+
+/* ═══════════════════════════════════════════════════════════
+   ♻️ 재사용 가능한 CSS 클래스 목록
+   새 컴포넌트를 만들기 전에 아래 클래스를 먼저 활용하세요.
+   ───────────────────────────────────────────────────────────
+
+   레이아웃
+   .app-container     전체 페이지 래퍼 (max-width 440px, 좌우 여백 20px)
+   .glass-panel       전면 패널 (glassmorphism, 로그인 화면 등)
+
+   버튼
+   .primary-btn       메인 CTA 버튼 (파란 그라디언트, 전체 너비, radius-card)
+   .qr-refresh-btn    보조 버튼 (테두리형, 알약 모양 radius-full)
+   .qr-logout-btn     텍스트 전용 버튼 (border 없음, 최소 강조)
+   .seat-return-btn   위험 액션 버튼 (빨간 계열, 전체 너비)
+   .date-btn          아이콘 전용 날짜 이동 버튼 (border 없음)
+
+   카드
+   .menu-card         식단 카드 (white, radius-card, 그림자)
+   .seat-info-card    좌석 정보 카드
+                        └ .is-temp      확정 대기 모디파이어 (warning 계열 왼쪽 테두리)
+                        └ .is-confirmed 이용중 모디파이어 (success 계열 왼쪽 테두리)
+   .reserve-panel     예약 폼 패널 (white, radius-card)
+   .misc-card         기능 메뉴 카드 (아이콘 56px + 제목 + 설명 가로 레이아웃)
+                        └ .disabled     비활성 모디파이어
+   .stt-tcard         셔틀·지하철 시간표 카드
+   .cal-card          헬스장 시간표 테이블 카드
+
+   폼 요소
+   .input-group       라벨 + 인풋 묶음 (margin-bottom 포함)
+   .input-field       텍스트 입력·셀렉트 박스 (radius-card, focus ring)
+                        └ .room-select  셀렉트 박스용 화살표 아이콘 추가
+
+   뱃지 · 태그 · 칩
+   .status-badge      상태 뱃지 (radius-full, 소문자 표기)
+                        └ .temp         확정 대기 (warning 계열)
+                        └ .confirmed    이용중 (success 계열)
+   .menu-type         식단 종류 태그 (primary 계열, radius-sm)
+   .cafe-chip         식당 선택 칩 (radius-card, .active 모디파이어)
+                        └ .active       선택된 식당 (primary 배경)
+                        └ .disabled     비활성 식당
+   .stt-stop-chip     셔틀 정류장 칩 (radius-full, .active 모디파이어)
+
+   내비게이션
+   .bottom-nav        하단 고정 내비바 (glassmorphism, radius-full)
+   .nav-item          내비 아이템
+                        └ .active       활성 탭 (hyu-blue-light 색상)
+
+   피드백 · 로딩
+   .spinner           버튼 내 소형 스피너 (흰색, 20px)
+   .loader-spinner    전면 로딩 스피너 (primary 색상, 40px)
+   .error-msg         에러 문구 (color-error, 쉐이크 애니메이션)
+   .loader-overlay    전체화면 로딩 오버레이
+
+   아코디언
+   .accordion-group   아코디언 묶음 컨테이너
+   .accordion-header  클릭 가능한 헤더 (radius-card, hover 효과)
+   .accordion-content 접힘/펼침 콘텐츠 (.expanded 클래스로 제어)
+
+   섹션 공통
+   .section-title     섹션 제목 (H1 크기, 700)
+   .section-subtitle  섹션 부제목 (text-sub 색상)
+   .date-controller   날짜 이동 컨트롤러 (white, radius-card)
+
+   애니메이션 (animation: 이름 duration 으로 사용)
+   slideUp            아래→위 등장 (추천: 0.4s ease-out)
+   popIn              확대되며 등장 (추천: 0.4s cubic-bezier)
+   spin               무한 회전 (로딩 스피너용)
+   shake              좌우 흔들림 (에러 피드백용)
+   pulse              불투명도 깜빡임 (스켈레톤 UI용)
+   rotate             단방향 회전 (새로고침 아이콘용)
+   ═══════════════════════════════════════════════════════════ */
