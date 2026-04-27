@@ -317,6 +317,14 @@ export default function ShuttleView() {
   const [subwayOffPeak,  setSubwayOffPeak]  = useState(false);
   const [now,            setNow]            = useState(curMin());
   const [loadErr,        setLoadErr]        = useState(null);
+  const [showTooltip,   setShowTooltip]    = useState(true);
+  const [initialStop]                      = useState(stop);
+
+  // Hide tooltip after 2 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => setShowTooltip(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('shuttle_stop', stop);
@@ -388,10 +396,18 @@ export default function ShuttleView() {
       <div className="stt-section">
         <p className="stt-sec-label">출발지</p>
         <div className="stt-stops-grid">
-          {STOPS.map(s => {
+          {STOPS.map((s, idx) => {
             const Icon = STOP_ICON[s];
             return (
-              <div key={s} className={`stt-stop-chip${stop === s ? ' active' : ''}`} onClick={() => setStop(s)}>
+              <div key={s} className={`stt-stop-chip${stop === s ? ' active' : ''}`} onClick={() => setStop(s)} style={{ position: 'relative' }}>
+                {initialStop === s && showTooltip && (
+                  <div className={`stt-tooltip ${idx >= 3 ? 'bottom' : 'top'}`}>
+                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
+                      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    잠깐! 이 출발지가 맞나요?
+                  </div>
+                )}
                 <Icon /> {s}
               </div>
             );
