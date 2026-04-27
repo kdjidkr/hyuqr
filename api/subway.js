@@ -66,6 +66,7 @@ export default async function handler(req, res) {
         updnLine: tr.updnLine,
         dest: tr.bstatnNm,
         arrTime: `${String(arrDateKst.getHours()).padStart(2, '0')}:${String(arrDateKst.getMinutes()).padStart(2, '0')}`,
+        btrainNo: tr.btrainNo,
         isRealtime: true,
       };
     });
@@ -93,6 +94,7 @@ export default async function handler(req, res) {
                   updnLine: upDown === '1' ? '상행' : '하행',
                   dest: r.SUBWAYENAME,
                   arrTime: r.ARRIVETIME.substring(0, 5),
+                  trainNo: r.TRAIN_NO,
                   isRealtime: false,
                 });
               }
