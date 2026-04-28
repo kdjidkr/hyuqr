@@ -1,7 +1,8 @@
 // 컴포넌트: 날짜·식당 선택 및 아코디언 식단 목록 표시
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock, Bell } from 'lucide-react';
 import { getKSTDate } from '../../utils/time.js';
+import { AlarmSettings } from './AlarmSettings.jsx';
 
 const formatDate = (targetDate) => {
   const days = ['일', '월', '화', '수', '목', '금', '토'];
@@ -34,6 +35,7 @@ const getMenuIcon = (type) => {
 export function CafeteriaView({ date, changeDate, cafes, loading }) {
   const [selectedCafeId, setSelectedCafeId] = useState('re12');
   const [expandedGroups, setExpandedGroups] = useState({});
+  const [showAlarm, setShowAlarm] = useState(false);
   const listRef = useRef(null);
 
   const selectedCafe = cafes.find(c => c.id === selectedCafeId) || { menus: [] };
@@ -88,6 +90,10 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
 
   return (
     <div className="cafe-container">
+      <button className="alarm-fab" onClick={() => setShowAlarm(true)}>
+        <Bell size={22} />
+      </button>
+      {showAlarm && <AlarmSettings onClose={() => setShowAlarm(false)} />}
       <div className="cafe-sticky-header">
         <div className="date-controller">
           <button className="date-btn" onClick={() => changeDate(-1)} disabled={loading}>
