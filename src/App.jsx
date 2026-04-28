@@ -11,7 +11,7 @@ import { MiscView }      from './presentation/components/MiscView.jsx';
 import { BottomNav }     from './presentation/components/BottomNav.jsx';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('qr');
+  const [activeTab, setActiveTab] = useState('cafe');
   const { user, loading, login, relogin, logout, updateUser } = useAuth();
   const { menuDate, cafes, menuLoading, changeDate } = useMenu();
 

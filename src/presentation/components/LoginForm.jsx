@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 export function LoginForm({ onSuccess }) {
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
-  const [status, setStatus]   = useState('idle');
-  const [errMsg, setErrMsg]   = useState('');
+  const [status, setStatus] = useState('idle');
+  const [errMsg, setErrMsg] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,8 +22,9 @@ export function LoginForm({ onSuccess }) {
 
   return (
     <div className="glass-panel">
-      <h1 className="title">HYU QR Pass</h1>
-      <p className="subtitle">빠른 입장을 위한 모바일 QR 패스</p>
+      <h1 className="title" style={{ background: 'none', webkitTextFillColor: 'var(--color-primary)', color: 'var(--color-primary)', marginBottom: '0.5rem' }}>
+        HYU 학술정보관
+      </h1>
       <form onSubmit={handleSubmit}>
         <div className="input-group">
           <label>포털 아이디</label>

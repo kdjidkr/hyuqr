@@ -1,5 +1,5 @@
 // 컴포넌트: 날짜·식당 선택 및 아코디언 식단 목록 표시
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Utensils } from 'lucide-react';
 import { getKSTDate } from '../../utils/time.js';
 
@@ -34,18 +34,28 @@ const getMenuIcon = (type) => {
 export function CafeteriaView({ date, changeDate, cafes, loading }) {
   const [selectedCafeId, setSelectedCafeId] = useState('re12');
   const [expandedGroups, setExpandedGroups] = useState({});
+  const listRef = useRef(null);
 
   const selectedCafe = cafes.find(c => c.id === selectedCafeId) || { menus: [] };
 
   useEffect(() => {
     if (!selectedCafe.menus?.length) return;
-    const nowKst  = getKSTDate();
+    const nowKst = getKSTDate();
     const isToday = nowKst.toISOString().split('T')[0] === date.toISOString().split('T')[0];
     const h = nowKst.getUTCHours();
 
+    const getTargetType = () => {
+      if (h < 9) return '조식';
+      if (h >= 14) return '석식';
+      return '중식';
+    };
+
+    const targetType = getTargetType();
+    const hasTarget = selectedCafe.menus.some(m => m.type.includes(targetType));
+
     const getOpen = (type) => {
-      if (!isToday) return true;
-      if (h < 9)   return type.includes('조식');
+      if (!isToday || !hasTarget) return true;
+      if (h < 9) return type.includes('조식');
       if (h >= 14) return type.includes('석식');
       return !type.includes('조식') && !type.includes('석식');
     };
@@ -55,7 +65,17 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
       if (initial[m.type] === undefined) initial[m.type] = getOpen(m.type);
     });
     setExpandedGroups(initial);
-  }, [selectedCafe.id, cafes, date]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // 중식/석식 시간에 식당 선택 시 해당 섹션으로 자동 스크롤 (조식 제외)
+    if (isToday && (targetType === '중식' || targetType === '석식')) {
+      setTimeout(() => {
+        const targetEl = listRef.current?.querySelector(`[data-type*="${targetType}"]`);
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 150); // 렌더링 및 애니메이션 대기
+    }
+  }, [selectedCafeId, cafes, date]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleGroup = (type) =>
     setExpandedGroups(prev => ({ ...prev, [type]: !prev[type] }));
@@ -68,34 +88,36 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
 
   return (
     <div className="cafe-container">
-      <div className="date-controller">
-        <button className="date-btn" onClick={() => changeDate(-1)} disabled={loading}>
-          <ChevronLeft style={{ opacity: loading ? 0.3 : 1 }} />
-        </button>
-        <div className="date-text" style={{ opacity: loading ? 0.5 : 1 }}>{formatDate(date)}</div>
-        <button className="date-btn" onClick={() => changeDate(1)} disabled={loading}>
-          <ChevronRight style={{ opacity: loading ? 0.3 : 1 }} />
-        </button>
+      <div className="cafe-sticky-header">
+        <div className="date-controller">
+          <button className="date-btn" onClick={() => changeDate(-1)} disabled={loading}>
+            <ChevronLeft style={{ opacity: loading ? 0.3 : 1 }} />
+          </button>
+          <div className="date-text" style={{ opacity: loading ? 0.5 : 1 }}>{formatDate(date)}</div>
+          <button className="date-btn" onClick={() => changeDate(1)} disabled={loading}>
+            <ChevronRight style={{ opacity: loading ? 0.3 : 1 }} />
+          </button>
+        </div>
+
+        <div
+          className="cafe-selector"
+          style={{ opacity: loading ? 0.6 : 1, pointerEvents: loading ? 'none' : 'auto' }}
+        >
+          {cafes.map(cafe => (
+            <div
+              key={cafe.id}
+              className={`cafe-chip ${selectedCafeId === cafe.id ? 'active' : ''} ${!cafe.available ? 'disabled' : ''}`}
+              onClick={() => setSelectedCafeId(cafe.id)}
+            >
+              <Utensils size={14} style={{ opacity: 0.7 }} />
+              {cafe.name}
+              {cafe.hasJeyuk && <span className="jeyuk-badge">🔥 제육</span>}
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div
-        className="cafe-selector"
-        style={{ opacity: loading ? 0.6 : 1, pointerEvents: loading ? 'none' : 'auto' }}
-      >
-        {cafes.map(cafe => (
-          <div
-            key={cafe.id}
-            className={`cafe-chip ${selectedCafeId === cafe.id ? 'active' : ''} ${!cafe.available ? 'disabled' : ''}`}
-            onClick={() => setSelectedCafeId(cafe.id)}
-          >
-            <Utensils size={14} style={{ opacity: 0.7 }} />
-            {cafe.name}
-            {cafe.hasJeyuk && <span className="jeyuk-badge">🔥 제육</span>}
-          </div>
-        ))}
-      </div>
-
-      <div className="menu-list" style={{ position: 'relative', minHeight: '200px' }}>
+      <div className="menu-list" ref={listRef} style={{ position: 'relative', minHeight: '200px' }}>
         {loading && (
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(15,23,42,0.4)', backdropFilter: 'blur(4px)', zIndex: 10, borderRadius: 'var(--radius-card)', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: '1rem' }}>
             <div className="loader-spinner" style={{ width: '40px', height: '40px' }} />
@@ -109,7 +131,7 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
               Object.entries(groupedMenus).map(([type, menus]) => {
                 const isExpanded = expandedGroups[type];
                 return (
-                  <div key={type} className="accordion-group">
+                  <div key={type} className="accordion-group" data-type={type}>
                     <div
                       className={`accordion-header ${isExpanded ? 'expanded' : ''}`}
                       onClick={() => toggleGroup(type)}
@@ -131,7 +153,7 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
                       <div className="accordion-inner">
                         {menus.map((m, i) => (
                           <div key={i} className="menu-card">
-                            <div className="menu-items">{m.menu}</div>
+                            <div className="menu-items" dangerouslySetInnerHTML={{ __html: m.menu }} />
                             {m.price && <div className="menu-price">{m.price}</div>}
                           </div>
                         ))}
