@@ -11,6 +11,7 @@ export const createMenuRepository = ({ menuApiDataSource }) => ({
       menus: c.menus ?? [],
       hasJeyuk: c.hasJeyuk ?? false,
       available: c.available ?? false,
+      hours: c.hours ?? {},
     }));
   },
 });
