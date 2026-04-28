@@ -2,10 +2,9 @@ import * as cheerio from 'cheerio';
 
 const CAFES = [
   { id: 're12', name: '학생식당' },
-  { id: 're15', name: '창업보육센터' },
-  { id: 're11', name: '교직원식당' },
-  { id: 're13', name: '창의인재원' },
-  { id: 're14', name: '푸드코트' }
+  { id: 're15', name: '창보' },
+  { id: 're11', name: '교직원' },
+  { id: 're13', name: '기숙사' }
 ];
 
 async function scrapeCafe(cafeId, dateStr) {
@@ -25,43 +24,54 @@ async function scrapeCafe(cafeId, dateStr) {
     $('h3').each((i, el) => {
       const title = $(el).text().trim();
       const ignoreList = ['검색', '댓글', '창업보육', '학생식당', '교직원', '창의인재', '푸드코트', '위치', '조회'];
-      
+
       if (title && !title.includes('원') && !ignoreList.some(ig => title.includes(ig))) {
         let menuText = $(el).next().text().replace(/\s+/g, ' ').trim();
         if (menuText && menuText.length > 5 && !menuText.includes('확인 가능합니다')) {
+          // 1. [천원의아침밥] 뒤에 띄어쓰기 없으면 강제로 공백 추가 (파싱용)
+          menuText = menuText.replace(/(\[천원의아침밥\])([^\s])/g, '$1 $2');
+
           const rawItems = menuText
-            .replace(/"/g, '') // Remove double quotes
-            .split(/\s+/) // Split by spaces
-            .filter(item => !/[a-zA-Z]/.test(item)) // Remove items with English characters
-            .filter(item => item.trim().length > 0); // Remove empty strings
-          
+            .replace(/"/g, '')
+            .split(/\s+/)
+            .filter(item => !/[a-zA-Z]/.test(item))
+            .filter(item => item !== '&') // 단독으로 남은 & 제거
+            .filter(item => item.trim().length > 0);
+
           const parsedSets = [];
           let currentItems = [];
 
           rawItems.forEach(item => {
             if (/\d+.*원/.test(item)) {
-              // It's a price. Finalize the current set.
-              parsedSets.push({
-                items: currentItems.join('\n'),
-                price: item
-              });
-              currentItems = []; // Reset for next set
+              // It's a price.
+              parsedSets.push({ items: [...currentItems], price: item });
+              currentItems = [];
             } else {
               currentItems.push(item);
             }
           });
-
-          // If there are leftover items (e.g. no price at the end)
           if (currentItems.length > 0) {
-            parsedSets.push({
-              items: currentItems.join('\n'),
-              price: ''
-            });
+            parsedSets.push({ items: currentItems, price: '' });
           }
 
           parsedSets.forEach(set => {
-            if (set.items.trim().length > 0) {
-              menus.push({ type: title, menu: set.items, price: set.price });
+            if (set.items.length > 0) {
+              let firstMenuFound = false;
+              const formattedItems = set.items.map(item => {
+                if (item === '[천원의아침밥]') return item; // 태그는 그대로 유지
+
+                if (!firstMenuFound) {
+                  firstMenuFound = true;
+                  return `• <b>${item}</b>`; // 첫 번째 메뉴는 볼드 + 불렛
+                }
+                return `• ${item}`; // 나머지는 불렛만
+              });
+
+              menus.push({
+                type: title,
+                menu: formattedItems.join('\n'),
+                price: set.price
+              });
             }
           });
         }
@@ -77,8 +87,8 @@ async function scrapeCafe(cafeId, dateStr) {
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ message: 'Method Not Allowed' });
 
-  // Add Edge Caching: Cache for 1 hour, revalidate in background if up to 10 mins old
-  res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=600');
+  // Add Edge Caching: Cache for 1 day, revalidate in background
+  res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate=3600');
 
   const id = req.query.id || 'all';
   let dateStr = req.query.date;

@@ -96,9 +96,9 @@ export default async function handler(req, res) {
   try {
     if (fs.existsSync(cachePath)) {
       const stats = fs.statSync(cachePath);
-      if (new Date().getTime() - new Date(stats.mtime).getTime() < 24 * 60 * 60 * 1000) {
+      if (new Date().getTime() - new Date(stats.mtime).getTime() < 14 * 24 * 60 * 60 * 1000) {
         const cachedData = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
-        res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate=3600');
+        res.setHeader('Cache-Control', 's-maxage=1209600, stale-while-revalidate=86400');
         return res.status(200).json({ ...cachedData, fromCache: true });
       }
     }
@@ -109,7 +109,7 @@ export default async function handler(req, res) {
     const result = await fetchWithRetry(username);
     
     // 3. If successful, set long cache and save
-    res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate=3600');
+    res.setHeader('Cache-Control', 's-maxage=1209600, stale-while-revalidate=86400');
     try {
       fs.writeFileSync(cachePath, JSON.stringify(result));
     } catch (e) {}
