@@ -109,7 +109,6 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
               className={`cafe-chip ${selectedCafeId === cafe.id ? 'active' : ''} ${!cafe.available ? 'disabled' : ''}`}
               onClick={() => setSelectedCafeId(cafe.id)}
             >
-              <Utensils size={14} style={{ opacity: 0.7 }} />
               {cafe.name}
               {cafe.hasJeyuk && <span className="jeyuk-badge">🔥 제육</span>}
             </div>
