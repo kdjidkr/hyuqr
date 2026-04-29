@@ -121,10 +121,10 @@ export default async function handler(req, res) {
       const arrDateKst = new Date(nowKst.getTime() + secsLeft * 1000);
       return {
         subwayId: String(tr.subwayId),
-        updnLine: tr.updnLine,
+        updnLine: (tr.updnLine || '').trim(),
         dest: tr.bstatnNm,
         arrTime: `${String(arrDateKst.getHours()).padStart(2, '0')}:${String(arrDateKst.getMinutes()).padStart(2, '0')}`,
-        btrainNo: tr.btrainNo,
+        btrainNo: tr.btrainNo ? String(parseInt(tr.btrainNo.replace(/[^0-9]/g, ''), 10)) : '',
         isRealtime: true,
       };
     });
@@ -167,7 +167,7 @@ export default async function handler(req, res) {
                 updnLine: updnLine,
                 dest: r.destination,
                 arrTime: r.time.substring(0, 5),
-                trainNo: r.train_no,
+                trainNo: r.train_no ? String(parseInt(r.train_no.replace(/[^0-9]/g, ''), 10)) : '',
                 isRealtime: false,
               });
             });
@@ -184,10 +184,11 @@ export default async function handler(req, res) {
           const ttData = await ttRes.json();
           if (ttData.SearchSTNTimeTableByIDService) {
             const rows = ttData.SearchSTNTimeTableByIDService.row || [];
-            console.log(`[Subway API] Line 4 (${upDown === '1' ? 'Up' : 'Down'}): Found ${rows.length} rows`);
+
             rows.forEach(r => {
               const updnLine = upDown === '1' ? '상행' : '하행';
-              const trainId = `1004-${updnLine}-${r.TRAIN_NO}`;
+              const normTrainNo = r.TRAIN_NO ? String(parseInt(r.TRAIN_NO.replace(/[^0-9]/g, ''), 10)) : '';
+              const trainId = `1004-${updnLine}-${normTrainNo}`;
               
               // Map Danggogae to Bulamsan for frontend consistency
               let destination = r.SUBWAYENAME;
@@ -200,7 +201,7 @@ export default async function handler(req, res) {
                   updnLine: updnLine,
                   dest: destination,
                   arrTime: r.ARRIVETIME.substring(0, 5),
-                  trainNo: r.TRAIN_NO,
+                  trainNo: normTrainNo,
                   isRealtime: false,
                 });
               }
@@ -217,7 +218,7 @@ export default async function handler(req, res) {
     const rtTrainKeys = new Set(rtArrivals.map(a => `${a.subwayId}-${a.updnLine}-${a.btrainNo}`));
     
     const nowHHMM = `${String(hour).padStart(2, '0')}:${String(nowKst.getMinutes()).padStart(2, '0')}`;
-    console.log(`[Subway API] DayTag: ${dayTag}, Time: ${nowHHMM}`);
+
     
     timetableCache[dayTag].data.forEach(tt => {
       const keyPrefix = `${tt.subwayId}-${tt.updnLine}-`;
@@ -234,11 +235,15 @@ export default async function handler(req, res) {
 
       const mMinus = toTimeKey(h, m - 1);
       const mPlus = toTimeKey(h, m + 1);
+      const mMinus2 = toTimeKey(h, m - 2);
+      const mPlus2 = toTimeKey(h, m + 2);
 
       const isDuplicate = rtTrainKeys.has(trainKey) ||
         rtTimeKeys.has(timeKey) ||
         rtTimeKeys.has(mMinus) ||
-        rtTimeKeys.has(mPlus);
+        rtTimeKeys.has(mPlus) ||
+        rtTimeKeys.has(mMinus2) ||
+        rtTimeKeys.has(mPlus2);
 
       if (!isDuplicate && tt.arrTime >= nowHHMM) {
         combined.push(tt);
@@ -251,7 +256,7 @@ export default async function handler(req, res) {
 
     const line4Count = combined.filter(c => c.subwayId === '1004').length;
     const suinCount = combined.filter(c => c.subwayId === '1075').length;
-    console.log(`[Subway API] Final Response -> Line 4: ${line4Count}, Suin: ${suinCount}`);
+
 
     subwayCache = { arrivals: combined, isHoliday };
     subwayCacheTime = nowMs;
