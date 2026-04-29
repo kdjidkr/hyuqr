@@ -1,10 +1,10 @@
 import * as cheerio from 'cheerio';
 
 const CAFES = [
-  { id: 're12', name: '학식' },
-  { id: 're15', name: '창보' },
-  { id: 're11', name: '교직원' },
-  { id: 're13', name: '기숙사' }
+  { id: 're12', name: '학생식당' },
+  { id: 're15', name: '창업보육센터' },
+  { id: 're11', name: '교직원식당' },
+  { id: 're13', name: '기숙사식당' }
 ];
 
 async function scrapeCafe(cafeId, dateStr) {
