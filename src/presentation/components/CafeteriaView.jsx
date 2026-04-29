@@ -4,6 +4,32 @@ import { ChevronLeft, ChevronRight, Clock, Bell } from 'lucide-react';
 import { getKSTDate } from '../../utils/time.js';
 import { AlarmSettings } from './AlarmSettings.jsx';
 
+function MenuItemLine({ html }) {
+  const wrapRef = useRef(null);
+  const spanRef = useRef(null);
+  const [offset, setOffset] = useState(0);
+
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    const span = spanRef.current;
+    if (wrap && span) {
+      const overflow = span.scrollWidth - wrap.clientWidth;
+      setOffset(overflow > 0 ? -overflow : 0);
+    }
+  }, [html]);
+
+  return (
+    <div ref={wrapRef} className="menu-item-line">
+      <span
+        ref={spanRef}
+        className={offset < 0 ? 'menu-item-marquee' : ''}
+        style={offset < 0 ? { '--marquee-offset': `${offset}px` } : undefined}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    </div>
+  );
+}
+
 const formatDate = (targetDate) => {
   const days = ['일', '월', '화', '수', '목', '금', '토'];
   const month = targetDate.getUTCMonth() + 1;
@@ -168,7 +194,11 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
                                 return (
                                   <div key={i} className={cardClass}>
                                     {m.price && <div className="menu-price">{m.price}</div>}
-                                    <div className="menu-items" dangerouslySetInnerHTML={{ __html: m.menu }} />
+                                    <div className="menu-items">
+                                      {m.menu.split('\n').map((line, idx) => (
+                                        <MenuItemLine key={idx} html={line} />
+                                      ))}
+                                    </div>
                                     {hoursText && (
                                       <div className="menu-hours menu-hours--card">
                                         <Clock size={12} />
