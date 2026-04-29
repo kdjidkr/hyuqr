@@ -1,14 +1,75 @@
+import fs from 'fs';
+import path from 'path';
+
 let subwayCache = null;
 let subwayCacheTime = 0;
 const CACHE_TTL = 2 * 60 * 1000; // 2 minutes
 
-// Timetable cache (stores the entire day's schedule)
-let timetableCache = { data: null, date: null };
+// Timetable cache (stores day-type schedules for 7 days)
+let timetableCache = {
+  '1': { data: null, lastUpdated: 0 },
+  '2': { data: null, lastUpdated: 0 },
+  '3': { data: null, lastUpdated: 0 }
+};
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+// Korean Public Holidays 2026 (Base fallback)
+const HOLIDAYS_2026 = [
+  '2026-01-01', '2026-02-16', '2026-02-17', '2026-02-18', '2026-03-01', '2026-03-02',
+  '2026-05-05', '2026-05-24', '2026-05-25', '2026-06-06', '2026-08-15', '2026-08-17',
+  '2026-09-24', '2026-09-25', '2026-09-26', '2026-10-03', '2026-10-05', '2026-10-09',
+  '2026-12-25'
+];
+
+async function getHolidays(year) {
+  const cacheDir = path.join(process.cwd(), 'api', 'cache');
+  if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
+  const cachePath = path.join(cacheDir, `holidays_${year}.json`);
+
+  let cache = null;
+  if (fs.existsSync(cachePath)) {
+    try {
+      cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
+      // Refresh once a month (30 days)
+      if (Date.now() - cache.lastUpdated < 30 * 24 * 60 * 60 * 1000) {
+        return cache.data;
+      }
+    } catch (e) { console.error('Holiday cache read error:', e); }
+  }
+
+  try {
+    const key = process.env.HOLIDAY_KEY;
+    if (!key) throw new Error('HOLIDAY_KEY not configured');
+    
+    const url = `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo?ServiceKey=${key}&solYear=${year}&_type=json&numOfRows=100`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    const json = await res.json();
+    
+    if (json.response?.header?.resultCode === '00') {
+      let items = json.response.body?.items?.item || [];
+      if (!Array.isArray(items)) items = [items];
+      
+      const holidayDates = items
+        .filter(item => item.isHoliday === 'Y')
+        .map(item => {
+          const s = String(item.locdate);
+          return `${s.substring(0, 4)}-${s.substring(4, 6)}-${s.substring(6, 8)}`;
+        });
+      
+      const uniqueHolidays = Array.from(new Set(holidayDates)).sort();
+      fs.writeFileSync(cachePath, JSON.stringify({ data: uniqueHolidays, lastUpdated: Date.now() }));
+      return uniqueHolidays;
+    }
+  } catch (e) {
+    console.error('[Subway API] Holiday fetch failed:', e.message);
+  }
+
+  return cache ? cache.data : (year === 2026 ? HOLIDAYS_2026 : []);
+}
 
 // Station codes for SearchSTNTimeTableByIDService
 const STATION_CODES = {
   '1004': '1755', // Line 4
-  '1075': '1830', // Suin-Bundang
 };
 
 export default async function handler(req, res) {
@@ -22,7 +83,6 @@ export default async function handler(req, res) {
   const nowKst = new Date(now.getTime() + (kstOffset + now.getTimezoneOffset()) * 60000);
   const hour = nowKst.getHours();
   const nowMs = now.getTime();
-  const todayStr = nowKst.toISOString().split('T')[0];
 
   // Only query the API between 05:00–24:00
   if (hour < 5 || hour >= 24) {
@@ -37,32 +97,30 @@ export default async function handler(req, res) {
   const key = process.env.SUBWAY_KEY;
   if (!key) return res.status(500).json({ error: 'SUBWAY_KEY env var not configured' });
 
+  // 1. Fetch Realtime Data (Always from API for live status)
+  let rtArrivals = [];
   try {
-    // 1. Fetch Realtime Data
     const rtUrl = `http://swopenAPI.seoul.go.kr/api/subway/${key}/json/realtimeStationArrival/0/100/${encodeURIComponent('한대앞')}`;
     const rtRes = await fetch(rtUrl, { signal: AbortSignal.timeout(5000) });
     const rtData = await rtRes.json();
     
-    const rtArrivals = (rtData.realtimeArrivalList || []).map(tr => {
+    rtArrivals = (rtData.realtimeArrivalList || []).map(tr => {
       let secsLeft = parseInt(tr.barvlDt || '0', 10);
       if (secsLeft === 0) {
         const msg = tr.arvlMsg2 || '';
         if (msg.includes('진입')) secsLeft = 30;
         else if (msg.includes('도착')) secsLeft = 60;
         else if (msg.includes('출발')) secsLeft = 90;
-        else if (tr.arvlCd === '5') secsLeft = 120; // Previous station departed
-        else if (tr.arvlCd === '4') secsLeft = 180; // Previous station arrived
+        else if (tr.arvlCd === '5') secsLeft = 120;
+        else if (tr.arvlCd === '4') secsLeft = 180;
         else {
           const match = msg.match(/\[(\d+)\]번째 전역/);
-          if (match) {
-            // Ansan/Suin lines usually take about 2 mins (120s) per station
-            secsLeft = parseInt(match[1], 10) * 120;
-          }
+          if (match) secsLeft = parseInt(match[1], 10) * 120;
         }
       }
       const arrDateKst = new Date(nowKst.getTime() + secsLeft * 1000);
       return {
-        subwayId: tr.subwayId,
+        subwayId: String(tr.subwayId),
         updnLine: tr.updnLine,
         dest: tr.bstatnNm,
         arrTime: `${String(arrDateKst.getHours()).padStart(2, '0')}:${String(arrDateKst.getMinutes()).padStart(2, '0')}`,
@@ -70,52 +128,98 @@ export default async function handler(req, res) {
         isRealtime: true,
       };
     });
+  } catch (e) {
+    console.warn('[Subway API] Realtime fetch failed, showing timetable only:', e.message);
+  }
 
-    // 2. Fetch Timetable if needed (once per day)
-    if (timetableCache.date !== todayStr) {
-      const dayTag = [0, 6].includes(nowKst.getDay()) ? (nowKst.getDay() === 0 ? '3' : '2') : '1';
+  try {
+    // 2. Load/Fetch Timetables
+    const year = nowKst.getFullYear();
+    const holidays = await getHolidays(year);
+    const yyyymmdd = `${year}-${String(nowKst.getMonth() + 1).padStart(2, '0')}-${String(nowKst.getDate()).padStart(2, '0')}`;
+    const isHoliday = holidays.includes(yyyymmdd);
+    const day = nowKst.getDay();
+    
+    let dayTag = '1'; // Weekday
+    if (day === 0 || isHoliday) dayTag = '3'; // Sunday/Holiday
+    else if (day === 6) dayTag = '2'; // Saturday
+
+    const cacheEntry = timetableCache[dayTag];
+
+    // Update timetable cache if empty or older than 1 week
+    if (!cacheEntry.data || nowMs - cacheEntry.lastUpdated > WEEK_MS) {
       const ttResults = [];
       const seenTrains = new Set();
       
-      // Fetch for both lines and both directions
-      for (const [subId, stCode] of Object.entries(STATION_CODES)) {
-        for (const upDown of ['1', '2']) {
-          const ttUrl = `http://openAPI.seoul.go.kr:8088/${key}/json/SearchSTNTimeTableByIDService/1/500/${stCode}/${dayTag}/${upDown}/`;
-          try {
-            const ttRes = await fetch(ttUrl, { signal: AbortSignal.timeout(3000) });
-            const ttData = await ttRes.json();
-            const rows = ttData.SearchSTNTimeTableByIDService?.row || [];
+      // A. Suin-Bundang (Local Data)
+      try {
+        const localPath = path.join(process.cwd(), 'api', '_lib', 'suin_timetable.json');
+        if (fs.existsSync(localPath)) {
+          const localData = JSON.parse(fs.readFileSync(localPath, 'utf8'));
+          const dayType = dayTag === '1' ? 'weekday' : 'holiday';
+          const suinData = localData[dayType];
+          
+          ['upward', 'downward'].forEach(dir => {
+            const updnLine = dir === 'upward' ? '상행' : '하행';
+            (suinData[dir] || []).forEach(r => {
+              ttResults.push({
+                subwayId: '1075',
+                updnLine: updnLine,
+                dest: r.destination,
+                arrTime: r.time.substring(0, 5),
+                trainNo: r.train_no,
+                isRealtime: false,
+              });
+            });
+          });
+        }
+      } catch (e) { console.error('Local Suin timetable load failed:', e); }
+
+      // B. Line 4 (External API)
+      const stCodeLine4 = STATION_CODES['1004'];
+      for (const upDown of ['1', '2']) {
+        const ttUrl = `http://openAPI.seoul.go.kr:8088/${key}/json/SearchSTNTimeTableByIDService/1/1000/${stCodeLine4}/${dayTag}/${upDown}/`;
+        try {
+          const ttRes = await fetch(ttUrl, { signal: AbortSignal.timeout(5000) });
+          const ttData = await ttRes.json();
+          if (ttData.SearchSTNTimeTableByIDService) {
+            const rows = ttData.SearchSTNTimeTableByIDService.row || [];
+            console.log(`[Subway API] Line 4 (${upDown === '1' ? 'Up' : 'Down'}): Found ${rows.length} rows`);
             rows.forEach(r => {
-              const trainId = `${subId}-${upDown}-${r.TRAIN_NO}-${r.ARRIVETIME}`;
+              const updnLine = upDown === '1' ? '상행' : '하행';
+              const trainId = `1004-${updnLine}-${r.TRAIN_NO}`;
+              
+              // Map Danggogae to Bulamsan for frontend consistency
+              let destination = r.SUBWAYENAME;
+              if (destination === '당고개') destination = '불암산';
+              
               if (!seenTrains.has(trainId)) {
                 seenTrains.add(trainId);
                 ttResults.push({
-                  subwayId: subId,
-                  updnLine: upDown === '1' ? '상행' : '하행',
-                  dest: r.SUBWAYENAME,
+                  subwayId: '1004',
+                  updnLine: updnLine,
+                  dest: destination,
                   arrTime: r.ARRIVETIME.substring(0, 5),
                   trainNo: r.TRAIN_NO,
                   isRealtime: false,
                 });
               }
             });
-          } catch (e) { console.error(`Timetable fetch failed for ${stCode}-${upDown}:`, e); }
-        }
+          }
+        } catch (e) { console.error(`Line 4 timetable fetch failed:`, e); }
       }
-      timetableCache = { data: ttResults, date: todayStr };
+      timetableCache[dayTag] = { data: ttResults, lastUpdated: nowMs };
     }
 
-    // 3. Merge: Realtime takes precedence, then add future timetable entries
+    // 3. Merge: Realtime priority
     const combined = [...rtArrivals];
-    // For deduplication, we use:
-    // 1. Time-based keys (with +/- 1 min fuzzy match)
-    // 2. Train ID based keys
     const rtTimeKeys = new Set(rtArrivals.map(a => `${a.subwayId}-${a.updnLine}-${a.arrTime}`));
     const rtTrainKeys = new Set(rtArrivals.map(a => `${a.subwayId}-${a.updnLine}-${a.btrainNo}`));
     
-    // Add timetable entries that are NOT in realtime and are in the future
     const nowHHMM = `${String(hour).padStart(2, '0')}:${String(nowKst.getMinutes()).padStart(2, '0')}`;
-    timetableCache.data.forEach(tt => {
+    console.log(`[Subway API] DayTag: ${dayTag}, Time: ${nowHHMM}`);
+    
+    timetableCache[dayTag].data.forEach(tt => {
       const keyPrefix = `${tt.subwayId}-${tt.updnLine}-`;
       const timeKey = `${keyPrefix}${tt.arrTime}`;
       const trainKey = `${keyPrefix}${tt.trainNo}`;
@@ -129,15 +233,12 @@ export default async function handler(req, res) {
       };
 
       const mMinus = toTimeKey(h, m - 1);
-      const mPlus  = toTimeKey(h, m + 1);
+      const mPlus = toTimeKey(h, m + 1);
 
-      // Skip if:
-      // - Same Train ID exists in realtime
-      // - Same Time (or +/- 1 min) exists in realtime
-      const isDuplicate = rtTrainKeys.has(trainKey) || 
-                          rtTimeKeys.has(timeKey) || 
-                          rtTimeKeys.has(mMinus) || 
-                          rtTimeKeys.has(mPlus);
+      const isDuplicate = rtTrainKeys.has(trainKey) ||
+        rtTimeKeys.has(timeKey) ||
+        rtTimeKeys.has(mMinus) ||
+        rtTimeKeys.has(mPlus);
 
       if (!isDuplicate && tt.arrTime >= nowHHMM) {
         combined.push(tt);
@@ -148,10 +249,15 @@ export default async function handler(req, res) {
 
     combined.sort((a, b) => a.arrTime.localeCompare(b.arrTime));
 
-    subwayCache = { arrivals: combined };
+    const line4Count = combined.filter(c => c.subwayId === '1004').length;
+    const suinCount = combined.filter(c => c.subwayId === '1075').length;
+    console.log(`[Subway API] Final Response -> Line 4: ${line4Count}, Suin: ${suinCount}`);
+
+    subwayCache = { arrivals: combined, isHoliday };
     subwayCacheTime = nowMs;
     return res.status(200).json(subwayCache);
   } catch (err) {
+    console.error('[Subway API] Fatal Error:', err);
     if (subwayCache) return res.status(200).json({ ...subwayCache, stale: true });
     return res.status(500).json({ error: err.message });
   }
