@@ -9,12 +9,14 @@ import { CafeteriaView } from './presentation/components/CafeteriaView.jsx';
 import { ShuttleView }   from './presentation/components/ShuttleView.jsx';
 import { MiscView }      from './presentation/components/MiscView.jsx';
 import { BottomNav }     from './presentation/components/BottomNav.jsx';
+import { SplashScreen }  from './presentation/components/SplashScreen.jsx';
 
 const TAB_ORDER = ['cafe', 'shuttle', 'qr', 'misc'];
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('cafe');
   const [slideDir, setSlideDir] = useState('right');
+  const [splashDone, setSplashDone] = useState(false);
   const { user, loading, login, relogin, logout, updateUser } = useAuth();
   const { menuDate, cafes, menuLoading, changeDate } = useMenu();
 
@@ -31,16 +33,11 @@ export default function App() {
     setActiveTab(tab);
   }, [activeTab]);
 
-  if (loading) {
-    return (
-      <div className="loader-overlay">
-        <div className="loader-spinner" />
-        <p style={{ color: 'var(--text-secondary)' }}>한양대 연동 중...</p>
-      </div>
-    );
-  }
-
   return (
+    <>
+      {!splashDone && (
+        <SplashScreen ready={!loading} onDone={() => setSplashDone(true)} />
+      )}
     <div className="app-container">
       <div key={activeTab} className={`main-content tab-slide-${slideDir}`}>
         {activeTab === 'qr' ? (
@@ -69,5 +66,6 @@ export default function App() {
       </div>
       <BottomNav activeTab={activeTab} setActiveTab={handleTabChange} />
     </div>
+    </>
   );
 }
