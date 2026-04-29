@@ -595,8 +595,8 @@ p.subtitle {
   top: -1.25rem;
   z-index: 100;
   background: #f8fafc; /* 앱 배경색과 동일한 불투명 색상 */
-  padding: 1.25rem 0 1rem;
-  margin: -1.25rem 0 0.5rem;
+  padding: 1.25rem 0 0.4rem;
+  margin: -1.25rem 0 0.35rem;
   /* 하단에 살짝 그림자를 주어 경계를 명확히 함 */
   box-shadow: 0 4px 6px -1px rgba(248, 250, 252, 1), 0 10px 15px -3px rgba(0, 0, 0, 0.02);
 }
@@ -641,19 +641,20 @@ p.subtitle {
   flex-wrap: wrap;
   justify-content: center;
   gap: 6px;
-  padding: 0 0 0.25rem;
+  padding: 0;
   margin-bottom: 0;
 }
 
 
 
 .cafe-chip {
-  flex: 0 0 auto;
-  padding: 0.5rem 1rem;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0.5rem 0.15rem;
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: var(--radius-card);
-  font-size: 0.85rem;
+  font-size: clamp(0.65rem, 3.3vw, 0.85rem);
   font-weight: 600;
   color: var(--color-text-sub);
   cursor: pointer;
@@ -661,7 +662,10 @@ p.subtitle {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .cafe-chip:hover {
