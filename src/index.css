@@ -738,7 +738,8 @@ p.subtitle {
 
 .alarm-toggle {
   position: relative;
-  display: inline-block;
+  display: flex;
+  align-items: center;
   width: 44px;
   height: 24px;
   flex-shrink: 0;
@@ -997,11 +998,10 @@ p.subtitle {
   position: sticky;
   top: -1.25rem;
   z-index: 100;
-  background: #f8fafc; /* 앱 배경색과 동일한 불투명 색상 */
+  background: var(--color-surface);
   padding: 1.25rem 0 0.4rem;
   margin: -1.25rem 0 0.35rem;
-  /* 하단에 살짝 그림자를 주어 경계를 명확히 함 */
-  box-shadow: 0 4px 6px -1px rgba(248, 250, 252, 1), 0 10px 15px -3px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 6px -1px rgba(248, 249, 250, 1), 0 10px 15px -3px rgba(0, 0, 0, 0.02);
 }
 
 .date-controller {
@@ -1059,7 +1059,7 @@ p.subtitle {
   font-weight: 600;
   color: var(--color-text-sub);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color, background-color, border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   display: flex;
   align-items: center;
@@ -1067,12 +1067,12 @@ p.subtitle {
   gap: 0.3rem;
   white-space: nowrap;
   overflow: visible;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .cafe-chip:hover {
   border-color: var(--hyu-blue-light);
   color: var(--color-primary);
-  transform: translateY(-1px);
 }
 
 .cafe-chip.active {
@@ -1138,17 +1138,31 @@ p.subtitle {
 
 .menu-items {
   font-size: 0.95rem;
-  line-height: 1.8;
   color: var(--color-text-main);
-  word-break: keep-all;
-  white-space: pre-line;
   padding-left: 0.25rem;
+  padding-right: 4.5rem;
+}
+
+.menu-item-line {
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 1.8;
+}
+
+@keyframes menu-marquee {
+  0%, 10%   { transform: translateX(0); }
+  90%, 100% { transform: translateX(var(--marquee-offset)); }
+}
+
+.menu-item-marquee {
+  display: inline-block;
+  animation: menu-marquee 4s ease-in-out infinite alternate;
+  animation-delay: 0.8s;
 }
 
 .menu-items b {
   font-size: 1rem;
   display: inline-block;
-  margin-bottom: 2px;
 }
 
 .menu-price {
