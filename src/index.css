@@ -1140,24 +1140,48 @@ p.subtitle {
   font-size: 0.95rem;
   color: var(--color-text-main);
   padding-left: 0.25rem;
-  padding-right: 4.5rem;
+  padding-right: 6.5rem;
 }
 
 .menu-item-line {
-  overflow: hidden;
+  display: flex;
+  align-items: baseline;
   white-space: nowrap;
   line-height: 1.8;
 }
 
-@keyframes menu-marquee {
-  0%, 10%   { transform: translateX(0); }
-  90%, 100% { transform: translateX(var(--marquee-offset)); }
+.menu-item-bullet {
+  flex-shrink: 0;
+  margin-right: 0.4rem;
 }
 
-.menu-item-marquee {
+/* 텍스트 스크롤 영역 — 불릿 제외한 나머지 너비를 가짐 */
+.menu-item-scroll-wrap {
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+
+/* 항상 inline-block — scrollWidth 측정이 정확해짐 */
+.menu-item-text {
   display: inline-block;
-  animation: menu-marquee 4s ease-in-out infinite alternate;
-  animation-delay: 0.8s;
+}
+
+@keyframes menu-marquee-loop {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* 두 벌의 텍스트를 inline-flex로 이어붙여 seamless loop */
+.menu-item-marquee-track {
+  display: inline-flex;
+  animation: menu-marquee-loop linear infinite;
+  will-change: transform;
+}
+
+/* 각 복사본 뒤에 한 글자 간격 — 두 벌 모두 동일해야 -50% loop가 seamless */
+.menu-item-gap {
+  padding-right: 1em;
 }
 
 .menu-items b {
@@ -1175,6 +1199,7 @@ p.subtitle {
   background: rgba(14, 74, 132, 0.05);
   padding: 4px 10px;
   border-radius: var(--radius-sm);
+  z-index: 1;
 }
 
 .menu-hours {
