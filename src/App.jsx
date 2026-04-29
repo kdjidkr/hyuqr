@@ -10,8 +10,11 @@ import { ShuttleView }   from './presentation/components/ShuttleView.jsx';
 import { MiscView }      from './presentation/components/MiscView.jsx';
 import { BottomNav }     from './presentation/components/BottomNav.jsx';
 
+const TAB_ORDER = ['cafe', 'shuttle', 'qr', 'misc'];
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('cafe');
+  const [slideDir, setSlideDir] = useState('right');
   const { user, loading, login, relogin, logout, updateUser } = useAuth();
   const { menuDate, cafes, menuLoading, changeDate } = useMenu();
 
@@ -20,6 +23,13 @@ export default function App() {
   const handleNameDiscovered = useCallback((name) => {
     updateUser({ name });
   }, [updateUser]);
+
+  const handleTabChange = useCallback((tab) => {
+    const newIdx = TAB_ORDER.indexOf(tab);
+    const curIdx = TAB_ORDER.indexOf(activeTab);
+    setSlideDir(newIdx >= curIdx ? 'right' : 'left');
+    setActiveTab(tab);
+  }, [activeTab]);
 
   if (loading) {
     return (
@@ -32,7 +42,7 @@ export default function App() {
 
   return (
     <div className="app-container">
-      <div className="main-content">
+      <div key={activeTab} className={`main-content tab-slide-${slideDir}`}>
         {activeTab === 'qr' ? (
           user ? (
             <QRView
@@ -57,7 +67,7 @@ export default function App() {
           <MiscView />
         )}
       </div>
-      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
+      <BottomNav activeTab={activeTab} setActiveTab={handleTabChange} />
     </div>
   );
 }

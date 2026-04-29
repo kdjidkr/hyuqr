@@ -365,6 +365,19 @@ p.subtitle {
   }
 }
 
+@keyframes slideInFromRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInFromLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.tab-slide-right { animation: slideInFromRight 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+.tab-slide-left  { animation: slideInFromLeft  0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+
 @keyframes popIn {
   0% {
     opacity: 0;
@@ -571,9 +584,10 @@ p.subtitle {
   gap: 4px;
   color: var(--color-text-hint);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease;
   flex: 1;
   padding: 8px 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .nav-item.active {
@@ -774,9 +788,10 @@ p.subtitle {
 
 .alarm-input {
   flex: 1;
+  height: 40px;
   border: 1.5px solid #e2e8f0;
   border-radius: var(--radius-card);
-  padding: var(--space-sm) var(--space-element);
+  padding: 0 var(--space-element);
   font-size: var(--font-size-body2);
   color: var(--color-text-main);
   background: var(--color-surface);
@@ -844,9 +859,10 @@ p.subtitle {
 
 .alarm-time-select {
   width: 100%;
+  height: 40px;
   border: 1.5px solid #e2e8f0;
   border-radius: var(--radius-card);
-  padding: var(--space-sm) var(--space-element);
+  padding: 0 var(--space-element);
   font-size: var(--font-size-body2);
   font-weight: var(--font-weight-h2);
   color: var(--color-text-main);
@@ -982,8 +998,8 @@ p.subtitle {
   top: -1.25rem;
   z-index: 100;
   background: #f8fafc; /* 앱 배경색과 동일한 불투명 색상 */
-  padding: 1.25rem 0 1rem;
-  margin: -1.25rem 0 0.5rem;
+  padding: 1.25rem 0 0.4rem;
+  margin: -1.25rem 0 0.35rem;
   /* 하단에 살짝 그림자를 주어 경계를 명확히 함 */
   box-shadow: 0 4px 6px -1px rgba(248, 250, 252, 1), 0 10px 15px -3px rgba(0, 0, 0, 0.02);
 }
@@ -1026,7 +1042,7 @@ p.subtitle {
 .cafe-selector {
   display: flex;
   gap: 6px;
-  padding: 0 0 0.25rem;
+  padding: 10px 0 0;
   margin-bottom: 0;
 }
 
@@ -1035,11 +1051,11 @@ p.subtitle {
 .cafe-chip {
   flex: 1 1 0;
   min-width: 0;
-  padding: 0.5rem 0.25rem;
+  padding: 0.5rem 0.15rem;
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: var(--radius-card);
-  font-size: 0.85rem;
+  font-size: clamp(0.65rem, 3.3vw, 0.85rem);
   font-weight: 600;
   color: var(--color-text-sub);
   cursor: pointer;
@@ -1049,6 +1065,8 @@ p.subtitle {
   align-items: center;
   justify-content: center;
   gap: 0.3rem;
+  white-space: nowrap;
+  overflow: visible;
 }
 
 .cafe-chip:hover {
@@ -1151,6 +1169,13 @@ p.subtitle {
   gap: 0.25rem;
   font-size: 0.75rem;
   color: var(--color-text-hint);
+}
+
+.menu-hours--card {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  padding-left: 0.2rem;
+  border-top: 1px solid #e2e8f0;
 }
 
 .menu-card--jeyuk {
@@ -1271,7 +1296,7 @@ p.subtitle {
 
 .misc-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 
@@ -1279,10 +1304,12 @@ p.subtitle {
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: var(--radius-card);
-  padding: 1.25rem;
+  padding: 1.5rem 1rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
+  text-align: center;
+  gap: 0.75rem;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
@@ -1325,7 +1352,7 @@ p.subtitle {
 }
 
 .misc-card-title {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 800;
   color: var(--color-text-main);
 }

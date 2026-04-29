@@ -150,12 +150,6 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
                               <span className="menu-icon">{getMenuIcon(type)}</span>
                               <span className="accordion-title">{type}</span>
                               <span className="accordion-count">{menus.length}개 메뉴</span>
-                              {hoursText && (
-                                <span className="menu-hours">
-                                  <Clock size={12} />
-                                  <span>{hoursText}</span>
-                                </span>
-                              )}
                             </div>
                             <div className="accordion-chevron">
                               <ChevronRight
@@ -175,6 +169,12 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
                                   <div key={i} className={cardClass}>
                                     {m.price && <div className="menu-price">{m.price}</div>}
                                     <div className="menu-items" dangerouslySetInnerHTML={{ __html: m.menu }} />
+                                    {hoursText && (
+                                      <div className="menu-hours menu-hours--card">
+                                        <Clock size={12} />
+                                        <span>{hoursText}</span>
+                                      </div>
+                                    )}
                                   </div>
                                 );
                               })}

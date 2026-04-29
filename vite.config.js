@@ -19,8 +19,8 @@ export default defineConfig(({ mode }) => {
           maximumFileSizeToCacheInBytes: 3000000
         },
         manifest: {
-          name: 'HYU QR Pass',
-          short_name: 'HYU QR',
+          name: '하냥냥',
+          short_name: '하냥냥',
           description: '빠른 한양대 도서관 입장을 위한 QR 패스',
           theme_color: '#0e4a84',
           background_color: '#ffffff',

@@ -86,20 +86,12 @@ export function AlarmSettings({ onClose }) {
           </button>
         </div>
 
-        {/* 특별 메뉴 알림 */}
+        {/* 학식 알림 */}
         <div className="alarm-section">
-          <div className="alarm-section-title">특별 메뉴 알림</div>
           <div className="alarm-row">
-            <span>"제육"이 포함된 알림 받기</span>
+            <span>학식 관련 알림 받기</span>
             <label className="alarm-toggle">
               <input type="checkbox" checked={settings.jeyukAlert} onChange={() => toggle('jeyukAlert')} />
-              <span className="alarm-toggle-slider" />
-            </label>
-          </div>
-          <div className="alarm-row">
-            <span>"천아밥" 메뉴 확인을 위한 알림 받기</span>
-            <label className="alarm-toggle">
-              <input type="checkbox" checked={settings.cheonaAlert} onChange={() => toggle('cheonaAlert')} />
               <span className="alarm-toggle-slider" />
             </label>
           </div>
