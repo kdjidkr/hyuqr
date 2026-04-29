@@ -69,20 +69,23 @@ const addMin = (t, n) => {
   return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
 };
 const curMin = () => { const n = new Date(); return n.getHours() * 60 + n.getMinutes(); };
-const dayType = () => {
-  const d = new Date().getDay();
+const dayType = (isHolidayServer) => {
+  const now = new Date();
+  const kst = new Date(now.getTime() + (9 * 60 + now.getTimezoneOffset()) * 60000);
+  const d = kst.getDay();
+  if (isHolidayServer === true) return '주말';
   return (d === 0 || d === 6) ? '주말' : '평일';
 };
 const pad2 = (n) => String(n).padStart(2, '0');
 const intToHHMM = (h, m) => `${pad2(h)}:${pad2(m)}`;
 
 // ── Schedule computation ──────────────────────────────────────────────────────
-function computeSchedule(allData, displayStop, nowMinutes) {
+function computeSchedule(allData, displayStop, nowMinutes, isHolidayServer) {
   const src = STOP_SOURCE[displayStop];
   let rows = allData.filter(d =>
     d['출발지'] === src &&
     d['기간']  === CURRENT_PERIOD &&
-    d['요일']  === dayType()
+    d['요일']  === dayType(isHolidayServer)
   );
 
   // For 중앙역 display stop, only show the 중앙역-loop shuttles
@@ -315,6 +318,7 @@ export default function ShuttleView() {
   const [allData,        setAllData]        = useState(null);
   const [subwayArrivals, setSubwayArrivals] = useState([]);
   const [subwayOffPeak,  setSubwayOffPeak]  = useState(false);
+  const [isHolidayServer, setIsHolidayServer] = useState(null);
   const [now,            setNow]            = useState(curMin());
   const [loadErr,        setLoadErr]        = useState(null);
   const [showTooltip,   setShowTooltip]    = useState(true);
@@ -356,6 +360,7 @@ export default function ShuttleView() {
       .then(d => {
         setSubwayArrivals(d.arrivals || []);
         setSubwayOffPeak(!!d.offPeak);
+        setIsHolidayServer(d.isHoliday ?? false);
       })
       .catch(() => {});
   }, []);
@@ -383,7 +388,7 @@ export default function ShuttleView() {
     );
   }
 
-  const schedule = computeSchedule(allData, stop, now);
+  const schedule = computeSchedule(allData, stop, now, isHolidayServer);
   // Index of the first upcoming shuttle (depMin >= now)
   const nextIdx  = schedule.findIndex(r => r.depMin >= now);
 
