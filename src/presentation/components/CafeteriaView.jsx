@@ -1,31 +1,48 @@
 // 컴포넌트: 날짜·식당 선택 및 아코디언 식단 목록 표시
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Clock, Bell } from 'lucide-react';
 import { getKSTDate } from '../../utils/time.js';
 import { AlarmSettings } from './AlarmSettings.jsx';
 
 function MenuItemLine({ html }) {
-  const wrapRef = useRef(null);
+  const scrollWrapRef = useRef(null);
   const spanRef = useRef(null);
-  const [offset, setOffset] = useState(0);
+  const [marquee, setMarquee] = useState(null);
 
-  useEffect(() => {
-    const wrap = wrapRef.current;
+  const hasBullet = html.startsWith('•');
+  const bullet  = hasBullet ? '•' : '';
+  const content = hasBullet ? html.slice(1).trimStart() : html;
+
+  useLayoutEffect(() => {
+    const wrap = scrollWrapRef.current;
     const span = spanRef.current;
-    if (wrap && span) {
-      const overflow = span.scrollWidth - wrap.clientWidth;
-      setOffset(overflow > 0 ? -overflow : 0);
+    if (!wrap || !span) return;
+    const dist = span.scrollWidth - wrap.clientWidth;
+    if (dist > 2) {
+      // 텍스트 너비 + 1em 간격(≈16px) 기준
+      setMarquee({ duration: Math.max(4, (span.scrollWidth + 16) / 30) });
+    } else {
+      setMarquee(null);
     }
   }, [html]);
 
   return (
-    <div ref={wrapRef} className="menu-item-line">
-      <span
-        ref={spanRef}
-        className={offset < 0 ? 'menu-item-marquee' : ''}
-        style={offset < 0 ? { '--marquee-offset': `${offset}px` } : undefined}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
+    <div className="menu-item-line">
+      {bullet && <span className="menu-item-bullet">{bullet}</span>}
+      <div ref={scrollWrapRef} className="menu-item-scroll-wrap">
+        <span
+          ref={spanRef}
+          className="menu-item-text"
+          style={marquee ? { position: 'absolute', visibility: 'hidden', pointerEvents: 'none' } : undefined}
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+        {marquee && (
+          <span className="menu-item-marquee-track" style={{ animationDuration: `${marquee.duration}s` }}>
+            <span className="menu-item-text menu-item-gap" dangerouslySetInnerHTML={{ __html: content }} />
+            <span className="menu-item-text menu-item-gap" aria-hidden="true" dangerouslySetInnerHTML={{ __html: content }} />
+          </span>
+        )}
+      </div>
     </div>
   );
 }
