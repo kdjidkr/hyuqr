@@ -78,9 +78,20 @@ async function scrapeCafe(cafeId, dateStr) {
       }
     });
 
-    return { id: cafeId, menus };
+    const hours = {};
+    const fullText = $('body').text().replace(/\s+/g, ' ');
+    const hoursSection = fullText.match(/운영시간(.{0,300})/);
+    if (hoursSection) {
+      const pattern = /(조식|중식|석식)[\s:]*(\d{1,2}:\d{2}\s*~\s*\d{1,2}:\d{2})/g;
+      let m;
+      while ((m = pattern.exec(hoursSection[0])) !== null) {
+        hours[m[1]] = m[2].replace(/\s+/g, ' ').trim();
+      }
+    }
+
+    return { id: cafeId, menus, hours };
   } catch (e) {
-    return { id: cafeId, menus: [], error: true };
+    return { id: cafeId, menus: [], hours: {}, error: true };
   }
 }
 
@@ -106,6 +117,7 @@ export default async function handler(req, res) {
       const data = CAFES.map((c, i) => ({
         ...c,
         menus: results[i].menus,
+        hours: results[i].hours ?? {},
         hasJeyuk: results[i].menus.some(m => m.menu.includes('제육')),
         available: results[i].menus.length > 0
       }));

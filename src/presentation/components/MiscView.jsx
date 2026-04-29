@@ -53,6 +53,16 @@ export function MiscView() {
             <span className="misc-card-desc">준비 중입니다</span>
           </div>
         </div>
+
+        <div className="misc-card disabled">
+          <div className="misc-icon-wrapper">
+            <LayoutGrid size={28} style={{ opacity: 0.2 }} />
+          </div>
+          <div className="misc-card-info">
+            <span className="misc-card-title">커밍순</span>
+            <span className="misc-card-desc">준비 중입니다</span>
+          </div>
+        </div>
       </div>
     </div>
   );

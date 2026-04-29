@@ -1,7 +1,8 @@
 // 컴포넌트: 날짜·식당 선택 및 아코디언 식단 목록 표시
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Utensils } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock, Bell } from 'lucide-react';
 import { getKSTDate } from '../../utils/time.js';
+import { AlarmSettings } from './AlarmSettings.jsx';
 
 const formatDate = (targetDate) => {
   const days = ['일', '월', '화', '수', '목', '금', '토'];
@@ -34,6 +35,7 @@ const getMenuIcon = (type) => {
 export function CafeteriaView({ date, changeDate, cafes, loading }) {
   const [selectedCafeId, setSelectedCafeId] = useState('re12');
   const [expandedGroups, setExpandedGroups] = useState({});
+  const [showAlarm, setShowAlarm] = useState(false);
   const listRef = useRef(null);
 
   const selectedCafe = cafes.find(c => c.id === selectedCafeId) || { menus: [] };
@@ -88,6 +90,10 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
 
   return (
     <div className="cafe-container">
+      <button className="alarm-fab" onClick={() => setShowAlarm(true)}>
+        <Bell size={22} />
+      </button>
+      {showAlarm && <AlarmSettings onClose={() => setShowAlarm(false)} />}
       <div className="cafe-sticky-header">
         <div className="date-controller">
           <button className="date-btn" onClick={() => changeDate(-1)} disabled={loading}>
@@ -131,33 +137,52 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
                 const isExpanded = expandedGroups[type];
                 return (
                   <div key={type} className="accordion-group" data-type={type}>
-                    <div
-                      className={`accordion-header ${isExpanded ? 'expanded' : ''}`}
-                      onClick={() => toggleGroup(type)}
-                    >
-                      <div className="accordion-title-area">
-                        <span className="menu-icon">{getMenuIcon(type)}</span>
-                        <span className="accordion-title">{type}</span>
-                        <span className="accordion-count">{menus.length}개 메뉴</span>
-                      </div>
-                      <div className="accordion-chevron">
-                        <ChevronRight
-                          style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }}
-                          size={20}
-                          color="#94a3b8"
-                        />
-                      </div>
-                    </div>
-                    <div className={`accordion-content ${isExpanded ? 'expanded' : ''}`}>
-                      <div className="accordion-inner">
-                        {menus.map((m, i) => (
-                          <div key={i} className="menu-card">
-                            <div className="menu-items" dangerouslySetInnerHTML={{ __html: m.menu }} />
-                            {m.price && <div className="menu-price">{m.price}</div>}
+                    {(() => {
+                      const mealKey = ['조식', '중식', '석식'].find(k => type.includes(k));
+                      const hoursText = mealKey ? selectedCafe.hours?.[mealKey] : null;
+                      return (
+                        <>
+                          <div
+                            className={`accordion-header ${isExpanded ? 'expanded' : ''}`}
+                            onClick={() => toggleGroup(type)}
+                          >
+                            <div className="accordion-title-area">
+                              <span className="menu-icon">{getMenuIcon(type)}</span>
+                              <span className="accordion-title">{type}</span>
+                              <span className="accordion-count">{menus.length}개 메뉴</span>
+                            </div>
+                            <div className="accordion-chevron">
+                              <ChevronRight
+                                style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }}
+                                size={20}
+                                color="#94a3b8"
+                              />
+                            </div>
                           </div>
-                        ))}
-                      </div>
-                    </div>
+                          <div className={`accordion-content ${isExpanded ? 'expanded' : ''}`}>
+                            <div className="accordion-inner">
+                              {menus.map((m, i) => {
+                                const hasJeyuk = m.menu.includes('제육');
+                                const isCheona = m.menu.includes('천원의아침밥');
+                                const cardClass = `menu-card${hasJeyuk ? ' menu-card--jeyuk' : ''}${isCheona ? ' menu-card--cheona' : ''}`;
+                                return (
+                                  <div key={i} className={cardClass}>
+                                    {m.price && <div className="menu-price">{m.price}</div>}
+                                    <div className="menu-items" dangerouslySetInnerHTML={{ __html: m.menu }} />
+                                    {hoursText && (
+                                      <div className="menu-hours menu-hours--card">
+                                        <Clock size={12} />
+                                        <span>{hoursText}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 );
               })
