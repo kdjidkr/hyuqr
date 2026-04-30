@@ -1,6 +1,6 @@
 // 컴포넌트: 체대 헬스장·인스타그램 등 기타 서비스 진입 그리드
 import React, { useState } from 'react';
-import { Dumbbell, LayoutGrid } from 'lucide-react';
+import { Dumbbell, LayoutGrid, ArrowUpRight } from 'lucide-react';
 import { GymTimetable } from './GymTimetable.jsx';
 import { InstagramListView } from './InstagramListView.jsx';
 
@@ -9,6 +9,16 @@ const InstagramIcon = ({ size = 24, color = 'currentColor' }) => (
     <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+  </svg>
+);
+
+const PianoIcon = ({ size = 24, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="2" />
+    <path d="M9 3v18" />
+    <path d="M15 3v18" />
+    <rect x="6" y="3" width="5" height="11" fill={color} stroke="none" />
+    <rect x="13" y="3" width="5" height="11" fill={color} stroke="none" />
   </svg>
 );
 
@@ -44,13 +54,15 @@ export function MiscView() {
           </div>
         </div>
 
-        <div className="misc-card disabled">
+        <div className="misc-card" onClick={() => window.open('https://hanjari.site', '_blank')}>
           <div className="misc-icon-wrapper">
-            <LayoutGrid size={28} style={{ opacity: 0.2 }} />
+            <PianoIcon size={28} color="#0EA5E9" />
           </div>
           <div className="misc-card-info">
-            <span className="misc-card-title">커밍순</span>
-            <span className="misc-card-desc">준비 중입니다</span>
+            <span className="misc-card-title">
+              동아리 <ArrowUpRight size={14} style={{ display: 'inline', marginLeft: '2px', verticalAlign: 'middle', opacity: 0.8 }} />
+            </span>
+            <span className="misc-card-desc">동아리 조회는 한자리</span>
           </div>
         </div>
 
