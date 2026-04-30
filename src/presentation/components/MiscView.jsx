@@ -54,7 +54,7 @@ export function MiscView() {
           </div>
         </div>
 
-        <div className="misc-card" onClick={() => window.open('https://hanjari.site', '_blank')}>
+        <div className="misc-card" onClick={() => window.location.href = 'https://hanjari.site'}>
           <div className="misc-icon-wrapper">
             <PianoIcon size={28} color="#0EA5E9" />
           </div>
