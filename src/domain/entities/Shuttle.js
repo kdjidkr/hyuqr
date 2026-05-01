@@ -22,7 +22,11 @@ export const SUBWAY_OPTS = [
 // ── 순수 헬퍼 함수 ── 
 export const toMin   = (t) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
 export const curMin  = ()  => { const n = new Date(); return n.getHours() * 60 + n.getMinutes(); };
-export const dayType = ()  => { const d = new Date().getDay(); return (d === 0 || d === 6) ? '주말' : '평일'; };
+export const dayType = (isHolidayServer)  => { 
+  if (isHolidayServer === true) return '주말';
+  const d = new Date().getDay(); 
+  return (d === 0 || d === 6) ? '주말' : '평일'; 
+};
 
 const pad2      = (n) => String(n).padStart(2, '0');
 const intToHHMM = (h, m) => `${pad2(h)}:${pad2(m)}`;
@@ -59,12 +63,12 @@ function arrivalInfo(displayStop, route) {
 }
 
 // 현재 시각 이후의 셔틀 5편 계산 (순수 함수)
-export function computeSchedule(allData, displayStop, nowMinutes) {
+export function computeSchedule(allData, displayStop, nowMinutes, isHolidayServer) {
   const src = STOP_SOURCE[displayStop];
   let rows = allData.filter(d =>
     d['출발지'] === src &&
     d['기간']   === CURRENT_PERIOD &&
-    d['요일']   === dayType()
+    d['요일']   === dayType(isHolidayServer)
   );
   if (displayStop === '중앙역') rows = rows.filter(d => d['노선기호'] === '중앙역');
 

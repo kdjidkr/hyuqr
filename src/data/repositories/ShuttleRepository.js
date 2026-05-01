@@ -11,7 +11,7 @@ export const createShuttleRepository = ({ shuttleDataSource }) => {
 
     getSubwayArrivals: async () => {
       const data = await shuttleDataSource.fetchSubwayArrivals();
-      return { arrivals: data.arrivals ?? [], offPeak: !!data.offPeak };
+      return { arrivals: data.arrivals ?? [], offPeak: !!data.offPeak, isHoliday: data.isHoliday ?? false };
     },
   };
 };
