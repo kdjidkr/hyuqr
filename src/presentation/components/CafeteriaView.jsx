@@ -206,8 +206,7 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
                             <div className="accordion-inner">
                               {menus.map((m, i) => {
                                 const hasJeyuk = m.menu.includes('제육');
-                                const isCheona = m.menu.includes('천원의아침밥');
-                                const cardClass = `menu-card${hasJeyuk ? ' menu-card--jeyuk' : ''}${isCheona ? ' menu-card--cheona' : ''}`;
+                                const cardClass = `menu-card${hasJeyuk ? ' menu-card--jeyuk' : ''}`;
                                 return (
                                   <div key={i} className={cardClass}>
                                     {m.price && <div className="menu-price">{m.price}</div>}
