@@ -16,7 +16,9 @@ export default defineConfig(({ mode }) => {
         includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'icons.svg'],
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-          maximumFileSizeToCacheInBytes: 3000000
+          maximumFileSizeToCacheInBytes: 3000000,
+          clientsClaim: true,
+          skipWaiting: true,
         },
         manifest: {
           name: '하냥냥',
