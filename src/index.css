@@ -1961,6 +1961,19 @@ p.subtitle {
   padding: 14px 14px 14px 4px;
 }
 
+.stt-subway-loader-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 2px;
+  height: 24px;
+}
+
+.stt-subway-loader {
+  color: #cbd5e1;
+  animation: spin 1s linear infinite;
+}
+
 .stt-subway-row {
   display: grid;
   grid-template-columns: 22px 1fr auto;

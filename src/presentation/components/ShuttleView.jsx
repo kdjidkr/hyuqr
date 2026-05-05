@@ -1,5 +1,6 @@
 // 컴포넌트: 셔틀버스 시간표 및 한대앞역 실시간 지하철 연결 정보 표시
 import { useState, useEffect, useRef } from 'react';
+import { Loader2 } from 'lucide-react';
 import { STOPS, SUBWAY_OPTS, connectingTrains } from '../../domain/entities/Shuttle.js';
 import { useShuttle } from '../hooks/useShuttle.js';
 
@@ -102,7 +103,7 @@ function SubwayDropdown({ selected, onChange }) {
 }
 
 // ── 시간표 행 ─────────────────────────────────────────────────────────────────
-function TimetableRow({ row, lineId, isNext, subwayArrivals, subwayOffPeak }) {
+function TimetableRow({ row, lineId, isNext, subwayArrivals, subwayOffPeak, isSubwayLoading }) {
   const opt    = SUBWAY_OPTS.find(o => o.id === lineId);
   const trains = row.subway ? connectingTrains(subwayArrivals, row.arr, lineId) : [];
   const noTrainReason = row.subway && trains.length === 0
@@ -134,7 +135,11 @@ function TimetableRow({ row, lineId, isNext, subwayArrivals, subwayOffPeak }) {
 
       <div className="stt-subway-col" style={{ paddingTop: isNext ? 26 : 14 }}>
         {row.subway ? (
-          trains.length > 0 ? trains.map((tr, i) => (
+          isSubwayLoading ? (
+            <div className="stt-subway-loader-wrap">
+              <Loader2 className="stt-subway-loader" size={16} />
+            </div>
+          ) : trains.length > 0 ? trains.map((tr, i) => (
             <div key={i} className="stt-subway-row">
               <LineBadge opt={opt} size={20} />
               <span className="stt-subway-dest">{tr.dest}행</span>
@@ -155,7 +160,7 @@ export function ShuttleView() {
     schedule, nextIdx,
     subwayArrivals, subwayOffPeak,
     needsSubway,
-    loadErr, isLoading,
+    loadErr, isLoading, isSubwayLoading,
   } = useShuttle();
 
   const [showTooltip, setShowTooltip] = useState(true);
@@ -218,6 +223,7 @@ export function ShuttleView() {
                 isNext={i === nextIdx && nextIdx !== -1}
                 subwayArrivals={subwayArrivals}
                 subwayOffPeak={subwayOffPeak}
+                isSubwayLoading={isSubwayLoading}
               />
             ))
           ) : (

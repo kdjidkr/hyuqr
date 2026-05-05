@@ -9,6 +9,7 @@ export function useShuttle() {
   const [allData,         setAllData]         = useState(null);
   const [subwayArrivals,  setSubwayArrivals]  = useState([]);
   const [subwayOffPeak,   setSubwayOffPeak]   = useState(false);
+  const [isSubwayLoading, setIsSubwayLoading] = useState(false);
   const [isHolidayServer, setIsHolidayServer] = useState(null);
   const [now,             setNow]             = useState(curMin);
   const [loadErr,         setLoadErr]         = useState(null);
@@ -32,13 +33,15 @@ export function useShuttle() {
   // 지하철 도착 정보 (2분 주기, 기숙사·셔틀콕만 필요)
   const needsSubway = stop === '기숙사' || stop === '셔틀콕';
   const fetchSubway = useCallback(() => {
+    setIsSubwayLoading(true);
     getSubwayArrivalsUseCase.execute()
       .then(d => { 
         setSubwayArrivals(d.arrivals); 
         setSubwayOffPeak(d.offPeak); 
         setIsHolidayServer(d.isHoliday ?? false);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setIsSubwayLoading(false));
   }, []);
 
   useEffect(() => {
@@ -62,5 +65,6 @@ export function useShuttle() {
     needsSubway,
     loadErr,
     isLoading: !allData && !loadErr,
+    isSubwayLoading,
   };
 }
