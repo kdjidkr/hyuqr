@@ -1,6 +1,6 @@
 // 컴포넌트: 셔틀버스 시간표 및 한대앞역 실시간 지하철 연결 정보 표시
 import { useState, useEffect, useRef } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ChevronDown } from 'lucide-react';
 import { STOPS, SUBWAY_OPTS, connectingTrains } from '../../domain/entities/Shuttle.js';
 import { useShuttle } from '../hooks/useShuttle.js';
 
@@ -161,28 +161,16 @@ export function ShuttleView() {
     subwayArrivals, subwayOffPeak,
     needsSubway,
     loadErr, isLoading, isSubwayLoading,
-    visibleCount, loadMore, isPageLoading,
+    visibleCount, loadMore,
   } = useShuttle();
 
   const [showTooltip, setShowTooltip] = useState(true);
   const [initialStop] = useState(stop);
-  const sentinelRef = useRef(null);
 
   useEffect(() => {
     const t = setTimeout(() => setShowTooltip(false), 2000);
     return () => clearTimeout(t);
   }, []);
-
-  useEffect(() => {
-    if (!sentinelRef.current) return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && schedule.length > visibleCount && !isPageLoading) {
-        loadMore();
-      }
-    }, { threshold: 0.1 });
-    observer.observe(sentinelRef.current);
-    return () => observer.disconnect();
-  }, [loadMore, schedule.length, visibleCount, isPageLoading]);
 
   if (loadErr)    return <div className="stt-container"><div className="stt-empty"><p>{loadErr}</p></div></div>;
   if (isLoading)  return <div className="stt-container"><div className="stt-empty"><p>불러오는 중…</p></div></div>;
@@ -241,8 +229,11 @@ export function ShuttleView() {
                 />
               ))}
               {schedule.length > visibleCount && (
-                <div ref={sentinelRef} style={{ height: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10 }}>
-                  <Loader2 className="stt-subway-loader" size={20} />
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0' }}>
+                  <button className="qr-refresh-btn" onClick={loadMore} style={{ width: 'auto', padding: '8px 24px' }}>
+                    <ChevronDown size={16} />
+                    정보 더 불러오기
+                  </button>
                 </div>
               )}
             </>
