@@ -2019,6 +2019,13 @@ p.subtitle {
   font-weight: 600;
 }
 
+.stt-empty.large {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .stt-lb {
   border-radius: 50%;
   display: flex;

@@ -227,7 +227,7 @@ export function ShuttleView() {
               />
             ))
           ) : (
-            <div className="stt-empty"><p>오늘 남은 셔틀이 없습니다</p></div>
+            <div className="stt-empty large"><p>오늘 남은 셔틀이 없습니다</p></div>
           )}
         </div>
       </div>
