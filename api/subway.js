@@ -227,6 +227,7 @@ export default async function handler(req, res) {
                 
                 let destination = r.destination;
                 if (lineId === '1004' && destination === '당고개') destination = '불암산';
+                if (lineId === '1075' && destination === '신인천') destination = '인천';
 
                 ttResults.push({
                   subwayId: lineId,
