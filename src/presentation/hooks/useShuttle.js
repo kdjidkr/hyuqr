@@ -12,13 +12,13 @@ export function useShuttle() {
   const [isSubwayLoading, setIsSubwayLoading] = useState(false);
   const [isHolidayServer, setIsHolidayServer] = useState(null);
   const [now,             setNow]             = useState(curMin);
-  const [visibleCount, setVisibleCount] = useState(7);
+  const [visibleCount, setVisibleCount] = useState(5);
   const [loadErr,         setLoadErr]         = useState(null);
 
   const setStop = (s) => { 
     setStopState(s); 
     localStorage.setItem('shuttle_stop', s); 
-    setVisibleCount(7); // 정류장 변경 시 초기화
+    setVisibleCount(5); // 정류장 변경 시 초기화
   };
   const setLineId = (l) => { setLineIdState(l); localStorage.setItem('shuttle_lineId', l); };
 
@@ -60,7 +60,7 @@ export function useShuttle() {
   }, [needsSubway, fetchSubway]);
 
   const loadMore = useCallback(() => {
-    setVisibleCount(prev => prev + 7);
+    setVisibleCount(prev => prev + 5);
   }, []);
 
   const schedule = allData ? computeSchedule(allData, stop, now, isHolidayServer) : [];

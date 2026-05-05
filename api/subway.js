@@ -178,7 +178,7 @@ export default async function handler(req, res) {
       // B. Line 4 (External API)
       const stCodeLine4 = STATION_CODES['1004'];
       for (const upDown of ['1', '2']) {
-        const ttUrl = `http://openAPI.seoul.go.kr:8088/${key}/json/SearchSTNTimeTableByIDService/1/1000/${stCodeLine4}/${dayTag}/${upDown}/`;
+        const ttUrl = `http://openAPI.seoul.go.kr:8088/${key}/json/SearchSTNTimeTableByIDService/1/2000/${stCodeLine4}/${dayTag}/${upDown}/`;
         try {
           const ttRes = await fetch(ttUrl, { signal: AbortSignal.timeout(5000) });
           const ttData = await ttRes.json();
