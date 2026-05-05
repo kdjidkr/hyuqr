@@ -32,7 +32,7 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
         )}
         <p className="qr-desc">스캐너에 화면을 인식시켜주세요.</p>
         <div className="qr-wrapper" style={{ position: 'relative' }}>
-          <QRCodeSVG value="HYUQR_DUMMY_LOADING" size={220} level="M" className="qr-loading-blur" />
+          <QRCodeSVG value="HYUQR_DUMMY_LOADING" size={220} level="M" className="qr-dummy-blur" />
           <div className="qr-loading-overlay">
             <div className="qr-spinner" />
           </div>

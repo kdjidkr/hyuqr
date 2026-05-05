@@ -359,6 +359,12 @@ p.subtitle {
   pointer-events: none;
 }
 
+.qr-dummy-blur {
+  filter: blur(4px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
 .qr-loading-overlay {
   position: absolute;
   inset: 0;
