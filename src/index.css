@@ -1922,6 +1922,7 @@ p.subtitle {
   align-items: stretch;
   border-bottom: 1px solid #f1f5f9;
   position: relative;
+  background: #fafbfc; /* 기본행은 아주 살짝 톤다운 */
 }
 
 .stt-trow:last-child {
@@ -1929,9 +1930,14 @@ p.subtitle {
 }
 
 .stt-trow.next {
-  background: rgba(14, 74, 132, 0.05);
-  box-shadow: inset 4px 0 0 0 var(--color-primary);
-  z-index: 10;
+  background: #ffffff;
+  box-shadow: inset 5px 0 0 0 var(--color-primary);
+  border-bottom: 1px solid #f1f5f9;
+  z-index: 20;
+}
+
+.stt-trow.next .stt-time-big {
+  color: var(--color-text-main);
 }
 
 .stt-trow.past {
@@ -2015,11 +2021,11 @@ p.subtitle {
   position: absolute;
   top: 0;
   left: 0;
-  font-size: 9px;
-  font-weight: 800;
+  font-size: 10px;
+  font-weight: 900;
   color: white;
   background: var(--color-primary);
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 0 0 var(--radius-sm) 0;
 }
 
@@ -2027,12 +2033,13 @@ p.subtitle {
   position: absolute;
   top: 0;
   left: 0;
-  font-size: 9px;
-  font-weight: 800;
+  font-size: 10px;
+  font-weight: 900;
   color: white;
-  background: #475569;
-  padding: 2px 8px;
+  background: var(--color-error);
+  padding: 3px 10px;
   border-radius: 0 0 var(--radius-sm) 0;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
 }
 
 .stt-past-tag {

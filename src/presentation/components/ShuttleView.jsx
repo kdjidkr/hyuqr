@@ -114,8 +114,12 @@ function TimetableRow({ row, lineId, isNext, isLast, isPast, subwayArrivals, sub
 
   return (
     <div className={`stt-trow${isNext ? ' next' : ''}${isPast ? ' past' : ''}`}>
-      {isNext && <div className="stt-next-tag">다음 셔틀</div>}
-      {isLast && !isNext && <div className="stt-last-tag">마지막 셔틀</div>}
+      {isNext && (
+        <div className={isLast ? "stt-last-tag" : "stt-next-tag"}>
+          {isLast ? "🚨 마지막 셔틀" : "다음 셔틀"}
+        </div>
+      )}
+      {isLast && !isNext && <div className="stt-last-tag">🚨 마지막 셔틀</div>}
       {isPast && <div className="stt-past-tag">이전 셔틀</div>}
 
       <div className="stt-shuttle-col" style={{ paddingTop: (isNext || isLast || isPast) ? 26 : 16, flex: '0 0 52%' }}>
