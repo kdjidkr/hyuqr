@@ -12,9 +12,14 @@ export function useShuttle() {
   const [isSubwayLoading, setIsSubwayLoading] = useState(false);
   const [isHolidayServer, setIsHolidayServer] = useState(null);
   const [now,             setNow]             = useState(curMin);
+  const [visibleCount, setVisibleCount] = useState(7);
   const [loadErr,         setLoadErr]         = useState(null);
 
-  const setStop = (s) => { setStopState(s); localStorage.setItem('shuttle_stop', s); };
+  const setStop = (s) => { 
+    setStopState(s); 
+    localStorage.setItem('shuttle_stop', s); 
+    setVisibleCount(7); // 정류장 변경 시 초기화
+  };
   const setLineId = (l) => { setLineIdState(l); localStorage.setItem('shuttle_lineId', l); };
 
   // 셔틀 시간표 최초 로드
@@ -54,6 +59,10 @@ export function useShuttle() {
     return () => { if (id) clearInterval(id); };
   }, [needsSubway, fetchSubway]);
 
+  const loadMore = useCallback(() => {
+    setVisibleCount(prev => prev + 7);
+  }, []);
+
   const schedule = allData ? computeSchedule(allData, stop, now, isHolidayServer) : [];
   const nextIdx  = schedule.findIndex(r => r.depMin >= now);
 
@@ -66,5 +75,7 @@ export function useShuttle() {
     loadErr,
     isLoading: !allData && !loadErr,
     isSubwayLoading,
+    visibleCount,
+    loadMore,
   };
 }

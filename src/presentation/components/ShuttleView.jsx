@@ -161,15 +161,28 @@ export function ShuttleView() {
     subwayArrivals, subwayOffPeak,
     needsSubway,
     loadErr, isLoading, isSubwayLoading,
+    visibleCount, loadMore,
   } = useShuttle();
 
   const [showTooltip, setShowTooltip] = useState(true);
   const [initialStop] = useState(stop);
+  const sentinelRef = useRef(null);
 
   useEffect(() => {
     const t = setTimeout(() => setShowTooltip(false), 2000);
     return () => clearTimeout(t);
   }, []);
+
+  useEffect(() => {
+    if (!sentinelRef.current) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && schedule.length > visibleCount) {
+        loadMore();
+      }
+    }, { threshold: 0.1 });
+    observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, [loadMore, schedule.length, visibleCount]);
 
   if (loadErr)    return <div className="stt-container"><div className="stt-empty"><p>{loadErr}</p></div></div>;
   if (isLoading)  return <div className="stt-container"><div className="stt-empty"><p>불러오는 중…</p></div></div>;
@@ -215,17 +228,24 @@ export function ShuttleView() {
 
         <div className="stt-tcard">
           {schedule.length > 0 ? (
-            schedule.map((row, i) => (
-              <TimetableRow
-                key={i}
-                row={row}
-                lineId={lineId}
-                isNext={i === nextIdx && nextIdx !== -1}
-                subwayArrivals={subwayArrivals}
-                subwayOffPeak={subwayOffPeak}
-                isSubwayLoading={isSubwayLoading}
-              />
-            ))
+            <>
+              {schedule.slice(0, visibleCount).map((row, i) => (
+                <TimetableRow
+                  key={i}
+                  row={row}
+                  lineId={lineId}
+                  isNext={i === nextIdx && nextIdx !== -1}
+                  subwayArrivals={subwayArrivals}
+                  subwayOffPeak={subwayOffPeak}
+                  isSubwayLoading={isSubwayLoading}
+                />
+              ))}
+              {schedule.length > visibleCount && (
+                <div ref={sentinelRef} style={{ height: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10 }}>
+                  <Loader2 className="stt-subway-loader" size={20} />
+                </div>
+              )}
+            </>
           ) : (
             <div className="stt-empty large"><p>오늘 남은 셔틀이 없습니다</p></div>
           )}

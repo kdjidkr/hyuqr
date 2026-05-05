@@ -89,8 +89,7 @@ export function computeSchedule(allData, displayStop, nowMinutes, isHolidayServe
       };
     })
     .sort((a, b) => a.depMin - b.depMin)
-    .filter(r => r.depMin >= nowMinutes)
-    .slice(0, 5);
+    .filter(r => r.depMin >= nowMinutes);
 }
 
 // 셔틀 도착 이후 연결 가능한 지하철 편 필터 (순수 함수)
