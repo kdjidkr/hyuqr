@@ -139,7 +139,8 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
   return (
     <div className="cafe-container">
       <button className="alarm-fab" onClick={() => setShowAlarm(true)}>
-        <Bell size={22} />
+        <Bell size={18} />
+        키워드 알림 받기
       </button>
       {showAlarm && <AlarmSettings onClose={() => setShowAlarm(false)} />}
       <div className="cafe-sticky-header">

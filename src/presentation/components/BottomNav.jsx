@@ -15,7 +15,7 @@ export function BottomNav({ activeTab, setActiveTab }) {
     <div className="bottom-nav">
       <div className={`nav-item ${activeTab === 'cafe'    ? 'active' : ''}`} onClick={() => setActiveTab('cafe')}>
         <Utensils size={24} />
-        <span className="nav-item-text">식단</span>
+        <span className="nav-item-text">학식</span>
       </div>
       <div className={`nav-item ${activeTab === 'shuttle' ? 'active' : ''}`} onClick={() => setActiveTab('shuttle')}>
         <BusIcon />

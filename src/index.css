@@ -332,6 +332,13 @@ p.subtitle {
   background: var(--color-surface);
 }
 
+.qr-refresh-btn:disabled,
+.qr-logout-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .qr-logout-btn {
   background: transparent;
   border: none;
@@ -344,6 +351,46 @@ p.subtitle {
 .qr-logout-btn:hover {
   color: #cbd5e1;
   text-decoration: underline;
+}
+
+.qr-loading-blur {
+  filter: blur(10px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.qr-dummy-blur {
+  filter: blur(4px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.qr-loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-card);
+}
+
+.qr-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top-color: var(--color-primary, #3b82f6);
+  border-radius: 50%;
+  animation: rotate 0.8s linear infinite;
+}
+
+.qr-placeholder {
+  width: 220px;
+  height: 220px;
+  background:
+    repeating-conic-gradient(#2d2d2d 0% 25%, #ffffff 0% 50%)
+    0 0 / 12px 12px;
+  border-radius: 4px;
 }
 
 /* Animations */
@@ -686,29 +733,44 @@ p.subtitle {
 .alarm-fab {
   position: fixed;
   bottom: calc(var(--space-page) + 64px + var(--space-element));
-  right: max(var(--space-page), calc((100vw - 440px) / 2 + var(--space-page)));
-  width: 48px;
-  height: 48px;
-  background: var(--color-primary);
-  color: white;
-  border: none;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 40px;
+  padding: 0 12px;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   cursor: pointer;
-  box-shadow: 0 4px 16px var(--color-primary-glow);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
   z-index: 999;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+  font-size: 0.78rem;
+  font-weight: var(--font-weight-body2);
+  font-family: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .alarm-fab:hover {
-  transform: scale(1.08);
-  box-shadow: 0 6px 22px var(--color-primary-glow);
+  transform: translateX(-50%) scale(1.04);
+  background: rgba(15, 23, 42, 0.88);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.45);
 }
 
 .alarm-fab:active {
-  transform: scale(0.95);
+  transform: translateX(-50%) scale(0.97);
+}
+
+.alarm-section--disabled {
+  opacity: 0.38;
+  pointer-events: none;
+  user-select: none;
 }
 
 /* Alarm Settings Bottom Sheet */
@@ -1605,11 +1667,11 @@ p.subtitle {
 .course-card {
   height: 100%;
   border-radius: var(--radius-sm);
-  border-left: 2.5px solid;
   padding: 2px 4px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   gap: 1px;
 }
 
@@ -1617,12 +1679,28 @@ p.subtitle {
   font-size: 0.6rem;
   font-weight: 800;
   line-height: 1.1;
-  word-break: keep-all;
   overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.course-name-line {
+  display: block;
+}
+
+@media (max-width: 375px) {
+  .course-name {
+    letter-spacing: -0.04em;
+  }
+}
+
+@media (max-width: 340px) {
+  .course-name {
+    letter-spacing: -0.07em;
+  }
 }
 
 /* NOW Indicator Premium - Compact */

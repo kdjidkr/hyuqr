@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { ROOMS, calcSeatId } from '../../domain/entities/Room.js';
 
-export function ReserveForm({ onReserve, loading }) {
+export function ReserveForm({ onReserve, loading, seatReady = true }) {
   const [selectedRoomIdx, setSelectedRoomIdx] = useState(0);
   const [seatNum, setSeatNum] = useState('');
 
@@ -51,10 +51,10 @@ export function ReserveForm({ onReserve, loading }) {
         <button
           type="submit"
           className="primary-btn"
-          disabled={loading}
+          disabled={loading || !seatReady}
           style={{ marginTop: '1rem' }}
         >
-          {loading ? <div className="spinner" /> : '좌석 예약하기'}
+          {loading ? <div className="spinner" /> : !seatReady ? '정보 불러오는 중...' : '좌석 예약하기'}
         </button>
       </form>
     </div>

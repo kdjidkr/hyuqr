@@ -62,7 +62,7 @@ export function MiscView() {
             <span className="misc-card-title">
               동아리 <ArrowUpRight size={14} style={{ display: 'inline', marginLeft: '2px', verticalAlign: 'middle', opacity: 0.8 }} />
             </span>
-            <span className="misc-card-desc">동아리 조회는 한자리</span>
+            <span className="misc-card-desc">동아리 조회는 '한자리'</span>
           </div>
         </div>
 

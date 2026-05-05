@@ -14,7 +14,7 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
     onLogout,
   });
 
-  const { seatData, loading: seatLoading, fetchSeat, handleReserve, handleSeatReturn } = useSeat({ user });
+  const { seatData, loading: seatLoading, seatFetched, fetchSeat, handleReserve, handleSeatReturn } = useSeat({ user });
 
   // QR 로드/갱신 완료 시 좌석 정보도 조회
   useEffect(() => {
@@ -24,8 +24,28 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
   if (status === 'loading') {
     return (
       <div className="qr-glass-panel">
-        <div className="loader-spinner" style={{ borderColor: 'rgba(0,0,0,0.1)', borderTopColor: 'var(--color-primary)' }} />
-        <p style={{ color: 'var(--color-text-sub)', fontSize: '0.875rem', marginTop: '1rem' }}>인증 코드를 불러오는 중...</p>
+        <h2 className="qr-title">출입증 QR</h2>
+        {user?.name && (
+          <div style={{ marginBottom: '0.25rem', fontSize: '1.1rem', fontWeight: '600', color: 'var(--text-primary)' }}>
+            {user.name}님 안녕하세요!
+          </div>
+        )}
+        <p className="qr-desc">스캐너에 화면을 인식시켜주세요.</p>
+        <div className="qr-wrapper" style={{ position: 'relative' }}>
+          <QRCodeSVG value="HYUQR_DUMMY_LOADING" size={220} level="M" className="qr-dummy-blur" />
+          <div className="qr-loading-overlay">
+            <div className="qr-spinner" />
+          </div>
+        </div>
+        <div style={{ color: 'var(--color-success)', fontWeight: '700', fontSize: '1rem', marginBottom: '0.5rem' }}>
+          Refreshing...
+        </div>
+        <button className="qr-refresh-btn" disabled style={{ marginBottom: '1.5rem' }}>
+          <RefreshCw size={16} className="spin-animation" />
+          <span>Refreshing...</span>
+        </button>
+        <ReserveForm onReserve={handleReserve} loading={seatLoading} seatReady={false} />
+        <button className="qr-logout-btn" disabled style={{ marginTop: '1rem' }}>로그아웃</button>
       </div>
     );
   }
@@ -44,7 +64,7 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
   }
 
   return (
-    <div className="qr-glass-panel" style={{ opacity: refreshing ? 0.7 : 1, transition: 'opacity 0.2s' }}>
+    <div className="qr-glass-panel">
       <h2 className="qr-title">출입증 QR</h2>
       {user?.name && (
         <div style={{ marginBottom: '0.25rem', fontSize: '1.1rem', fontWeight: '600', color: 'var(--text-primary)' }}>
@@ -53,8 +73,13 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
       )}
       <p className="qr-desc">스캐너에 화면을 인식시켜주세요.</p>
 
-      <div className="qr-wrapper" style={{ filter: refreshing ? 'blur(2px)' : 'none' }}>
-        <QRCodeSVG value={qrData} size={220} level="M" />
+      <div className="qr-wrapper" style={{ position: 'relative' }}>
+        <QRCodeSVG value={qrData} size={220} level="M" className={refreshing ? 'qr-loading-blur' : ''} />
+        {refreshing && (
+          <div className="qr-loading-overlay">
+            <div className="qr-spinner" />
+          </div>
+        )}
       </div>
 
       <div style={{ color: timeLeft <= 5 ? 'var(--color-error)' : 'var(--color-success)', fontWeight: '700', fontSize: '1rem', marginBottom: '0.5rem' }}>
@@ -78,7 +103,7 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
           loading={seatLoading}
         />
       ) : (
-        <ReserveForm onReserve={handleReserve} loading={seatLoading} />
+        <ReserveForm onReserve={handleReserve} loading={seatLoading} seatReady={seatFetched} />
       )}
 
       <button className="qr-logout-btn" onClick={onLogout} style={{ marginTop: '1rem' }}>로그아웃</button>
