@@ -103,7 +103,7 @@ function SubwayDropdown({ selected, onChange }) {
 }
 
 // ── 시간표 행 ─────────────────────────────────────────────────────────────────
-function TimetableRow({ row, lineId, isNext, isLast, isPast, subwayArrivals, subwayOffPeak, isSubwayLoading }) {
+function TimetableRow({ row, lineId, isNext, isLast, isPast, subwayArrivals, subwayOffPeak, isSubwayLoading, hideSubwayCol }) {
   const opt = SUBWAY_OPTS.find(o => o.id === lineId);
   const trains = row.subway ? connectingTrains(subwayArrivals, row.arr, lineId) : [];
   const noTrainReason = row.subway && trains.length === 0
@@ -122,40 +122,40 @@ function TimetableRow({ row, lineId, isNext, isLast, isPast, subwayArrivals, sub
       {isLast && !isNext && <div className="stt-last-tag">마지막 셔틀</div>}
       {isPast && <div className="stt-past-tag">이전 셔틀</div>}
 
-      <div className="stt-shuttle-col" style={{ paddingTop: (isNext || isLast || isPast) ? 26 : 16, flex: '0 0 52%' }}>
+      <div className="stt-shuttle-col" style={{ paddingTop: (isNext || isLast || isPast) ? 26 : 16, flex: hideSubwayCol ? 1 : '0 0 52%' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <span className={`stt-route-label ${routeClass}`}>{rLabel}</span>
           <div>
             <span className="stt-time-big">{row.dep}</span>
-            {row.subway && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginTop: 2 }}>
-                <svg width={9} height={9} viewBox="0 0 24 24" fill="none" stroke="var(--color-text-hint)" strokeWidth={2.5} strokeLinecap="round" style={{ flexShrink: 0 }}>
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-                <span style={{ fontSize: 12, color: 'var(--color-text-hint)', fontWeight: 600 }}>
-                  {row.arrLabel} {row.arr}
-                </span>
-              </div>
-            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginTop: 2 }}>
+              <svg width={9} height={9} viewBox="0 0 24 24" fill="none" stroke="var(--color-text-hint)" strokeWidth={2.5} strokeLinecap="round" style={{ flexShrink: 0 }}>
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+              <span style={{ fontSize: 12, color: 'var(--color-text-hint)', fontWeight: 600 }}>
+                {row.arrLabel} {row.arr}
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="stt-subway-col" style={{ paddingTop: (isNext || isLast || isPast) ? 26 : 14 }}>
-        {row.subway ? (
-          isSubwayLoading ? (
-            <div className="stt-subway-loader-wrap">
-              <Loader2 className="stt-subway-loader" size={16} />
-            </div>
-          ) : trains.length > 0 ? trains.map((tr, i) => (
-            <div key={i} className="stt-subway-row">
-              <LineBadge opt={opt} size={20} />
-              <span className="stt-subway-dest">{tr.dest}행</span>
-              <span className="stt-subway-time">{tr.arrTime}</span>
-            </div>
-          )) : <span className="stt-no-train">{noTrainReason}</span>
-        ) : null}
-      </div>
+      {!hideSubwayCol && (
+        <div className="stt-subway-col" style={{ paddingTop: (isNext || isLast || isPast) ? 26 : 14 }}>
+          {row.subway ? (
+            isSubwayLoading ? (
+              <div className="stt-subway-loader-wrap">
+                <Loader2 className="stt-subway-loader" size={16} />
+              </div>
+            ) : trains.length > 0 ? trains.map((tr, i) => (
+              <div key={i} className="stt-subway-row">
+                <LineBadge opt={opt} size={20} />
+                <span className="stt-subway-dest">{tr.dest}행</span>
+                <span className="stt-subway-time">{tr.arrTime}</span>
+              </div>
+            )) : <span className="stt-no-train">{noTrainReason}</span>
+          ) : <span className="stt-no-train">—</span>}
+        </div>
+      )}
     </div>
   );
 }
@@ -175,6 +175,9 @@ export function ShuttleView() {
 
   const [showTooltip, setShowTooltip] = useState(true);
   const [initialStop] = useState(stop);
+
+  const HIDE_COL_STOPS = ['한대앞', '셔틀콕 건너편', '예술인', '중앙역'];
+  const hideSubwayCol = HIDE_COL_STOPS.includes(stop);
 
   useEffect(() => {
     const t = setTimeout(() => setShowTooltip(false), 2000);
@@ -224,10 +227,12 @@ export function ShuttleView() {
         </div>
 
         <div className="stt-col-header">
-          <div style={{ flex: '0 0 52%', paddingLeft: 16 }} className="stt-col-label">출발 시간</div>
-          <div style={{ flex: 1, paddingLeft: 4 }} className="stt-col-label">
-            {needsSubway ? '연결 지하철' : null}
-          </div>
+          <div style={{ flex: hideSubwayCol ? 1 : '0 0 52%', paddingLeft: 16 }} className="stt-col-label">출발 시간</div>
+          {!hideSubwayCol && (
+            <div style={{ flex: 1, paddingLeft: 4 }} className="stt-col-label">
+              {needsSubway ? '연결 지하철' : '도착'}
+            </div>
+          )}
         </div>
 
         <div className="stt-tcard">
@@ -243,6 +248,7 @@ export function ShuttleView() {
                 subwayArrivals={subwayArrivals}
                 subwayOffPeak={subwayOffPeak}
                 isSubwayLoading={isSubwayLoading}
+                hideSubwayCol={hideSubwayCol}
               />
             ))
           ) : (
