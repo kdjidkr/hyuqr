@@ -161,7 +161,7 @@ export function ShuttleView() {
     subwayArrivals, subwayOffPeak,
     needsSubway,
     loadErr, isLoading, isSubwayLoading,
-    visibleCount, loadMore,
+    visibleCount, loadMore, isPageLoading,
   } = useShuttle();
 
   const [showTooltip, setShowTooltip] = useState(true);
@@ -176,13 +176,13 @@ export function ShuttleView() {
   useEffect(() => {
     if (!sentinelRef.current) return;
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && schedule.length > visibleCount) {
+      if (entries[0].isIntersecting && schedule.length > visibleCount && !isPageLoading) {
         loadMore();
       }
     }, { threshold: 0.1 });
     observer.observe(sentinelRef.current);
     return () => observer.disconnect();
-  }, [loadMore, schedule.length, visibleCount]);
+  }, [loadMore, schedule.length, visibleCount, isPageLoading]);
 
   if (loadErr)    return <div className="stt-container"><div className="stt-empty"><p>{loadErr}</p></div></div>;
   if (isLoading)  return <div className="stt-container"><div className="stt-empty"><p>불러오는 중…</p></div></div>;

@@ -59,9 +59,16 @@ export function useShuttle() {
     return () => { if (id) clearInterval(id); };
   }, [needsSubway, fetchSubway]);
 
+  const [isPageLoading, setIsPageLoading] = useState(false);
+
   const loadMore = useCallback(() => {
-    setVisibleCount(prev => prev + 5);
-  }, []);
+    if (isPageLoading) return;
+    setIsPageLoading(true);
+    setTimeout(() => {
+      setVisibleCount(prev => prev + 5);
+      setIsPageLoading(false);
+    }, 1000);
+  }, [isPageLoading]);
 
   const schedule = allData ? computeSchedule(allData, stop, now, isHolidayServer) : [];
   const nextIdx  = schedule.findIndex(r => r.depMin >= now);
@@ -77,5 +84,6 @@ export function useShuttle() {
     isSubwayLoading,
     visibleCount,
     loadMore,
+    isPageLoading,
   };
 }
