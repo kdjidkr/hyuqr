@@ -9,6 +9,7 @@ export function useShuttle() {
   const [allData,         setAllData]         = useState(null);
   const [subwayArrivals,  setSubwayArrivals]  = useState([]);
   const [subwayOffPeak,   setSubwayOffPeak]   = useState(false);
+  const [isHolidayServer, setIsHolidayServer] = useState(null);
   const [now,             setNow]             = useState(curMin);
   const [loadErr,         setLoadErr]         = useState(null);
 
@@ -32,18 +33,25 @@ export function useShuttle() {
   const needsSubway = stop === '기숙사' || stop === '셔틀콕';
   const fetchSubway = useCallback(() => {
     getSubwayArrivalsUseCase.execute()
-      .then(d => { setSubwayArrivals(d.arrivals); setSubwayOffPeak(d.offPeak); })
+      .then(d => { 
+        setSubwayArrivals(d.arrivals); 
+        setSubwayOffPeak(d.offPeak); 
+        setIsHolidayServer(d.isHoliday ?? false);
+      })
       .catch(() => {});
   }, []);
 
   useEffect(() => {
-    if (!needsSubway) return;
+    // 무조건 한 번 호출해서 isHoliday 서버 상태를 가져오고, needsSubway면 2분마다 갱신
     fetchSubway();
-    const id = setInterval(fetchSubway, 2 * 60_000);
-    return () => clearInterval(id);
+    let id;
+    if (needsSubway) {
+      id = setInterval(fetchSubway, 2 * 60_000);
+    }
+    return () => { if (id) clearInterval(id); };
   }, [needsSubway, fetchSubway]);
 
-  const schedule = allData ? computeSchedule(allData, stop, now) : [];
+  const schedule = allData ? computeSchedule(allData, stop, now, isHolidayServer) : [];
   const nextIdx  = schedule.findIndex(r => r.depMin >= now);
 
   return {

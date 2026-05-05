@@ -36,7 +36,7 @@ export default function App() {
   return (
     <>
       {!splashDone && (
-        <SplashScreen ready={!loading} onDone={() => setSplashDone(true)} />
+        <SplashScreen ready={!loading && !menuLoading} onDone={() => setSplashDone(true)} />
       )}
     <div className="app-container">
       <div key={activeTab} className={`main-content tab-slide-${slideDir}`}>
