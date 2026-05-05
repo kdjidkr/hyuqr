@@ -6,6 +6,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const CACHE_TTL = 30 * 24 * 60 * 60 * 1000; // 30 days
+const S_MAXAGE = 2592000; // 30 days in seconds
 const CACHE_DIR = path.join('/tmp', 'insta-cache');
 
 try {
@@ -14,17 +16,19 @@ try {
   }
 } catch (e) {}
 
-const fetchWithRetry = (username, retries = 2) => {
+const fetchWithRetry = (username, retries = 3) => {
   return new Promise((resolve, reject) => {
     const apiUrl = `https://www.instagram.com/api/v1/users/web_profile_info/?username=${username}`;
     const options = {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
         'x-ig-app-id': '936619743392459',
         'Accept': '*/*',
         'Sec-Fetch-Dest': 'empty',
         'Sec-Fetch-Mode': 'cors',
         'Sec-Fetch-Site': 'same-origin',
+        'Referer': `https://www.instagram.com/${username}/`,
+        'X-Requested-With': 'XMLHttpRequest'
       }
     };
 
@@ -42,22 +46,24 @@ const fetchWithRetry = (username, retries = 2) => {
                   username,
                   fullName: user.full_name || username,
                   profilePicUrl: user.profile_pic_url_hd || user.profile_pic_url,
-                  success: true
+                  success: true,
+                  fetchedAt: new Date().getTime()
                 });
               }
             } catch (e) {}
           }
           
           if (attempt < retries) {
-            console.log(`Retrying ${username} (Attempt ${attempt + 1})...`);
-            setTimeout(() => performFetch(attempt + 1), 500 * (attempt + 1));
+            const delay = 1000 * (attempt + 1);
+            console.log(`Retrying ${username} (Attempt ${attempt + 1}) after ${delay}ms... (Status ${res.statusCode})`);
+            setTimeout(() => performFetch(attempt + 1), delay);
           } else {
             reject(new Error(`Status ${res.statusCode}`));
           }
         });
       }).on('error', (err) => {
         if (attempt < retries) {
-          setTimeout(() => performFetch(attempt + 1), 500 * (attempt + 1));
+          setTimeout(() => performFetch(attempt + 1), 1000 * (attempt + 1));
         } else {
           reject(err);
         }
@@ -74,14 +80,26 @@ export default async function handler(req, res) {
   // Image Proxy Mode
   if (url) {
     if (!url.includes('cdninstagram.com')) return res.status(403).send('Invalid URL');
-    res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=3600');
+    
+    // Set long cache for images that are successfully proxied
+    res.setHeader('Cache-Control', `public, max-age=${S_MAXAGE}, s-maxage=${S_MAXAGE}, stale-while-revalidate=86400`);
+    
     return new Promise((resolve) => {
-      https.get(url, (imgRes) => {
-        res.setHeader('Content-Type', imgRes.headers['content-type'] || 'image/jpeg');
-        imgRes.pipe(res);
+      const imgReq = https.get(url, (imgRes) => {
+        if (imgRes.statusCode === 200) {
+          res.setHeader('Content-Type', imgRes.headers['content-type'] || 'image/jpeg');
+          imgRes.pipe(res);
+        } else {
+          // If Instagram CDN fails (likely expired), redirect to local fallback
+          res.writeHead(302, { 'Location': '/hanyang_insta_fallback.png', 'Cache-Control': 'no-cache' });
+          res.end();
+        }
         imgRes.on('end', resolve);
-      }).on('error', () => {
-        res.status(500).send('Proxy error');
+      });
+      
+      imgReq.on('error', () => {
+        res.writeHead(302, { 'Location': '/hanyang_insta_fallback.png', 'Cache-Control': 'no-cache' });
+        res.end();
         resolve();
       });
     });
@@ -96,9 +114,9 @@ export default async function handler(req, res) {
   try {
     if (fs.existsSync(cachePath)) {
       const stats = fs.statSync(cachePath);
-      if (new Date().getTime() - new Date(stats.mtime).getTime() < 14 * 24 * 60 * 60 * 1000) {
+      if (new Date().getTime() - new Date(stats.mtime).getTime() < CACHE_TTL) {
         const cachedData = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
-        res.setHeader('Cache-Control', 's-maxage=1209600, stale-while-revalidate=86400');
+        res.setHeader('Cache-Control', `s-maxage=${S_MAXAGE}, stale-while-revalidate=86400`);
         return res.status(200).json({ ...cachedData, fromCache: true });
       }
     }
@@ -109,7 +127,7 @@ export default async function handler(req, res) {
     const result = await fetchWithRetry(username);
     
     // 3. If successful, set long cache and save
-    res.setHeader('Cache-Control', 's-maxage=1209600, stale-while-revalidate=86400');
+    res.setHeader('Cache-Control', `s-maxage=${S_MAXAGE}, stale-while-revalidate=86400`);
     try {
       fs.writeFileSync(cachePath, JSON.stringify(result));
     } catch (e) {}
@@ -118,13 +136,12 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error(`Insta Proxy Final Error for ${username}:`, error.message);
     
-    // 4. IMPORTANT: Do NOT set long cache for failures
-    // This allows the browser to try again on next refresh
+    // 4. IMPORTANT: On failure, return the local fallback image info
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.status(200).json({
       username,
       fullName: username,
-      profilePicUrl: `https://ui-avatars.com/api/?name=${username}&background=random`,
+      profilePicUrl: '/hanyang_insta_fallback.png',
       error: true,
       success: false
     });
