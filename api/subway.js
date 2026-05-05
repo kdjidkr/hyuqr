@@ -164,41 +164,44 @@ export default async function handler(req, res) {
     const rtData = await rtRes.json();
     
     rtArrivals = (rtData.realtimeArrivalList || []).map(tr => {
+      const isUp = tr.updnLine === '상행';
+      const isLine4 = String(tr.subwayId) === '1004';
+      const msg = tr.arvlMsg2 || '';
+      
       let secsLeft = parseInt(tr.barvlDt || '0', 10);
+      
+      // 1. Calculate Base Seconds based on station count (n)
       if (secsLeft === 0) {
-        const msg = tr.arvlMsg2 || '';
-        if (msg.includes('진입')) secsLeft = 30;
-        else if (msg.includes('도착')) secsLeft = 60;
-        else if (msg.includes('출발')) secsLeft = 90;
-        else if (tr.arvlCd === '5') secsLeft = 120;
-        else if (tr.arvlCd === '4') secsLeft = 180;
-        else {
-          const match = msg.match(/\[(\d+)\]번째 전역/);
-          if (match) {
-            const n = parseInt(match[1], 10);
-            const isUp = tr.updnLine === '상행';
-            const isLine4 = String(tr.subwayId) === '1004';
-
-            if (isUp) {
-              // Upward (from Jungang): 1st=2m, 2nd=4m, 3rd=6m
-              if (n === 1) secsLeft = 2 * 60;
-              else if (n === 2) secsLeft = 4 * 60;
-              else secsLeft = (4 + (n - 2) * 2) * 60; 
-            } else {
-              // Downward
-              if (isLine4) {
-                // Line 4 (from Sangnoksu): 1st=2m, 2nd=5m, 3rd=8m
-                if (n === 1) secsLeft = 2 * 60;
-                else if (n === 2) secsLeft = 5 * 60;
-                else secsLeft = (5 + (n - 2) * 3) * 60;
-              } else {
-                // Suin (from Sa-ri): 1st=3m, 2nd=8m, 3rd=11m
-                if (n === 1) secsLeft = 3 * 60;
-                else if (n === 2) secsLeft = 8 * 60;
-                else secsLeft = (8 + (n - 2) * 3) * 60;
-              }
-            }
+        const nMatch = msg.match(/\[(\d+)\]번째 전역/);
+        let n = nMatch ? parseInt(nMatch[1], 10) : (msg.includes('전역') ? 1 : 0);
+        
+        if (n > 0) {
+          if (isUp) {
+            // Upward (from Jungang): 2m, 4m, 6m...
+            secsLeft = n * 120;
+          } else if (isLine4) {
+            // Line 4 Down (from Sangnoksu): 1st=2m, 2nd=5m, 3rd=8m
+            if (n === 1) secsLeft = 120;
+            else if (n === 2) secsLeft = 300;
+            else secsLeft = 300 + (n - 2) * 180;
+          } else {
+            // Suin Down (from Sa-ri): 1st=3m, 2nd=8m, 3rd=11m
+            if (n === 1) secsLeft = 180;
+            else if (n === 2) secsLeft = 480;
+            else secsLeft = 480 + (n - 2) * 180;
           }
+          
+          // 2. Apply Correction Values (보정값) based on status for n > 0
+          if (msg.includes('진입')) secsLeft += 30;       // Still entering the station
+          else if (msg.includes('출발')) secsLeft -= 40;  // Already left for next station
+          // '도착' is considered the base time
+        } else {
+          // No station count found, check direct Handaeap status
+          if (tr.arvlCd === '5') secsLeft = 120;
+          else if (tr.arvlCd === '4') secsLeft = 180;
+          else if (msg.includes('진입')) secsLeft = 40;
+          else if (msg.includes('도착')) secsLeft = 15;
+          else secsLeft = 0;
         }
       }
       const arrDateKst = new Date(nowKst.getTime() + secsLeft * 1000);
