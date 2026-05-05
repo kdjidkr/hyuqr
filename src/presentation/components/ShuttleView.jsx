@@ -236,7 +236,7 @@ export function ShuttleView() {
           <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0' }}>
             <button className="qr-refresh-btn" onClick={loadMore} style={{ width: 'auto', padding: '8px 24px' }}>
               <ChevronDown size={16} />
-              정보 더 불러오기
+              더 불러오기
             </button>
           </div>
         )}
