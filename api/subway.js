@@ -180,22 +180,22 @@ export default async function handler(req, res) {
             const isLine4 = String(tr.subwayId) === '1004';
 
             if (isUp) {
-              // Upward (from Jungang): 1st=3m, 2nd=5m, 3rd=8m
-              if (n === 1) secsLeft = 3 * 60;
-              else if (n === 2) secsLeft = 5 * 60;
-              else secsLeft = (5 + (n - 2) * 3) * 60; 
+              // Upward (from Jungang): 1st=2m, 2nd=4m, 3rd=6m
+              if (n === 1) secsLeft = 2 * 60;
+              else if (n === 2) secsLeft = 4 * 60;
+              else secsLeft = (4 + (n - 2) * 2) * 60; 
             } else {
               // Downward
               if (isLine4) {
-                // Line 4 (from Sangnoksu): 1st=3m, 2nd=8m, 3rd=11m
+                // Line 4 (from Sangnoksu): 1st=2m, 2nd=5m, 3rd=8m
+                if (n === 1) secsLeft = 2 * 60;
+                else if (n === 2) secsLeft = 5 * 60;
+                else secsLeft = (5 + (n - 2) * 3) * 60;
+              } else {
+                // Suin (from Sa-ri): 1st=3m, 2nd=8m, 3rd=11m
                 if (n === 1) secsLeft = 3 * 60;
                 else if (n === 2) secsLeft = 8 * 60;
                 else secsLeft = (8 + (n - 2) * 3) * 60;
-              } else {
-                // Suin (from Sa-ri): 1st=4m, 2nd=9m, 3rd=13m
-                if (n === 1) secsLeft = 4 * 60;
-                else if (n === 2) secsLeft = 9 * 60;
-                else secsLeft = (9 + (n - 2) * 4) * 60;
               }
             }
           }
