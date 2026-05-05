@@ -2020,7 +2020,7 @@ p.subtitle {
 }
 
 .stt-empty.large {
-  min-height: 300px;
+  min-height: 425px;
   display: flex;
   flex-direction: column;
   justify-content: center;
