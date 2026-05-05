@@ -210,12 +210,14 @@ export function ShuttleView() {
       {/* 시간표 */}
       <div className="stt-section">
         <div className="stt-section-header">
-          <p className="stt-sec-label">
+          <div className="stt-sec-label">
             시간표
-            {(isHolidayServer || isWeekend) && (
-              <span className="stt-holiday-badge">공휴일/주말</span>
-            )}
-          </p>
+            {isWeekend ? (
+              <span className="stt-holiday-badge">주말</span>
+            ) : isHolidayServer ? (
+              <span className="stt-holiday-badge">공휴일</span>
+            ) : null}
+          </div>
           {needsSubway && <SubwayDropdown selected={lineId} onChange={setLineId} />}
         </div>
 

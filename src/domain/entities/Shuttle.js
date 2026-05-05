@@ -72,7 +72,7 @@ export function computeSchedule(allData, displayStop, nowMinutes, isHolidayServe
   );
   if (displayStop === '중앙역') rows = rows.filter(d => d['노선기호'] === '중앙역');
 
-  return rows
+  const allMapped = rows
     .map(d => {
       const srcMin   = d['시'] * 60 + d['분'];
       const dOff     = depOffset(displayStop, d['노선기호']);
@@ -88,8 +88,26 @@ export function computeSchedule(allData, displayStop, nowMinutes, isHolidayServe
         route:    d['노선기호'],
       };
     })
-    .sort((a, b) => a.depMin - b.depMin)
-    .filter(r => r.depMin >= nowMinutes - lookbackMinutes);
+    .sort((a, b) => a.depMin - b.depMin);
+
+  const nextIdx = allMapped.findIndex(r => r.depMin >= nowMinutes);
+  
+  if (nextIdx === -1) {
+    // 모든 셔틀이 과거인 경우
+    const past = allMapped.filter(r => r.depMin >= nowMinutes - lookbackMinutes);
+    if (past.length === 0 && allMapped.length > 0) return [allMapped[allMapped.length - 1]];
+    return past;
+  }
+
+  const pastCandidates = allMapped.slice(0, nextIdx);
+  const upcoming       = allMapped.slice(nextIdx);
+
+  let filteredPast = pastCandidates.filter(r => r.depMin >= nowMinutes - lookbackMinutes);
+  if (filteredPast.length === 0 && pastCandidates.length > 0) {
+    filteredPast = [pastCandidates[pastCandidates.length - 1]];
+  }
+
+  return filteredPast.concat(upcoming);
 }
 
 // 셔틀 도착 이후 연결 가능한 지하철 편 필터 (순수 함수)
