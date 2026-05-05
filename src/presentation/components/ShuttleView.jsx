@@ -127,14 +127,16 @@ function TimetableRow({ row, lineId, isNext, isLast, isPast, subwayArrivals, sub
           <span className={`stt-route-label ${routeClass}`}>{rLabel}</span>
           <div>
             <span className="stt-time-big">{row.dep}</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginTop: 2 }}>
-              <svg width={9} height={9} viewBox="0 0 24 24" fill="none" stroke="var(--color-text-hint)" strokeWidth={2.5} strokeLinecap="round" style={{ flexShrink: 0 }}>
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-              <span style={{ fontSize: 12, color: 'var(--color-text-hint)', fontWeight: 600 }}>
-                {row.arrLabel} {row.arr}
-              </span>
-            </div>
+            {row.subway && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginTop: 2 }}>
+                <svg width={9} height={9} viewBox="0 0 24 24" fill="none" stroke="var(--color-text-hint)" strokeWidth={2.5} strokeLinecap="round" style={{ flexShrink: 0 }}>
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+                <span style={{ fontSize: 12, color: 'var(--color-text-hint)', fontWeight: 600 }}>
+                  {row.arrLabel} {row.arr}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -152,7 +154,7 @@ function TimetableRow({ row, lineId, isNext, isLast, isPast, subwayArrivals, sub
               <span className="stt-subway-time">{tr.arrTime}</span>
             </div>
           )) : <span className="stt-no-train">{noTrainReason}</span>
-        ) : <span className="stt-no-train">—</span>}
+        ) : null}
       </div>
     </div>
   );
@@ -224,7 +226,7 @@ export function ShuttleView() {
         <div className="stt-col-header">
           <div style={{ flex: '0 0 52%', paddingLeft: 16 }} className="stt-col-label">출발 시간</div>
           <div style={{ flex: 1, paddingLeft: 4 }} className="stt-col-label">
-            {needsSubway ? '연결 지하철' : '도착'}
+            {needsSubway ? '연결 지하철' : null}
           </div>
         </div>
 
