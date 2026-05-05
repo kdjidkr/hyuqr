@@ -14,7 +14,7 @@ import { SplashScreen }  from './presentation/components/SplashScreen.jsx';
 const TAB_ORDER = ['cafe', 'shuttle', 'qr', 'misc'];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('cafe');
+  const [activeTab, setActiveTab] = useState(() => localStorage.getItem('lastActiveTab') || 'cafe');
   const [slideDir, setSlideDir] = useState('right');
   const [splashDone, setSplashDone] = useState(false);
   const { user, loading, login, relogin, logout, updateUser } = useAuth();
@@ -31,6 +31,7 @@ export default function App() {
     const curIdx = TAB_ORDER.indexOf(activeTab);
     setSlideDir(newIdx >= curIdx ? 'right' : 'left');
     setActiveTab(tab);
+    localStorage.setItem('lastActiveTab', tab);
   }, [activeTab]);
 
   return (

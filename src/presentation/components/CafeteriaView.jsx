@@ -76,7 +76,12 @@ const getMenuIcon = (type) => {
 };
 
 export function CafeteriaView({ date, changeDate, cafes, loading }) {
-  const [selectedCafeId, setSelectedCafeId] = useState('re12');
+  const [selectedCafeId, setSelectedCafeId] = useState(() => localStorage.getItem('lastSelectedCafeId') || 're12');
+  
+  const handleCafeSelect = (id) => {
+    setSelectedCafeId(id);
+    localStorage.setItem('lastSelectedCafeId', id);
+  };
   const [expandedGroups, setExpandedGroups] = useState({});
   const [showAlarm, setShowAlarm] = useState(false);
   const listRef = useRef(null);
@@ -156,7 +161,7 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
             <div
               key={cafe.id}
               className={`cafe-chip ${selectedCafeId === cafe.id ? 'active' : ''} ${!cafe.available ? 'disabled' : ''}`}
-              onClick={() => setSelectedCafeId(cafe.id)}
+              onClick={() => handleCafeSelect(cafe.id)}
             >
               {cafe.name}
               {cafe.hasJeyuk && <span className="jeyuk-badge">🔥 제육</span>}
