@@ -60,7 +60,7 @@ function SubwayDropdown({ selected, onChange }) {
   }, []);
 
   const line4 = SUBWAY_OPTS.filter(o => o.line === '4호선');
-  const sb    = SUBWAY_OPTS.filter(o => o.line === '수인분당선');
+  const sb = SUBWAY_OPTS.filter(o => o.line === '수인분당선');
 
   return (
     <div className="stt-dd-wrap" ref={ref}>
@@ -104,7 +104,7 @@ function SubwayDropdown({ selected, onChange }) {
 
 // ── 시간표 행 ─────────────────────────────────────────────────────────────────
 function TimetableRow({ row, lineId, isNext, isLast, isPast, subwayArrivals, subwayOffPeak, isSubwayLoading }) {
-  const opt    = SUBWAY_OPTS.find(o => o.id === lineId);
+  const opt = SUBWAY_OPTS.find(o => o.id === lineId);
   const trains = row.subway ? connectingTrains(subwayArrivals, row.arr, lineId) : [];
   const noTrainReason = row.subway && trains.length === 0
     ? (subwayOffPeak ? '운행 시간 외' : '연결 열차 없음') : null;
@@ -116,10 +116,10 @@ function TimetableRow({ row, lineId, isNext, isLast, isPast, subwayArrivals, sub
     <div className={`stt-trow${isNext ? ' next' : ''}${isPast ? ' past' : ''}`}>
       {isNext && (
         <div className={isLast ? "stt-last-tag" : "stt-next-tag"}>
-          {isLast ? "🚨 마지막 셔틀" : "다음 셔틀"}
+          {isLast ? "마지막 셔틀" : "다음 셔틀"}
         </div>
       )}
-      {isLast && !isNext && <div className="stt-last-tag">🚨 마지막 셔틀</div>}
+      {isLast && !isNext && <div className="stt-last-tag">마지막 셔틀</div>}
       {isPast && <div className="stt-past-tag">이전 셔틀</div>}
 
       <div className="stt-shuttle-col" style={{ paddingTop: (isNext || isLast || isPast) ? 26 : 16, flex: '0 0 52%' }}>
@@ -165,6 +165,7 @@ export function ShuttleView() {
     lineId, setLineId,
     schedule, nextIdx, now,
     subwayArrivals, subwayOffPeak,
+    isHolidayServer, isWeekend,
     needsSubway,
     loadErr, isLoading, isSubwayLoading,
     visibleCount, loadMore,
@@ -178,8 +179,8 @@ export function ShuttleView() {
     return () => clearTimeout(t);
   }, []);
 
-  if (loadErr)    return <div className="stt-container"><div className="stt-empty"><p>{loadErr}</p></div></div>;
-  if (isLoading)  return <div className="stt-container"><div className="stt-empty"><p>불러오는 중…</p></div></div>;
+  if (loadErr) return <div className="stt-container"><div className="stt-empty"><p>{loadErr}</p></div></div>;
+  if (isLoading) return <div className="stt-container"><div className="stt-empty"><p>불러오는 중…</p></div></div>;
 
   return (
     <div className="stt-container">
@@ -194,7 +195,7 @@ export function ShuttleView() {
                 {initialStop === s && showTooltip && (
                   <div className={`stt-tooltip ${idx >= 3 ? 'bottom' : 'top'}`}>
                     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
-                      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                      <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                     </svg>
                     잠깐! 이 출발지가 맞나요?
                   </div>
@@ -209,7 +210,12 @@ export function ShuttleView() {
       {/* 시간표 */}
       <div className="stt-section">
         <div className="stt-section-header">
-          <p className="stt-sec-label">시간표</p>
+          <p className="stt-sec-label">
+            시간표
+            {(isHolidayServer || isWeekend) && (
+              <span className="stt-holiday-badge">공휴일/주말</span>
+            )}
+          </p>
           {needsSubway && <SubwayDropdown selected={lineId} onChange={setLineId} />}
         </div>
 

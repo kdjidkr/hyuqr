@@ -1845,10 +1845,25 @@ p.subtitle {
 }
 
 .stt-sec-label {
+  display: flex;
+  align-items: center;
   font-size: 1.1rem;
   font-weight: 800;
   color: var(--color-text-main);
   margin-bottom: 0.75rem;
+}
+
+.stt-holiday-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: var(--color-warning-dark);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.2;
 }
 
 .stt-section-header {
@@ -2036,10 +2051,10 @@ p.subtitle {
   font-size: 10px;
   font-weight: 900;
   color: white;
-  background: var(--color-error);
+  background: #e55b5b; /* 아주 조금 더 선명해진 파스텔 레드 */
   padding: 3px 10px;
   border-radius: 0 0 var(--radius-sm) 0;
-  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+  box-shadow: 0 2px 4px rgba(229, 91, 91, 0.1);
 }
 
 .stt-past-tag {
@@ -2167,6 +2182,7 @@ p.subtitle {
     transform: none;
   }
 }
+
 
 .stt-dd-group-label {
   display: flex;

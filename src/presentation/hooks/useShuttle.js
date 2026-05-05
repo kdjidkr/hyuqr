@@ -63,9 +63,11 @@ export function useShuttle() {
     setVisibleCount(prev => prev + 5);
   }, []);
 
-  const lookback = stop === '기숙사' ? 15 : (stop === '셔틀콕' ? 10 : 0);
+  const lookback = 15;
   const schedule = allData ? computeSchedule(allData, stop, now, isHolidayServer, lookback) : [];
   const nextIdx  = schedule.findIndex(r => r.depMin >= now);
+
+  const isWeekend = [0, 6].includes(new Date().getDay());
 
   return {
     stop, setStop,
@@ -76,6 +78,8 @@ export function useShuttle() {
     loadErr,
     isLoading: !allData && !loadErr,
     isSubwayLoading,
+    isHolidayServer,
+    isWeekend,
     visibleCount,
     loadMore,
   };
