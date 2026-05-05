@@ -103,7 +103,7 @@ function SubwayDropdown({ selected, onChange }) {
 }
 
 // ── 시간표 행 ─────────────────────────────────────────────────────────────────
-function TimetableRow({ row, lineId, isNext, subwayArrivals, subwayOffPeak, isSubwayLoading }) {
+function TimetableRow({ row, lineId, isNext, isLast, subwayArrivals, subwayOffPeak, isSubwayLoading }) {
   const opt    = SUBWAY_OPTS.find(o => o.id === lineId);
   const trains = row.subway ? connectingTrains(subwayArrivals, row.arr, lineId) : [];
   const noTrainReason = row.subway && trains.length === 0
@@ -115,8 +115,9 @@ function TimetableRow({ row, lineId, isNext, subwayArrivals, subwayOffPeak, isSu
   return (
     <div className={`stt-trow${isNext ? ' next' : ''}`}>
       {isNext && <div className="stt-next-tag">다음 셔틀</div>}
+      {isLast && !isNext && <div className="stt-last-tag">마지막 셔틀</div>}
 
-      <div className="stt-shuttle-col" style={{ paddingTop: isNext ? 26 : 16, flex: '0 0 52%' }}>
+      <div className="stt-shuttle-col" style={{ paddingTop: (isNext || isLast) ? 26 : 16, flex: '0 0 52%' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <span className={`stt-route-label ${routeClass}`}>{rLabel}</span>
           <div>
@@ -133,7 +134,7 @@ function TimetableRow({ row, lineId, isNext, subwayArrivals, subwayOffPeak, isSu
         </div>
       </div>
 
-      <div className="stt-subway-col" style={{ paddingTop: isNext ? 26 : 14 }}>
+      <div className="stt-subway-col" style={{ paddingTop: (isNext || isLast) ? 26 : 14 }}>
         {row.subway ? (
           isSubwayLoading ? (
             <div className="stt-subway-loader-wrap">
@@ -222,6 +223,7 @@ export function ShuttleView() {
                 row={row}
                 lineId={lineId}
                 isNext={i === nextIdx && nextIdx !== -1}
+                isLast={i === schedule.length - 1}
                 subwayArrivals={subwayArrivals}
                 subwayOffPeak={subwayOffPeak}
                 isSubwayLoading={isSubwayLoading}

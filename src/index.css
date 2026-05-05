@@ -2012,6 +2012,18 @@ p.subtitle {
   border-radius: 0 0 var(--radius-sm) 0;
 }
 
+.stt-last-tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 9px;
+  font-weight: 800;
+  color: white;
+  background: #475569;
+  padding: 2px 8px;
+  border-radius: 0 0 var(--radius-sm) 0;
+}
+
 .stt-empty {
   padding: 32px 0;
   text-align: center;
