@@ -216,31 +216,30 @@ export function ShuttleView() {
 
         <div className="stt-tcard">
           {schedule.length > 0 ? (
-            <>
-              {schedule.slice(0, visibleCount).map((row, i) => (
-                <TimetableRow
-                  key={i}
-                  row={row}
-                  lineId={lineId}
-                  isNext={i === nextIdx && nextIdx !== -1}
-                  subwayArrivals={subwayArrivals}
-                  subwayOffPeak={subwayOffPeak}
-                  isSubwayLoading={isSubwayLoading}
-                />
-              ))}
-              {schedule.length > visibleCount && (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0' }}>
-                  <button className="qr-refresh-btn" onClick={loadMore} style={{ width: 'auto', padding: '8px 24px' }}>
-                    <ChevronDown size={16} />
-                    정보 더 불러오기
-                  </button>
-                </div>
-              )}
-            </>
+            schedule.slice(0, visibleCount).map((row, i) => (
+              <TimetableRow
+                key={i}
+                row={row}
+                lineId={lineId}
+                isNext={i === nextIdx && nextIdx !== -1}
+                subwayArrivals={subwayArrivals}
+                subwayOffPeak={subwayOffPeak}
+                isSubwayLoading={isSubwayLoading}
+              />
+            ))
           ) : (
             <div className="stt-empty large"><p>오늘 남은 셔틀이 없습니다</p></div>
           )}
         </div>
+
+        {schedule.length > visibleCount && (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0' }}>
+            <button className="qr-refresh-btn" onClick={loadMore} style={{ width: 'auto', padding: '8px 24px' }}>
+              <ChevronDown size={16} />
+              정보 더 불러오기
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
