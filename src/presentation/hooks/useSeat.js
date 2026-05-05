@@ -13,6 +13,7 @@ export function useSeat({ user }) {
 
   const [seatData, setSeatData]   = useState(null);
   const [loading, setLoading]     = useState(false);
+  const [seatFetched, setSeatFetched] = useState(false);
 
   const fetchSeat = useCallback(async () => {
     const token = userRef.current?.token;
@@ -22,6 +23,8 @@ export function useSeat({ user }) {
       setSeatData(seat);
     } catch (err) {
       console.error('좌석 조회 실패:', err);
+    } finally {
+      setSeatFetched(true);
     }
   }, []);
 
@@ -62,5 +65,5 @@ export function useSeat({ user }) {
     }
   }, []);
 
-  return { seatData, setSeatData, loading, fetchSeat, handleReserve, handleSeatReturn };
+  return { seatData, setSeatData, loading, seatFetched, fetchSeat, handleReserve, handleSeatReturn };
 }

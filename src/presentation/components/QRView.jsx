@@ -14,7 +14,7 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
     onLogout,
   });
 
-  const { seatData, loading: seatLoading, fetchSeat, handleReserve, handleSeatReturn } = useSeat({ user });
+  const { seatData, loading: seatLoading, seatFetched, fetchSeat, handleReserve, handleSeatReturn } = useSeat({ user });
 
   // QR 로드/갱신 완료 시 좌석 정보도 조회
   useEffect(() => {
@@ -41,6 +41,7 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
           <RefreshCw size={16} />
           <span>QR 새로고침</span>
         </button>
+        <ReserveForm onReserve={handleReserve} loading={seatLoading} seatReady={false} />
         <button className="qr-logout-btn" disabled style={{ marginTop: '1rem' }}>로그아웃</button>
       </div>
     );
@@ -94,7 +95,7 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
           loading={seatLoading}
         />
       ) : (
-        <ReserveForm onReserve={handleReserve} loading={seatLoading} />
+        <ReserveForm onReserve={handleReserve} loading={seatLoading} seatReady={seatFetched} />
       )}
 
       <button className="qr-logout-btn" onClick={onLogout} style={{ marginTop: '1rem' }}>로그아웃</button>
