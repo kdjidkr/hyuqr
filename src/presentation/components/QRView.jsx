@@ -31,15 +31,15 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
           </div>
         )}
         <p className="qr-desc">스캐너에 화면을 인식시켜주세요.</p>
-        <div className="qr-wrapper qr-loading-blur">
+        <div className="qr-wrapper" style={{ filter: 'blur(2px)' }}>
           <div className="qr-placeholder" />
         </div>
-        <p style={{ color: 'var(--color-text-hint)', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
-          인증 코드를 불러오는 중...
-        </p>
+        <div style={{ color: 'var(--color-success)', fontWeight: '700', fontSize: '1rem', marginBottom: '0.5rem' }}>
+          Refreshing...
+        </div>
         <button className="qr-refresh-btn" disabled style={{ marginBottom: '1.5rem' }}>
-          <RefreshCw size={16} />
-          <span>QR 새로고침</span>
+          <RefreshCw size={16} className="spin-animation" />
+          <span>Refreshing...</span>
         </button>
         <ReserveForm onReserve={handleReserve} loading={seatLoading} seatReady={false} />
         <button className="qr-logout-btn" disabled style={{ marginTop: '1rem' }}>로그아웃</button>
