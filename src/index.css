@@ -1561,11 +1561,11 @@ p.subtitle {
 .course-card {
   height: 100%;
   border-radius: var(--radius-sm);
-  border-left: 2.5px solid;
   padding: 2px 4px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   gap: 1px;
 }
 
@@ -1573,12 +1573,28 @@ p.subtitle {
   font-size: 0.6rem;
   font-weight: 800;
   line-height: 1.1;
-  word-break: keep-all;
   overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.course-name-line {
+  display: block;
+}
+
+@media (max-width: 375px) {
+  .course-name {
+    letter-spacing: -0.04em;
+  }
+}
+
+@media (max-width: 340px) {
+  .course-name {
+    letter-spacing: -0.07em;
+  }
 }
 
 /* NOW Indicator Premium - Compact */
