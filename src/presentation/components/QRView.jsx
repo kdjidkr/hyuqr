@@ -31,8 +31,11 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
           </div>
         )}
         <p className="qr-desc">스캐너에 화면을 인식시켜주세요.</p>
-        <div className="qr-wrapper" style={{ filter: 'blur(2px)' }}>
+        <div className="qr-wrapper" style={{ position: 'relative' }}>
           <div className="qr-placeholder" />
+          <div className="qr-loading-overlay">
+            <div className="qr-spinner" />
+          </div>
         </div>
         <div style={{ color: 'var(--color-success)', fontWeight: '700', fontSize: '1rem', marginBottom: '0.5rem' }}>
           Refreshing...
@@ -61,7 +64,7 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
   }
 
   return (
-    <div className="qr-glass-panel" style={{ opacity: refreshing ? 0.7 : 1, transition: 'opacity 0.2s' }}>
+    <div className="qr-glass-panel">
       <h2 className="qr-title">출입증 QR</h2>
       {user?.name && (
         <div style={{ marginBottom: '0.25rem', fontSize: '1.1rem', fontWeight: '600', color: 'var(--text-primary)' }}>
@@ -70,8 +73,13 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
       )}
       <p className="qr-desc">스캐너에 화면을 인식시켜주세요.</p>
 
-      <div className="qr-wrapper" style={{ filter: refreshing ? 'blur(2px)' : 'none' }}>
+      <div className="qr-wrapper" style={{ position: 'relative' }}>
         <QRCodeSVG value={qrData} size={220} level="M" />
+        {refreshing && (
+          <div className="qr-loading-overlay">
+            <div className="qr-spinner" />
+          </div>
+        )}
       </div>
 
       <div style={{ color: timeLeft <= 5 ? 'var(--color-error)' : 'var(--color-success)', fontWeight: '700', fontSize: '1rem', marginBottom: '0.5rem' }}>
