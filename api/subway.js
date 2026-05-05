@@ -70,7 +70,66 @@ async function getHolidays(year) {
 // Station codes for SearchSTNTimeTableByIDService
 const STATION_CODES = {
   '1004': '1755', // Line 4
+  '1075': 'K251', // Suin-Bundang
 };
+
+const TTL_30_DAYS = 30 * 24 * 60 * 60 * 1000;
+
+async function refreshTimetableIfNeeded(lineId, key) {
+  const fileName = lineId === '1004' ? 'line4_timetable.json' : 'suin_timetable.json';
+  const filePath = path.join(process.cwd(), 'api', '_lib', fileName);
+  const stCode = STATION_CODES[lineId];
+
+  try {
+    let currentData = null;
+    if (fs.existsSync(filePath)) {
+      currentData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      const lastUpdated = new Date(currentData.metadata?.lastUpdated || 0).getTime();
+      if (Date.now() - lastUpdated < TTL_30_DAYS) {
+        return currentData;
+      }
+      console.log(`[Subway API] ${lineId} timetable is older than 30 days. Refreshing...`);
+    }
+
+    const result = {
+      metadata: { lastUpdated: new Date().toISOString() },
+      weekday: { upward: [], downward: [] },
+      saturday: { upward: [], downward: [] },
+      holiday: { upward: [], downward: [] }
+    };
+
+    const dayMap = { '1': 'weekday', '2': 'saturday', '3': 'holiday' };
+    for (const [dayTag, dayKey] of Object.entries(dayMap)) {
+      for (const upDown of ['1', '2']) {
+        const url = `http://openAPI.seoul.go.kr:8088/${key}/json/SearchSTNTimeTableByIDService/1/1000/${stCode}/${dayTag}/${upDown}/`;
+        try {
+          const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+          const data = await res.json();
+          if (data.SearchSTNTimeTableByIDService) {
+            const rows = data.SearchSTNTimeTableByIDService.row || [];
+            const dirKey = upDown === '1' ? 'upward' : 'downward';
+            result[dayKey][dirKey] = rows.map(r => ({
+              time: r.ARRIVETIME,
+              destination: r.SUBWAYENAME,
+              train_no: r.TRAIN_NO
+            }));
+          }
+        } catch (e) { console.error(`[Subway API] Refresh fetch failed for ${lineId} (${dayKey}):`, e.message); }
+      }
+    }
+
+    // Only write if we actually got some data (avoid wiping file on API failure)
+    if (result.weekday.upward.length > 0) {
+      fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
+      console.log(`[Subway API] Successfully updated ${fileName}`);
+      return result;
+    }
+    return currentData; // Fallback to old data if refresh failed
+  } catch (e) {
+    console.error(`[Subway API] Critical error refreshing ${lineId}:`, e.message);
+    return null;
+  }
+}
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -150,95 +209,80 @@ export default async function handler(req, res) {
     if (!cacheEntry.data || nowMs - cacheEntry.lastUpdated > WEEK_MS) {
       const ttResults = [];
       const seenTrains = new Set();
-      
-      // A. Suin-Bundang (Local Data)
-      try {
-        const localPath = path.join(process.cwd(), 'api', '_lib', 'suin_timetable.json');
-        if (fs.existsSync(localPath)) {
-          const localData = JSON.parse(fs.readFileSync(localPath, 'utf8'));
-          const dayType = dayTag === '1' ? 'weekday' : 'holiday';
-          const suinData = localData[dayType];
+      const dayKey = dayTag === '1' ? 'weekday' : (dayTag === '2' ? 'saturday' : 'holiday');
+
+      // Process both Line 4 and Suin-Bundang
+      for (const lineId of ['1004', '1075']) {
+        const localData = await refreshTimetableIfNeeded(lineId, key);
+        if (localData) {
+          // Fallback logic for missing saturday in old JSONs
+          const lineData = localData[dayKey] || localData['holiday']; 
           
           ['upward', 'downward'].forEach(dir => {
             const updnLine = dir === 'upward' ? '상행' : '하행';
-            (suinData[dir] || []).forEach(r => {
-              ttResults.push({
-                subwayId: '1075',
-                updnLine: updnLine,
-                dest: r.destination,
-                arrTime: r.time.substring(0, 5),
-                trainNo: r.train_no,
-                isRealtime: false,
-              });
-            });
-          });
-        }
-      } catch (e) { console.error('Local Suin timetable load failed:', e); }
-
-      // B. Line 4 (External API)
-      const stCodeLine4 = STATION_CODES['1004'];
-      for (const upDown of ['1', '2']) {
-        const ttUrl = `http://openAPI.seoul.go.kr:8088/${key}/json/SearchSTNTimeTableByIDService/1/2000/${stCodeLine4}/${dayTag}/${upDown}/`;
-        try {
-          const ttRes = await fetch(ttUrl, { signal: AbortSignal.timeout(5000) });
-          const ttData = await ttRes.json();
-          if (ttData.SearchSTNTimeTableByIDService) {
-            const rows = ttData.SearchSTNTimeTableByIDService.row || [];
-            console.log(`[Subway API] Line 4 (${upDown === '1' ? 'Up' : 'Down'}): Found ${rows.length} rows`);
-            rows.forEach(r => {
-              const updnLine = upDown === '1' ? '상행' : '하행';
-              const trainId = `1004-${updnLine}-${r.TRAIN_NO}`;
-              
-              // Map Danggogae to Bulamsan for frontend consistency
-              let destination = r.SUBWAYENAME;
-              if (destination === '당고개') destination = '불암산';
-              
+            (lineData[dir] || []).forEach(r => {
+              const trainId = `${lineId}-${updnLine}-${r.train_no}`;
               if (!seenTrains.has(trainId)) {
                 seenTrains.add(trainId);
+                
+                let destination = r.destination;
+                if (lineId === '1004' && destination === '당고개') destination = '불암산';
+
                 ttResults.push({
-                  subwayId: '1004',
+                  subwayId: lineId,
                   updnLine: updnLine,
                   dest: destination,
-                  arrTime: r.ARRIVETIME.substring(0, 5),
-                  trainNo: r.TRAIN_NO,
+                  arrTime: r.time.substring(0, 5),
+                  trainNo: r.train_no,
                   isRealtime: false,
                 });
               }
             });
-          }
-        } catch (e) { console.error(`Line 4 timetable fetch failed:`, e); }
+          });
+        }
       }
       timetableCache[dayTag] = { data: ttResults, lastUpdated: nowMs };
     }
 
+
     // 3. Merge: Realtime priority
     const combined = [...rtArrivals];
+    const normalizeTrainNo = (no) => (no || '').replace(/[^0-9]/g, '');
+    
     const rtTimeKeys = new Set(rtArrivals.map(a => `${a.subwayId}-${a.updnLine}-${a.arrTime}`));
-    const rtTrainKeys = new Set(rtArrivals.map(a => `${a.subwayId}-${a.updnLine}-${a.btrainNo}`));
+    const rtTrainKeys = new Set(rtArrivals.map(a => `${a.subwayId}-${a.updnLine}-${normalizeTrainNo(a.btrainNo)}`));
     
     const nowHHMM = `${String(hour).padStart(2, '0')}:${String(nowKst.getMinutes()).padStart(2, '0')}`;
     console.log(`[Subway API] DayTag: ${dayTag}, Time: ${nowHHMM}`);
     
     timetableCache[dayTag].data.forEach(tt => {
+      const normTtTrainNo = normalizeTrainNo(tt.trainNo);
       const keyPrefix = `${tt.subwayId}-${tt.updnLine}-`;
       const timeKey = `${keyPrefix}${tt.arrTime}`;
-      const trainKey = `${keyPrefix}${tt.trainNo}`;
+      const trainKey = `${keyPrefix}${normTtTrainNo}`;
       
       const [h, m] = tt.arrTime.split(':').map(Number);
       const toTimeKey = (hh, mm) => {
         let finalH = hh, finalM = mm;
-        if (finalM < 0) { finalM = 59; finalH--; }
-        if (finalM > 59) { finalM = 0; finalH++; }
+        while (finalM < 0) { finalM += 60; finalH--; }
+        while (finalM > 59) { finalM -= 60; finalH++; }
         return `${keyPrefix}${String(finalH).padStart(2, '0')}:${String(finalM).padStart(2, '0')}`;
       };
 
-      const mMinus = toTimeKey(h, m - 1);
-      const mPlus = toTimeKey(h, m + 1);
-
-      const isDuplicate = rtTrainKeys.has(trainKey) ||
-        rtTimeKeys.has(timeKey) ||
-        rtTimeKeys.has(mMinus) ||
-        rtTimeKeys.has(mPlus);
+      // Deduplication Logic:
+      // 1. Priority: Match by Train Number (Normalized)
+      let isDuplicate = rtTrainKeys.has(trainKey);
+      
+      // 2. Fallback: Match by narrow time window (±1 min) if train number didn't match
+      // This handles cases where train numbers might differ but it's clearly the same arrival
+      if (!isDuplicate) {
+        for (let diff = -1; diff <= 1; diff++) {
+          if (rtTimeKeys.has(toTimeKey(h, m + diff))) {
+            isDuplicate = true;
+            break;
+          }
+        }
+      }
 
       if (!isDuplicate && tt.arrTime >= nowHHMM) {
         combined.push(tt);

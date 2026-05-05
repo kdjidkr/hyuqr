@@ -1,0 +1,3493 @@
+{
+  "metadata": {
+    "lastUpdated": "2026-05-05T04:04:35.601Z"
+  },
+  "weekday": {
+    "upward": [
+      {
+        "time": "05:17:00",
+        "destination": "불암산",
+        "train_no": "4304K"
+      },
+      {
+        "time": "05:31:30",
+        "destination": "불암산",
+        "train_no": "4502K"
+      },
+      {
+        "time": "05:39:30",
+        "destination": "불암산",
+        "train_no": "4504K"
+      },
+      {
+        "time": "05:50:30",
+        "destination": "불암산",
+        "train_no": "4506K"
+      },
+      {
+        "time": "05:57:30",
+        "destination": "불암산",
+        "train_no": "4508K"
+      },
+      {
+        "time": "06:02:30",
+        "destination": "불암산",
+        "train_no": "4510K"
+      },
+      {
+        "time": "06:11:30",
+        "destination": "불암산",
+        "train_no": "4512K"
+      },
+      {
+        "time": "06:20:30",
+        "destination": "불암산",
+        "train_no": "4514"
+      },
+      {
+        "time": "06:28:30",
+        "destination": "불암산",
+        "train_no": "4516K"
+      },
+      {
+        "time": "06:36:00",
+        "destination": "불암산",
+        "train_no": "4518K"
+      },
+      {
+        "time": "06:42:00",
+        "destination": "불암산",
+        "train_no": "4306K"
+      },
+      {
+        "time": "06:48:00",
+        "destination": "불암산",
+        "train_no": "4520K"
+      },
+      {
+        "time": "06:55:00",
+        "destination": "불암산",
+        "train_no": "4308K"
+      },
+      {
+        "time": "06:58:00",
+        "destination": "불암산",
+        "train_no": "4422K"
+      },
+      {
+        "time": "07:06:30",
+        "destination": "불암산",
+        "train_no": "4524K"
+      },
+      {
+        "time": "07:12:30",
+        "destination": "불암산",
+        "train_no": "4528"
+      },
+      {
+        "time": "07:15:30",
+        "destination": "불암산",
+        "train_no": "4426K"
+      },
+      {
+        "time": "07:23:00",
+        "destination": "불암산",
+        "train_no": "4310K"
+      },
+      {
+        "time": "07:28:30",
+        "destination": "불암산",
+        "train_no": "4530"
+      },
+      {
+        "time": "07:37:00",
+        "destination": "불암산",
+        "train_no": "4532K"
+      },
+      {
+        "time": "07:42:30",
+        "destination": "불암산",
+        "train_no": "4534K"
+      },
+      {
+        "time": "07:46:30",
+        "destination": "불암산",
+        "train_no": "4536"
+      },
+      {
+        "time": "07:52:30",
+        "destination": "불암산",
+        "train_no": "4538K"
+      },
+      {
+        "time": "07:58:00",
+        "destination": "불암산",
+        "train_no": "4540"
+      },
+      {
+        "time": "08:05:30",
+        "destination": "불암산",
+        "train_no": "4442K"
+      },
+      {
+        "time": "08:10:00",
+        "destination": "불암산",
+        "train_no": "4544"
+      },
+      {
+        "time": "08:19:30",
+        "destination": "불암산",
+        "train_no": "4446K"
+      },
+      {
+        "time": "08:22:00",
+        "destination": "불암산",
+        "train_no": "4548"
+      },
+      {
+        "time": "08:29:30",
+        "destination": "불암산",
+        "train_no": "4550"
+      },
+      {
+        "time": "08:37:30",
+        "destination": "불암산",
+        "train_no": "4312"
+      },
+      {
+        "time": "08:44:30",
+        "destination": "불암산",
+        "train_no": "4552"
+      },
+      {
+        "time": "08:53:00",
+        "destination": "불암산",
+        "train_no": "4314"
+      },
+      {
+        "time": "09:00:30",
+        "destination": "불암산",
+        "train_no": "4554"
+      },
+      {
+        "time": "09:10:30",
+        "destination": "불암산",
+        "train_no": "4556K"
+      },
+      {
+        "time": "09:20:30",
+        "destination": "불암산",
+        "train_no": "4558K"
+      },
+      {
+        "time": "09:30:30",
+        "destination": "불암산",
+        "train_no": "4560"
+      },
+      {
+        "time": "09:40:30",
+        "destination": "불암산",
+        "train_no": "4562"
+      },
+      {
+        "time": "09:50:30",
+        "destination": "불암산",
+        "train_no": "4564"
+      },
+      {
+        "time": "10:00:30",
+        "destination": "불암산",
+        "train_no": "4566K"
+      },
+      {
+        "time": "10:09:30",
+        "destination": "불암산",
+        "train_no": "4568"
+      },
+      {
+        "time": "10:20:30",
+        "destination": "불암산",
+        "train_no": "4570K"
+      },
+      {
+        "time": "10:32:00",
+        "destination": "불암산",
+        "train_no": "4572"
+      },
+      {
+        "time": "10:40:30",
+        "destination": "불암산",
+        "train_no": "4722"
+      },
+      {
+        "time": "10:43:30",
+        "destination": "불암산",
+        "train_no": "4574K"
+      },
+      {
+        "time": "10:53:30",
+        "destination": "불암산",
+        "train_no": "4576K"
+      },
+      {
+        "time": "11:07:30",
+        "destination": "불암산",
+        "train_no": "4578K"
+      },
+      {
+        "time": "11:17:30",
+        "destination": "불암산",
+        "train_no": "4580K"
+      },
+      {
+        "time": "11:27:30",
+        "destination": "불암산",
+        "train_no": "4582K"
+      },
+      {
+        "time": "11:35:00",
+        "destination": "불암산",
+        "train_no": "4316K"
+      },
+      {
+        "time": "11:45:30",
+        "destination": "불암산",
+        "train_no": "4584K"
+      },
+      {
+        "time": "11:55:30",
+        "destination": "불암산",
+        "train_no": "4586"
+      },
+      {
+        "time": "12:03:30",
+        "destination": "불암산",
+        "train_no": "4588K"
+      },
+      {
+        "time": "12:13:30",
+        "destination": "불암산",
+        "train_no": "4590K"
+      },
+      {
+        "time": "12:24:30",
+        "destination": "불암산",
+        "train_no": "4592K"
+      },
+      {
+        "time": "12:38:30",
+        "destination": "불암산",
+        "train_no": "4594K"
+      },
+      {
+        "time": "12:49:30",
+        "destination": "불암산",
+        "train_no": "4596"
+      },
+      {
+        "time": "12:58:30",
+        "destination": "불암산",
+        "train_no": "4598"
+      },
+      {
+        "time": "13:08:30",
+        "destination": "불암산",
+        "train_no": "4600"
+      },
+      {
+        "time": "13:20:30",
+        "destination": "불암산",
+        "train_no": "4602"
+      },
+      {
+        "time": "13:32:30",
+        "destination": "불암산",
+        "train_no": "4604K"
+      },
+      {
+        "time": "13:38:30",
+        "destination": "불암산",
+        "train_no": "4606K"
+      },
+      {
+        "time": "13:50:30",
+        "destination": "불암산",
+        "train_no": "4608"
+      },
+      {
+        "time": "14:02:30",
+        "destination": "불암산",
+        "train_no": "4610"
+      },
+      {
+        "time": "14:07:00",
+        "destination": "불암산",
+        "train_no": "4318K"
+      },
+      {
+        "time": "14:17:30",
+        "destination": "불암산",
+        "train_no": "4612"
+      },
+      {
+        "time": "14:27:30",
+        "destination": "불암산",
+        "train_no": "4614"
+      },
+      {
+        "time": "14:41:30",
+        "destination": "불암산",
+        "train_no": "4616K"
+      },
+      {
+        "time": "14:52:30",
+        "destination": "불암산",
+        "train_no": "4618"
+      },
+      {
+        "time": "15:00:30",
+        "destination": "불암산",
+        "train_no": "4620K"
+      },
+      {
+        "time": "15:07:00",
+        "destination": "불암산",
+        "train_no": "4320K"
+      },
+      {
+        "time": "15:14:30",
+        "destination": "불암산",
+        "train_no": "4622K"
+      },
+      {
+        "time": "15:26:30",
+        "destination": "불암산",
+        "train_no": "4624K"
+      },
+      {
+        "time": "15:37:30",
+        "destination": "불암산",
+        "train_no": "4626K"
+      },
+      {
+        "time": "15:43:30",
+        "destination": "불암산",
+        "train_no": "4628K"
+      },
+      {
+        "time": "15:55:30",
+        "destination": "불암산",
+        "train_no": "4630K"
+      },
+      {
+        "time": "16:06:30",
+        "destination": "불암산",
+        "train_no": "4632K"
+      },
+      {
+        "time": "16:13:30",
+        "destination": "불암산",
+        "train_no": "4634"
+      },
+      {
+        "time": "16:22:30",
+        "destination": "불암산",
+        "train_no": "4636K"
+      },
+      {
+        "time": "16:33:30",
+        "destination": "불암산",
+        "train_no": "4638K"
+      },
+      {
+        "time": "16:43:00",
+        "destination": "불암산",
+        "train_no": "4322K"
+      },
+      {
+        "time": "16:47:30",
+        "destination": "불암산",
+        "train_no": "4640K"
+      },
+      {
+        "time": "16:56:30",
+        "destination": "불암산",
+        "train_no": "4642K"
+      },
+      {
+        "time": "17:04:00",
+        "destination": "불암산",
+        "train_no": "4324K"
+      },
+      {
+        "time": "17:11:30",
+        "destination": "불암산",
+        "train_no": "4644"
+      },
+      {
+        "time": "17:19:00",
+        "destination": "불암산",
+        "train_no": "4326K"
+      },
+      {
+        "time": "17:26:30",
+        "destination": "불암산",
+        "train_no": "4646"
+      },
+      {
+        "time": "17:33:30",
+        "destination": "불암산",
+        "train_no": "4648"
+      },
+      {
+        "time": "17:40:00",
+        "destination": "불암산",
+        "train_no": "4328K"
+      },
+      {
+        "time": "17:47:30",
+        "destination": "불암산",
+        "train_no": "4650"
+      },
+      {
+        "time": "17:54:30",
+        "destination": "불암산",
+        "train_no": "4652K"
+      },
+      {
+        "time": "18:01:30",
+        "destination": "불암산",
+        "train_no": "4654K"
+      },
+      {
+        "time": "18:09:30",
+        "destination": "불암산",
+        "train_no": "4656"
+      },
+      {
+        "time": "18:16:00",
+        "destination": "불암산",
+        "train_no": "4658"
+      },
+      {
+        "time": "18:23:30",
+        "destination": "불암산",
+        "train_no": "4660K"
+      },
+      {
+        "time": "18:29:30",
+        "destination": "불암산",
+        "train_no": "4662K"
+      },
+      {
+        "time": "18:37:30",
+        "destination": "불암산",
+        "train_no": "4664K"
+      },
+      {
+        "time": "18:44:00",
+        "destination": "불암산",
+        "train_no": "4666"
+      },
+      {
+        "time": "18:51:30",
+        "destination": "불암산",
+        "train_no": "4668"
+      },
+      {
+        "time": "18:59:30",
+        "destination": "불암산",
+        "train_no": "4670K"
+      },
+      {
+        "time": "19:08:30",
+        "destination": "불암산",
+        "train_no": "4672"
+      },
+      {
+        "time": "19:15:30",
+        "destination": "불암산",
+        "train_no": "4674K"
+      },
+      {
+        "time": "19:24:30",
+        "destination": "불암산",
+        "train_no": "4676K"
+      },
+      {
+        "time": "19:31:30",
+        "destination": "불암산",
+        "train_no": "4678K"
+      },
+      {
+        "time": "19:40:30",
+        "destination": "불암산",
+        "train_no": "4680K"
+      },
+      {
+        "time": "19:49:30",
+        "destination": "불암산",
+        "train_no": "4682"
+      },
+      {
+        "time": "19:57:00",
+        "destination": "불암산",
+        "train_no": "4330K"
+      },
+      {
+        "time": "20:06:30",
+        "destination": "불암산",
+        "train_no": "4684"
+      },
+      {
+        "time": "20:12:30",
+        "destination": "불암산",
+        "train_no": "4686K"
+      },
+      {
+        "time": "20:22:30",
+        "destination": "불암산",
+        "train_no": "4688K"
+      },
+      {
+        "time": "20:32:00",
+        "destination": "불암산",
+        "train_no": "4332K"
+      },
+      {
+        "time": "20:35:30",
+        "destination": "불암산",
+        "train_no": "4690"
+      },
+      {
+        "time": "20:41:30",
+        "destination": "불암산",
+        "train_no": "4334K"
+      },
+      {
+        "time": "20:46:30",
+        "destination": "불암산",
+        "train_no": "4692"
+      },
+      {
+        "time": "20:59:30",
+        "destination": "불암산",
+        "train_no": "4694K"
+      },
+      {
+        "time": "21:13:30",
+        "destination": "불암산",
+        "train_no": "4696"
+      },
+      {
+        "time": "21:21:30",
+        "destination": "불암산",
+        "train_no": "4698K"
+      },
+      {
+        "time": "21:36:30",
+        "destination": "불암산",
+        "train_no": "4700"
+      },
+      {
+        "time": "21:50:30",
+        "destination": "불암산",
+        "train_no": "4702"
+      },
+      {
+        "time": "22:04:30",
+        "destination": "불암산",
+        "train_no": "4704"
+      },
+      {
+        "time": "22:17:30",
+        "destination": "불암산",
+        "train_no": "4706K"
+      },
+      {
+        "time": "22:31:00",
+        "destination": "불암산",
+        "train_no": "4708"
+      },
+      {
+        "time": "22:44:30",
+        "destination": "불암산",
+        "train_no": "4710"
+      },
+      {
+        "time": "22:57:30",
+        "destination": "불암산",
+        "train_no": "4712K"
+      },
+      {
+        "time": "23:15:00",
+        "destination": "불암산",
+        "train_no": "4714"
+      },
+      {
+        "time": "23:30:30",
+        "destination": "금정",
+        "train_no": "4716K"
+      },
+      {
+        "time": "23:47:30",
+        "destination": "한성대입구",
+        "train_no": "4718"
+      },
+      {
+        "time": "24:20:30",
+        "destination": "금정",
+        "train_no": "4720K"
+      }
+    ],
+    "downward": [
+      {
+        "time": "00:00:00",
+        "destination": "오이도",
+        "train_no": "K4469"
+      },
+      {
+        "time": "00:00:00",
+        "destination": "오이도",
+        "train_no": "K4487"
+      },
+      {
+        "time": "00:00:00",
+        "destination": "오이도",
+        "train_no": "K4495"
+      },
+      {
+        "time": "06:00:30",
+        "destination": "오이도",
+        "train_no": "K4503"
+      },
+      {
+        "time": "06:16:30",
+        "destination": "오이도",
+        "train_no": "K4505"
+      },
+      {
+        "time": "06:32:00",
+        "destination": "오이도",
+        "train_no": "S4507"
+      },
+      {
+        "time": "06:48:30",
+        "destination": "오이도",
+        "train_no": "S4509"
+      },
+      {
+        "time": "07:01:00",
+        "destination": "오이도",
+        "train_no": "S4511"
+      },
+      {
+        "time": "07:12:00",
+        "destination": "오이도",
+        "train_no": "S4513"
+      },
+      {
+        "time": "07:21:00",
+        "destination": "오이도",
+        "train_no": "S4515"
+      },
+      {
+        "time": "07:32:00",
+        "destination": "오이도",
+        "train_no": "S4517"
+      },
+      {
+        "time": "07:41:00",
+        "destination": "오이도",
+        "train_no": "S4519"
+      },
+      {
+        "time": "07:49:00",
+        "destination": "오이도",
+        "train_no": "S4521"
+      },
+      {
+        "time": "07:57:00",
+        "destination": "오이도",
+        "train_no": "K4523"
+      },
+      {
+        "time": "08:05:00",
+        "destination": "안산",
+        "train_no": "S4301"
+      },
+      {
+        "time": "08:13:00",
+        "destination": "오이도",
+        "train_no": "K4525"
+      },
+      {
+        "time": "08:20:00",
+        "destination": "오이도",
+        "train_no": "K4527"
+      },
+      {
+        "time": "08:26:00",
+        "destination": "안산",
+        "train_no": "S4303"
+      },
+      {
+        "time": "08:33:00",
+        "destination": "오이도",
+        "train_no": "S4529"
+      },
+      {
+        "time": "08:38:00",
+        "destination": "오이도",
+        "train_no": "K4531"
+      },
+      {
+        "time": "08:44:00",
+        "destination": "오이도",
+        "train_no": "S4533"
+      },
+      {
+        "time": "08:51:00",
+        "destination": "오이도",
+        "train_no": "S4535"
+      },
+      {
+        "time": "08:57:00",
+        "destination": "안산",
+        "train_no": "K4305"
+      },
+      {
+        "time": "09:04:00",
+        "destination": "오이도",
+        "train_no": "K4537"
+      },
+      {
+        "time": "09:08:00",
+        "destination": "오이도",
+        "train_no": "S4539"
+      },
+      {
+        "time": "09:14:00",
+        "destination": "안산",
+        "train_no": "K4307"
+      },
+      {
+        "time": "09:21:00",
+        "destination": "오이도",
+        "train_no": "K4541"
+      },
+      {
+        "time": "09:26:00",
+        "destination": "오이도",
+        "train_no": "K4543"
+      },
+      {
+        "time": "09:31:30",
+        "destination": "오이도",
+        "train_no": "S4719"
+      },
+      {
+        "time": "09:34:00",
+        "destination": "안산",
+        "train_no": "K4309"
+      },
+      {
+        "time": "09:44:00",
+        "destination": "오이도",
+        "train_no": "S4545"
+      },
+      {
+        "time": "09:51:00",
+        "destination": "오이도",
+        "train_no": "K4547"
+      },
+      {
+        "time": "09:58:00",
+        "destination": "오이도",
+        "train_no": "K4549"
+      },
+      {
+        "time": "10:04:00",
+        "destination": "오이도",
+        "train_no": "K4551"
+      },
+      {
+        "time": "10:11:00",
+        "destination": "안산",
+        "train_no": "K4311"
+      },
+      {
+        "time": "10:15:30",
+        "destination": "오이도",
+        "train_no": "K4553"
+      },
+      {
+        "time": "10:23:00",
+        "destination": "오이도",
+        "train_no": "K4555"
+      },
+      {
+        "time": "10:29:00",
+        "destination": "안산",
+        "train_no": "K4313"
+      },
+      {
+        "time": "10:34:30",
+        "destination": "오이도",
+        "train_no": "K4557"
+      },
+      {
+        "time": "10:45:00",
+        "destination": "오이도",
+        "train_no": "K4559"
+      },
+      {
+        "time": "10:55:00",
+        "destination": "오이도",
+        "train_no": "S4561"
+      },
+      {
+        "time": "11:05:00",
+        "destination": "오이도",
+        "train_no": "K4563"
+      },
+      {
+        "time": "11:09:00",
+        "destination": "안산",
+        "train_no": "K4315"
+      },
+      {
+        "time": "11:18:00",
+        "destination": "오이도",
+        "train_no": "K4565"
+      },
+      {
+        "time": "11:28:00",
+        "destination": "오이도",
+        "train_no": "K4567"
+      },
+      {
+        "time": "11:38:00",
+        "destination": "오이도",
+        "train_no": "K4569"
+      },
+      {
+        "time": "11:49:00",
+        "destination": "오이도",
+        "train_no": "S4571"
+      },
+      {
+        "time": "12:00:00",
+        "destination": "오이도",
+        "train_no": "S4573"
+      },
+      {
+        "time": "12:11:00",
+        "destination": "오이도",
+        "train_no": "S4575"
+      },
+      {
+        "time": "12:22:00",
+        "destination": "오이도",
+        "train_no": "S4577"
+      },
+      {
+        "time": "12:33:00",
+        "destination": "오이도",
+        "train_no": "K4579"
+      },
+      {
+        "time": "12:44:00",
+        "destination": "오이도",
+        "train_no": "K4581"
+      },
+      {
+        "time": "12:51:00",
+        "destination": "오이도",
+        "train_no": "S4583"
+      },
+      {
+        "time": "13:03:00",
+        "destination": "오이도",
+        "train_no": "S4585"
+      },
+      {
+        "time": "13:15:00",
+        "destination": "오이도",
+        "train_no": "S4587"
+      },
+      {
+        "time": "13:27:00",
+        "destination": "안산",
+        "train_no": "K4317"
+      },
+      {
+        "time": "13:34:00",
+        "destination": "오이도",
+        "train_no": "S4589"
+      },
+      {
+        "time": "13:45:00",
+        "destination": "오이도",
+        "train_no": "K4591"
+      },
+      {
+        "time": "13:56:00",
+        "destination": "오이도",
+        "train_no": "S4593"
+      },
+      {
+        "time": "14:07:00",
+        "destination": "오이도",
+        "train_no": "K4595"
+      },
+      {
+        "time": "14:17:30",
+        "destination": "오이도",
+        "train_no": "K4597"
+      },
+      {
+        "time": "14:29:00",
+        "destination": "오이도",
+        "train_no": "K4599"
+      },
+      {
+        "time": "14:40:00",
+        "destination": "오이도",
+        "train_no": "K4601"
+      },
+      {
+        "time": "14:50:00",
+        "destination": "오이도",
+        "train_no": "K4603"
+      },
+      {
+        "time": "14:58:00",
+        "destination": "오이도",
+        "train_no": "K4605"
+      },
+      {
+        "time": "15:09:00",
+        "destination": "오이도",
+        "train_no": "K4607"
+      },
+      {
+        "time": "15:19:00",
+        "destination": "오이도",
+        "train_no": "S4609"
+      },
+      {
+        "time": "15:27:00",
+        "destination": "오이도",
+        "train_no": "K4611"
+      },
+      {
+        "time": "15:37:00",
+        "destination": "오이도",
+        "train_no": "K4613"
+      },
+      {
+        "time": "15:48:00",
+        "destination": "오이도",
+        "train_no": "K4615"
+      },
+      {
+        "time": "16:02:00",
+        "destination": "오이도",
+        "train_no": "K4617"
+      },
+      {
+        "time": "16:13:00",
+        "destination": "오이도",
+        "train_no": "S4619"
+      },
+      {
+        "time": "16:22:00",
+        "destination": "오이도",
+        "train_no": "S4621"
+      },
+      {
+        "time": "16:33:00",
+        "destination": "오이도",
+        "train_no": "S4623"
+      },
+      {
+        "time": "16:44:00",
+        "destination": "오이도",
+        "train_no": "S4625"
+      },
+      {
+        "time": "16:56:00",
+        "destination": "오이도",
+        "train_no": "K4627"
+      },
+      {
+        "time": "17:02:00",
+        "destination": "오이도",
+        "train_no": "K4629"
+      },
+      {
+        "time": "17:15:00",
+        "destination": "오이도",
+        "train_no": "S4631"
+      },
+      {
+        "time": "17:26:00",
+        "destination": "오이도",
+        "train_no": "S4633"
+      },
+      {
+        "time": "17:31:00",
+        "destination": "오이도",
+        "train_no": "K4635"
+      },
+      {
+        "time": "17:41:00",
+        "destination": "오이도",
+        "train_no": "S4637"
+      },
+      {
+        "time": "17:51:00",
+        "destination": "오이도",
+        "train_no": "S4639"
+      },
+      {
+        "time": "18:05:00",
+        "destination": "오이도",
+        "train_no": "K4641"
+      },
+      {
+        "time": "18:14:30",
+        "destination": "오이도",
+        "train_no": "S4643"
+      },
+      {
+        "time": "18:23:00",
+        "destination": "오이도",
+        "train_no": "K4645"
+      },
+      {
+        "time": "18:30:00",
+        "destination": "오이도",
+        "train_no": "K4647"
+      },
+      {
+        "time": "18:37:00",
+        "destination": "오이도",
+        "train_no": "K4649"
+      },
+      {
+        "time": "18:44:30",
+        "destination": "오이도",
+        "train_no": "S4651"
+      },
+      {
+        "time": "18:51:30",
+        "destination": "오이도",
+        "train_no": "K4653"
+      },
+      {
+        "time": "18:59:00",
+        "destination": "오이도",
+        "train_no": "K4655"
+      },
+      {
+        "time": "19:06:00",
+        "destination": "오이도",
+        "train_no": "K4657"
+      },
+      {
+        "time": "19:12:30",
+        "destination": "오이도",
+        "train_no": "S4659"
+      },
+      {
+        "time": "19:19:00",
+        "destination": "오이도",
+        "train_no": "K4661"
+      },
+      {
+        "time": "19:29:00",
+        "destination": "오이도",
+        "train_no": "K4663"
+      },
+      {
+        "time": "19:35:00",
+        "destination": "오이도",
+        "train_no": "S4665"
+      },
+      {
+        "time": "19:41:00",
+        "destination": "오이도",
+        "train_no": "S4667"
+      },
+      {
+        "time": "19:54:00",
+        "destination": "안산",
+        "train_no": "K4321"
+      },
+      {
+        "time": "20:02:30",
+        "destination": "오이도",
+        "train_no": "S4671"
+      },
+      {
+        "time": "20:09:00",
+        "destination": "오이도",
+        "train_no": "K4673"
+      },
+      {
+        "time": "20:13:00",
+        "destination": "안산",
+        "train_no": "K4323"
+      },
+      {
+        "time": "20:20:00",
+        "destination": "오이도",
+        "train_no": "K4675"
+      },
+      {
+        "time": "20:27:00",
+        "destination": "오이도",
+        "train_no": "K4677"
+      },
+      {
+        "time": "20:34:00",
+        "destination": "오이도",
+        "train_no": "S4679"
+      },
+      {
+        "time": "20:42:00",
+        "destination": "오이도",
+        "train_no": "K4681"
+      },
+      {
+        "time": "20:50:00",
+        "destination": "오이도",
+        "train_no": "S4683"
+      },
+      {
+        "time": "20:58:00",
+        "destination": "오이도",
+        "train_no": "S4685"
+      },
+      {
+        "time": "21:16:30",
+        "destination": "오이도",
+        "train_no": "K4689"
+      },
+      {
+        "time": "21:24:00",
+        "destination": "오이도",
+        "train_no": "K4691"
+      },
+      {
+        "time": "21:33:00",
+        "destination": "오이도",
+        "train_no": "S4693"
+      },
+      {
+        "time": "21:40:00",
+        "destination": "오이도",
+        "train_no": "S4695"
+      },
+      {
+        "time": "21:46:00",
+        "destination": "안산",
+        "train_no": "K4327"
+      },
+      {
+        "time": "22:01:00",
+        "destination": "오이도",
+        "train_no": "K4697"
+      },
+      {
+        "time": "22:10:00",
+        "destination": "오이도",
+        "train_no": "S4699"
+      },
+      {
+        "time": "22:20:00",
+        "destination": "오이도",
+        "train_no": "S4701"
+      },
+      {
+        "time": "22:25:00",
+        "destination": "안산",
+        "train_no": "K4331"
+      },
+      {
+        "time": "22:32:00",
+        "destination": "오이도",
+        "train_no": "S4703"
+      },
+      {
+        "time": "22:39:00",
+        "destination": "오이도",
+        "train_no": "K4705"
+      },
+      {
+        "time": "22:48:00",
+        "destination": "안산",
+        "train_no": "K4335"
+      },
+      {
+        "time": "22:55:00",
+        "destination": "오이도",
+        "train_no": "K4707"
+      },
+      {
+        "time": "23:08:00",
+        "destination": "오이도",
+        "train_no": "K4709"
+      },
+      {
+        "time": "23:17:00",
+        "destination": "안산",
+        "train_no": "S4337"
+      },
+      {
+        "time": "23:25:00",
+        "destination": "오이도",
+        "train_no": "K4711"
+      },
+      {
+        "time": "23:36:00",
+        "destination": "오이도",
+        "train_no": "K4713"
+      },
+      {
+        "time": "23:48:00",
+        "destination": "오이도",
+        "train_no": "K4715"
+      },
+      {
+        "time": "23:56:00",
+        "destination": "안산",
+        "train_no": "K4339"
+      },
+      {
+        "time": "24:12:00",
+        "destination": "오이도",
+        "train_no": "K4717"
+      },
+      {
+        "time": "24:27:00",
+        "destination": "안산",
+        "train_no": "K4341"
+      }
+    ]
+  },
+  "saturday": {
+    "upward": [
+      {
+        "time": "05:29:30",
+        "destination": "불암산",
+        "train_no": "K4304"
+      },
+      {
+        "time": "05:36:30",
+        "destination": "불암산",
+        "train_no": "K4306"
+      },
+      {
+        "time": "05:48:30",
+        "destination": "불암산",
+        "train_no": "K4502"
+      },
+      {
+        "time": "06:00:30",
+        "destination": "불암산",
+        "train_no": "S4504"
+      },
+      {
+        "time": "06:12:30",
+        "destination": "불암산",
+        "train_no": "K4506"
+      },
+      {
+        "time": "06:24:30",
+        "destination": "불암산",
+        "train_no": "K4508"
+      },
+      {
+        "time": "06:36:30",
+        "destination": "불암산",
+        "train_no": "K4510"
+      },
+      {
+        "time": "06:48:30",
+        "destination": "불암산",
+        "train_no": "K4512"
+      },
+      {
+        "time": "07:00:30",
+        "destination": "불암산",
+        "train_no": "K4514"
+      },
+      {
+        "time": "07:12:30",
+        "destination": "불암산",
+        "train_no": "K4516"
+      },
+      {
+        "time": "07:18:00",
+        "destination": "불암산",
+        "train_no": "K4308"
+      },
+      {
+        "time": "07:24:30",
+        "destination": "불암산",
+        "train_no": "S4518"
+      },
+      {
+        "time": "07:36:30",
+        "destination": "불암산",
+        "train_no": "S4520"
+      },
+      {
+        "time": "07:42:30",
+        "destination": "불암산",
+        "train_no": "K4522"
+      },
+      {
+        "time": "07:54:30",
+        "destination": "불암산",
+        "train_no": "S4524"
+      },
+      {
+        "time": "08:06:30",
+        "destination": "불암산",
+        "train_no": "K4526"
+      },
+      {
+        "time": "08:18:30",
+        "destination": "불암산",
+        "train_no": "S4528"
+      },
+      {
+        "time": "08:28:30",
+        "destination": "불암산",
+        "train_no": "S4310"
+      },
+      {
+        "time": "08:33:30",
+        "destination": "불암산",
+        "train_no": "S4530"
+      },
+      {
+        "time": "08:43:30",
+        "destination": "불암산",
+        "train_no": "K4532"
+      },
+      {
+        "time": "08:54:30",
+        "destination": "불암산",
+        "train_no": "S4534"
+      },
+      {
+        "time": "09:06:30",
+        "destination": "불암산",
+        "train_no": "S4536"
+      },
+      {
+        "time": "09:18:30",
+        "destination": "불암산",
+        "train_no": "S4538"
+      },
+      {
+        "time": "09:30:30",
+        "destination": "불암산",
+        "train_no": "S4540"
+      },
+      {
+        "time": "09:42:30",
+        "destination": "불암산",
+        "train_no": "K4542"
+      },
+      {
+        "time": "09:47:30",
+        "destination": "불암산",
+        "train_no": "K4544"
+      },
+      {
+        "time": "09:59:30",
+        "destination": "불암산",
+        "train_no": "K4546"
+      },
+      {
+        "time": "10:11:30",
+        "destination": "불암산",
+        "train_no": "K4548"
+      },
+      {
+        "time": "10:23:30",
+        "destination": "불암산",
+        "train_no": "S4550"
+      },
+      {
+        "time": "10:32:30",
+        "destination": "불암산",
+        "train_no": "K4552"
+      },
+      {
+        "time": "10:39:30",
+        "destination": "불암산",
+        "train_no": "K4554"
+      },
+      {
+        "time": "10:48:30",
+        "destination": "불암산",
+        "train_no": "K4556"
+      },
+      {
+        "time": "10:58:30",
+        "destination": "불암산",
+        "train_no": "K4558"
+      },
+      {
+        "time": "11:03:30",
+        "destination": "불암산",
+        "train_no": "K4560"
+      },
+      {
+        "time": "11:13:30",
+        "destination": "불암산",
+        "train_no": "K4562"
+      },
+      {
+        "time": "11:23:30",
+        "destination": "불암산",
+        "train_no": "K4564"
+      },
+      {
+        "time": "11:28:30",
+        "destination": "불암산",
+        "train_no": "K4566"
+      },
+      {
+        "time": "11:38:30",
+        "destination": "불암산",
+        "train_no": "K4568"
+      },
+      {
+        "time": "11:47:00",
+        "destination": "불암산",
+        "train_no": "S4312"
+      },
+      {
+        "time": "11:53:30",
+        "destination": "불암산",
+        "train_no": "K4570"
+      },
+      {
+        "time": "12:01:30",
+        "destination": "불암산",
+        "train_no": "K4314"
+      },
+      {
+        "time": "12:09:30",
+        "destination": "불암산",
+        "train_no": "K4572"
+      },
+      {
+        "time": "12:18:30",
+        "destination": "불암산",
+        "train_no": "S4574"
+      },
+      {
+        "time": "12:28:30",
+        "destination": "불암산",
+        "train_no": "K4576"
+      },
+      {
+        "time": "12:38:30",
+        "destination": "불암산",
+        "train_no": "K4578"
+      },
+      {
+        "time": "12:43:30",
+        "destination": "불암산",
+        "train_no": "S4580"
+      },
+      {
+        "time": "12:53:30",
+        "destination": "불암산",
+        "train_no": "S4582"
+      },
+      {
+        "time": "13:01:30",
+        "destination": "불암산",
+        "train_no": "K4316"
+      },
+      {
+        "time": "13:09:30",
+        "destination": "불암산",
+        "train_no": "K4584"
+      },
+      {
+        "time": "13:18:30",
+        "destination": "불암산",
+        "train_no": "S4586"
+      },
+      {
+        "time": "13:28:30",
+        "destination": "불암산",
+        "train_no": "S4588"
+      },
+      {
+        "time": "13:33:30",
+        "destination": "불암산",
+        "train_no": "K4590"
+      },
+      {
+        "time": "13:43:30",
+        "destination": "불암산",
+        "train_no": "S4592"
+      },
+      {
+        "time": "13:53:30",
+        "destination": "불암산",
+        "train_no": "K4594"
+      },
+      {
+        "time": "13:58:30",
+        "destination": "불암산",
+        "train_no": "S4596"
+      },
+      {
+        "time": "14:06:30",
+        "destination": "불암산",
+        "train_no": "S4318"
+      },
+      {
+        "time": "14:14:30",
+        "destination": "불암산",
+        "train_no": "K4598"
+      },
+      {
+        "time": "14:23:30",
+        "destination": "불암산",
+        "train_no": "K4600"
+      },
+      {
+        "time": "14:33:30",
+        "destination": "불암산",
+        "train_no": "K4602"
+      },
+      {
+        "time": "14:43:30",
+        "destination": "불암산",
+        "train_no": "S4604"
+      },
+      {
+        "time": "14:48:30",
+        "destination": "불암산",
+        "train_no": "K4320"
+      },
+      {
+        "time": "14:58:30",
+        "destination": "불암산",
+        "train_no": "K4606"
+      },
+      {
+        "time": "15:06:30",
+        "destination": "불암산",
+        "train_no": "K4608"
+      },
+      {
+        "time": "15:14:30",
+        "destination": "불암산",
+        "train_no": "K4610"
+      },
+      {
+        "time": "15:23:30",
+        "destination": "불암산",
+        "train_no": "K4612"
+      },
+      {
+        "time": "15:32:30",
+        "destination": "불암산",
+        "train_no": "K4614"
+      },
+      {
+        "time": "15:39:30",
+        "destination": "불암산",
+        "train_no": "K4616"
+      },
+      {
+        "time": "15:48:30",
+        "destination": "불암산",
+        "train_no": "K4618"
+      },
+      {
+        "time": "15:58:30",
+        "destination": "불암산",
+        "train_no": "S4322"
+      },
+      {
+        "time": "16:03:30",
+        "destination": "불암산",
+        "train_no": "K4620"
+      },
+      {
+        "time": "16:12:30",
+        "destination": "불암산",
+        "train_no": "K4622"
+      },
+      {
+        "time": "16:19:30",
+        "destination": "불암산",
+        "train_no": "K4324"
+      },
+      {
+        "time": "16:28:30",
+        "destination": "불암산",
+        "train_no": "K4624"
+      },
+      {
+        "time": "16:38:30",
+        "destination": "불암산",
+        "train_no": "S4626"
+      },
+      {
+        "time": "16:47:00",
+        "destination": "불암산",
+        "train_no": "K4326"
+      },
+      {
+        "time": "16:53:30",
+        "destination": "불암산",
+        "train_no": "K4628"
+      },
+      {
+        "time": "17:03:30",
+        "destination": "불암산",
+        "train_no": "K4328"
+      },
+      {
+        "time": "17:08:30",
+        "destination": "불암산",
+        "train_no": "S4630"
+      },
+      {
+        "time": "17:19:30",
+        "destination": "불암산",
+        "train_no": "S4632"
+      },
+      {
+        "time": "17:30:30",
+        "destination": "불암산",
+        "train_no": "K4634"
+      },
+      {
+        "time": "17:40:30",
+        "destination": "불암산",
+        "train_no": "S4636"
+      },
+      {
+        "time": "17:45:30",
+        "destination": "불암산",
+        "train_no": "K4330"
+      },
+      {
+        "time": "17:55:30",
+        "destination": "불암산",
+        "train_no": "S4638"
+      },
+      {
+        "time": "18:07:30",
+        "destination": "불암산",
+        "train_no": "S4640"
+      },
+      {
+        "time": "18:19:30",
+        "destination": "불암산",
+        "train_no": "S4332"
+      },
+      {
+        "time": "18:25:30",
+        "destination": "불암산",
+        "train_no": "S4642"
+      },
+      {
+        "time": "18:37:30",
+        "destination": "불암산",
+        "train_no": "K4644"
+      },
+      {
+        "time": "18:49:30",
+        "destination": "불암산",
+        "train_no": "K4646"
+      },
+      {
+        "time": "19:01:30",
+        "destination": "불암산",
+        "train_no": "S4648"
+      },
+      {
+        "time": "19:13:30",
+        "destination": "불암산",
+        "train_no": "K4650"
+      },
+      {
+        "time": "19:25:30",
+        "destination": "불암산",
+        "train_no": "K4652"
+      },
+      {
+        "time": "19:37:30",
+        "destination": "불암산",
+        "train_no": "K4654"
+      },
+      {
+        "time": "19:49:30",
+        "destination": "불암산",
+        "train_no": "K4656"
+      },
+      {
+        "time": "20:00:30",
+        "destination": "불암산",
+        "train_no": "K4658"
+      },
+      {
+        "time": "20:08:30",
+        "destination": "불암산",
+        "train_no": "K4660"
+      },
+      {
+        "time": "20:19:30",
+        "destination": "불암산",
+        "train_no": "K4662"
+      },
+      {
+        "time": "20:31:30",
+        "destination": "불암산",
+        "train_no": "K4664"
+      },
+      {
+        "time": "20:43:30",
+        "destination": "불암산",
+        "train_no": "K4666"
+      },
+      {
+        "time": "20:55:30",
+        "destination": "불암산",
+        "train_no": "K4668"
+      },
+      {
+        "time": "21:07:30",
+        "destination": "불암산",
+        "train_no": "S4670"
+      },
+      {
+        "time": "21:19:30",
+        "destination": "불암산",
+        "train_no": "K4672"
+      },
+      {
+        "time": "21:31:30",
+        "destination": "불암산",
+        "train_no": "K4674"
+      },
+      {
+        "time": "21:43:30",
+        "destination": "불암산",
+        "train_no": "S4676"
+      },
+      {
+        "time": "21:59:30",
+        "destination": "불암산",
+        "train_no": "S4678"
+      },
+      {
+        "time": "22:15:30",
+        "destination": "불암산",
+        "train_no": "S4680"
+      },
+      {
+        "time": "22:31:30",
+        "destination": "노원",
+        "train_no": "S4682"
+      },
+      {
+        "time": "22:47:30",
+        "destination": "한성대입구",
+        "train_no": "S4684"
+      },
+      {
+        "time": "22:59:30",
+        "destination": "금정",
+        "train_no": "K4686"
+      },
+      {
+        "time": "23:17:30",
+        "destination": "사당",
+        "train_no": "S4688"
+      },
+      {
+        "time": "23:42:30",
+        "destination": "금정",
+        "train_no": "K4690"
+      }
+    ],
+    "downward": [
+      {
+        "time": "05:57:30",
+        "destination": "오이도",
+        "train_no": "K4501"
+      },
+      {
+        "time": "06:14:30",
+        "destination": "오이도",
+        "train_no": "K4503"
+      },
+      {
+        "time": "06:32:30",
+        "destination": "오이도",
+        "train_no": "S4505"
+      },
+      {
+        "time": "06:49:30",
+        "destination": "오이도",
+        "train_no": "S4507"
+      },
+      {
+        "time": "07:06:00",
+        "destination": "오이도",
+        "train_no": "K4509"
+      },
+      {
+        "time": "07:18:00",
+        "destination": "오이도",
+        "train_no": "S4511"
+      },
+      {
+        "time": "07:30:00",
+        "destination": "오이도",
+        "train_no": "S4513"
+      },
+      {
+        "time": "07:42:00",
+        "destination": "안산",
+        "train_no": "S4301"
+      },
+      {
+        "time": "07:54:00",
+        "destination": "오이도",
+        "train_no": "S4515"
+      },
+      {
+        "time": "08:06:00",
+        "destination": "오이도",
+        "train_no": "S4517"
+      },
+      {
+        "time": "08:18:00",
+        "destination": "오이도",
+        "train_no": "S4519"
+      },
+      {
+        "time": "08:30:00",
+        "destination": "오이도",
+        "train_no": "S4521"
+      },
+      {
+        "time": "08:36:00",
+        "destination": "오이도",
+        "train_no": "K4523"
+      },
+      {
+        "time": "08:48:00",
+        "destination": "오이도",
+        "train_no": "K4525"
+      },
+      {
+        "time": "08:54:00",
+        "destination": "안산",
+        "train_no": "K4303"
+      },
+      {
+        "time": "09:05:00",
+        "destination": "오이도",
+        "train_no": "K4527"
+      },
+      {
+        "time": "09:12:00",
+        "destination": "오이도",
+        "train_no": "K4529"
+      },
+      {
+        "time": "09:24:00",
+        "destination": "오이도",
+        "train_no": "S4531"
+      },
+      {
+        "time": "09:36:00",
+        "destination": "오이도",
+        "train_no": "K4533"
+      },
+      {
+        "time": "09:48:00",
+        "destination": "오이도",
+        "train_no": "K4535"
+      },
+      {
+        "time": "10:00:00",
+        "destination": "오이도",
+        "train_no": "K4537"
+      },
+      {
+        "time": "10:12:00",
+        "destination": "오이도",
+        "train_no": "K4539"
+      },
+      {
+        "time": "10:24:00",
+        "destination": "오이도",
+        "train_no": "K4541"
+      },
+      {
+        "time": "10:36:00",
+        "destination": "오이도",
+        "train_no": "K4543"
+      },
+      {
+        "time": "10:48:00",
+        "destination": "오이도",
+        "train_no": "K4545"
+      },
+      {
+        "time": "11:00:00",
+        "destination": "안산",
+        "train_no": "S4305"
+      },
+      {
+        "time": "11:06:00",
+        "destination": "오이도",
+        "train_no": "K4547"
+      },
+      {
+        "time": "11:18:00",
+        "destination": "오이도",
+        "train_no": "S4549"
+      },
+      {
+        "time": "11:30:00",
+        "destination": "오이도",
+        "train_no": "K4551"
+      },
+      {
+        "time": "11:42:00",
+        "destination": "오이도",
+        "train_no": "S4553"
+      },
+      {
+        "time": "11:54:00",
+        "destination": "오이도",
+        "train_no": "S4555"
+      },
+      {
+        "time": "12:06:00",
+        "destination": "오이도",
+        "train_no": "K4557"
+      },
+      {
+        "time": "12:18:00",
+        "destination": "오이도",
+        "train_no": "S4559"
+      },
+      {
+        "time": "12:30:00",
+        "destination": "오이도",
+        "train_no": "S4561"
+      },
+      {
+        "time": "12:42:00",
+        "destination": "오이도",
+        "train_no": "S4563"
+      },
+      {
+        "time": "12:54:00",
+        "destination": "오이도",
+        "train_no": "S4565"
+      },
+      {
+        "time": "13:06:00",
+        "destination": "오이도",
+        "train_no": "K4567"
+      },
+      {
+        "time": "13:11:00",
+        "destination": "오이도",
+        "train_no": "K4569"
+      },
+      {
+        "time": "13:19:00",
+        "destination": "안산",
+        "train_no": "S4307"
+      },
+      {
+        "time": "13:27:00",
+        "destination": "오이도",
+        "train_no": "K4571"
+      },
+      {
+        "time": "13:36:00",
+        "destination": "오이도",
+        "train_no": "K4573"
+      },
+      {
+        "time": "13:46:00",
+        "destination": "오이도",
+        "train_no": "S4575"
+      },
+      {
+        "time": "13:56:00",
+        "destination": "오이도",
+        "train_no": "K4577"
+      },
+      {
+        "time": "14:01:00",
+        "destination": "안산",
+        "train_no": "K4309"
+      },
+      {
+        "time": "14:11:00",
+        "destination": "오이도",
+        "train_no": "K4579"
+      },
+      {
+        "time": "14:19:00",
+        "destination": "오이도",
+        "train_no": "K4581"
+      },
+      {
+        "time": "14:27:00",
+        "destination": "오이도",
+        "train_no": "K4583"
+      },
+      {
+        "time": "14:36:00",
+        "destination": "오이도",
+        "train_no": "K4585"
+      },
+      {
+        "time": "14:46:00",
+        "destination": "오이도",
+        "train_no": "K4587"
+      },
+      {
+        "time": "14:51:00",
+        "destination": "오이도",
+        "train_no": "K4589"
+      },
+      {
+        "time": "15:01:00",
+        "destination": "오이도",
+        "train_no": "K4591"
+      },
+      {
+        "time": "15:11:00",
+        "destination": "안산",
+        "train_no": "S4311"
+      },
+      {
+        "time": "15:16:00",
+        "destination": "오이도",
+        "train_no": "K4593"
+      },
+      {
+        "time": "15:24:00",
+        "destination": "안산",
+        "train_no": "K4313"
+      },
+      {
+        "time": "15:32:00",
+        "destination": "오이도",
+        "train_no": "K4595"
+      },
+      {
+        "time": "15:41:00",
+        "destination": "오이도",
+        "train_no": "S4597"
+      },
+      {
+        "time": "15:51:00",
+        "destination": "오이도",
+        "train_no": "K4599"
+      },
+      {
+        "time": "16:01:00",
+        "destination": "안산",
+        "train_no": "K4315"
+      },
+      {
+        "time": "16:06:00",
+        "destination": "오이도",
+        "train_no": "S4601"
+      },
+      {
+        "time": "16:16:00",
+        "destination": "오이도",
+        "train_no": "S4603"
+      },
+      {
+        "time": "16:24:00",
+        "destination": "오이도",
+        "train_no": "K4605"
+      },
+      {
+        "time": "16:32:00",
+        "destination": "안산",
+        "train_no": "K4317"
+      },
+      {
+        "time": "16:41:00",
+        "destination": "오이도",
+        "train_no": "S4607"
+      },
+      {
+        "time": "16:51:00",
+        "destination": "오이도",
+        "train_no": "S4609"
+      },
+      {
+        "time": "16:56:00",
+        "destination": "안산",
+        "train_no": "K4319"
+      },
+      {
+        "time": "17:06:00",
+        "destination": "오이도",
+        "train_no": "S4611"
+      },
+      {
+        "time": "17:16:00",
+        "destination": "안산",
+        "train_no": "K4321"
+      },
+      {
+        "time": "17:21:00",
+        "destination": "오이도",
+        "train_no": "S4613"
+      },
+      {
+        "time": "17:29:00",
+        "destination": "안산",
+        "train_no": "S4323"
+      },
+      {
+        "time": "17:37:00",
+        "destination": "오이도",
+        "train_no": "K4615"
+      },
+      {
+        "time": "17:46:00",
+        "destination": "오이도",
+        "train_no": "K4617"
+      },
+      {
+        "time": "17:56:00",
+        "destination": "오이도",
+        "train_no": "K4619"
+      },
+      {
+        "time": "18:06:00",
+        "destination": "오이도",
+        "train_no": "S4621"
+      },
+      {
+        "time": "18:11:00",
+        "destination": "오이도",
+        "train_no": "K4623"
+      },
+      {
+        "time": "18:21:00",
+        "destination": "오이도",
+        "train_no": "K4625"
+      },
+      {
+        "time": "18:31:00",
+        "destination": "오이도",
+        "train_no": "K4627"
+      },
+      {
+        "time": "18:36:00",
+        "destination": "오이도",
+        "train_no": "K4629"
+      },
+      {
+        "time": "18:46:00",
+        "destination": "오이도",
+        "train_no": "K4631"
+      },
+      {
+        "time": "18:56:00",
+        "destination": "오이도",
+        "train_no": "K4633"
+      },
+      {
+        "time": "19:01:00",
+        "destination": "오이도",
+        "train_no": "K4635"
+      },
+      {
+        "time": "19:12:00",
+        "destination": "오이도",
+        "train_no": "K4637"
+      },
+      {
+        "time": "19:24:00",
+        "destination": "오이도",
+        "train_no": "K4639"
+      },
+      {
+        "time": "19:36:00",
+        "destination": "오이도",
+        "train_no": "K4641"
+      },
+      {
+        "time": "19:43:00",
+        "destination": "오이도",
+        "train_no": "K4643"
+      },
+      {
+        "time": "19:54:00",
+        "destination": "오이도",
+        "train_no": "K4645"
+      },
+      {
+        "time": "20:05:00",
+        "destination": "오이도",
+        "train_no": "S4647"
+      },
+      {
+        "time": "20:15:00",
+        "destination": "오이도",
+        "train_no": "K4649"
+      },
+      {
+        "time": "20:20:00",
+        "destination": "오이도",
+        "train_no": "K4651"
+      },
+      {
+        "time": "20:30:00",
+        "destination": "오이도",
+        "train_no": "K4653"
+      },
+      {
+        "time": "20:42:00",
+        "destination": "오이도",
+        "train_no": "S4655"
+      },
+      {
+        "time": "20:54:00",
+        "destination": "오이도",
+        "train_no": "K4657"
+      },
+      {
+        "time": "21:04:00",
+        "destination": "오이도",
+        "train_no": "S4659"
+      },
+      {
+        "time": "21:09:00",
+        "destination": "안산",
+        "train_no": "K4325"
+      },
+      {
+        "time": "21:19:00",
+        "destination": "오이도",
+        "train_no": "S4661"
+      },
+      {
+        "time": "21:29:00",
+        "destination": "오이도",
+        "train_no": "S4663"
+      },
+      {
+        "time": "21:34:00",
+        "destination": "오이도",
+        "train_no": "S4665"
+      },
+      {
+        "time": "21:44:00",
+        "destination": "오이도",
+        "train_no": "S4667"
+      },
+      {
+        "time": "21:49:00",
+        "destination": "오이도",
+        "train_no": "S4669"
+      },
+      {
+        "time": "22:00:00",
+        "destination": "오이도",
+        "train_no": "K4671"
+      },
+      {
+        "time": "22:12:00",
+        "destination": "오이도",
+        "train_no": "K4673"
+      },
+      {
+        "time": "22:24:00",
+        "destination": "오이도",
+        "train_no": "S4675"
+      },
+      {
+        "time": "22:36:00",
+        "destination": "오이도",
+        "train_no": "K4677"
+      },
+      {
+        "time": "22:48:00",
+        "destination": "오이도",
+        "train_no": "K4679"
+      },
+      {
+        "time": "23:00:00",
+        "destination": "오이도",
+        "train_no": "K4681"
+      },
+      {
+        "time": "23:12:00",
+        "destination": "오이도",
+        "train_no": "K4683"
+      },
+      {
+        "time": "23:22:00",
+        "destination": "안산",
+        "train_no": "K4327"
+      },
+      {
+        "time": "23:29:00",
+        "destination": "오이도",
+        "train_no": "K4685"
+      },
+      {
+        "time": "23:45:00",
+        "destination": "오이도",
+        "train_no": "K4687"
+      },
+      {
+        "time": "23:58:00",
+        "destination": "안산",
+        "train_no": "K4329"
+      },
+      {
+        "time": "24:21:00",
+        "destination": "안산",
+        "train_no": "K4331"
+      }
+    ]
+  },
+  "holiday": {
+    "upward": [
+      {
+        "time": "05:29:30",
+        "destination": "불암산",
+        "train_no": "K4304"
+      },
+      {
+        "time": "05:36:30",
+        "destination": "불암산",
+        "train_no": "K4306"
+      },
+      {
+        "time": "05:48:30",
+        "destination": "불암산",
+        "train_no": "K4502"
+      },
+      {
+        "time": "06:00:30",
+        "destination": "불암산",
+        "train_no": "S4504"
+      },
+      {
+        "time": "06:12:30",
+        "destination": "불암산",
+        "train_no": "K4506"
+      },
+      {
+        "time": "06:24:30",
+        "destination": "불암산",
+        "train_no": "K4508"
+      },
+      {
+        "time": "06:36:30",
+        "destination": "불암산",
+        "train_no": "K4510"
+      },
+      {
+        "time": "06:48:30",
+        "destination": "불암산",
+        "train_no": "K4512"
+      },
+      {
+        "time": "07:00:30",
+        "destination": "불암산",
+        "train_no": "K4514"
+      },
+      {
+        "time": "07:12:30",
+        "destination": "불암산",
+        "train_no": "K4516"
+      },
+      {
+        "time": "07:18:00",
+        "destination": "불암산",
+        "train_no": "K4308"
+      },
+      {
+        "time": "07:24:30",
+        "destination": "불암산",
+        "train_no": "S4518"
+      },
+      {
+        "time": "07:36:30",
+        "destination": "불암산",
+        "train_no": "S4520"
+      },
+      {
+        "time": "07:42:30",
+        "destination": "불암산",
+        "train_no": "K4522"
+      },
+      {
+        "time": "07:54:30",
+        "destination": "불암산",
+        "train_no": "S4524"
+      },
+      {
+        "time": "08:06:30",
+        "destination": "불암산",
+        "train_no": "K4526"
+      },
+      {
+        "time": "08:18:30",
+        "destination": "불암산",
+        "train_no": "S4528"
+      },
+      {
+        "time": "08:28:30",
+        "destination": "불암산",
+        "train_no": "S4310"
+      },
+      {
+        "time": "08:33:30",
+        "destination": "불암산",
+        "train_no": "S4530"
+      },
+      {
+        "time": "08:43:30",
+        "destination": "불암산",
+        "train_no": "K4532"
+      },
+      {
+        "time": "08:54:30",
+        "destination": "불암산",
+        "train_no": "S4534"
+      },
+      {
+        "time": "09:06:30",
+        "destination": "불암산",
+        "train_no": "S4536"
+      },
+      {
+        "time": "09:18:30",
+        "destination": "불암산",
+        "train_no": "S4538"
+      },
+      {
+        "time": "09:30:30",
+        "destination": "불암산",
+        "train_no": "S4540"
+      },
+      {
+        "time": "09:42:30",
+        "destination": "불암산",
+        "train_no": "K4542"
+      },
+      {
+        "time": "09:47:30",
+        "destination": "불암산",
+        "train_no": "K4544"
+      },
+      {
+        "time": "09:59:30",
+        "destination": "불암산",
+        "train_no": "K4546"
+      },
+      {
+        "time": "10:11:30",
+        "destination": "불암산",
+        "train_no": "K4548"
+      },
+      {
+        "time": "10:23:30",
+        "destination": "불암산",
+        "train_no": "S4550"
+      },
+      {
+        "time": "10:32:30",
+        "destination": "불암산",
+        "train_no": "K4552"
+      },
+      {
+        "time": "10:39:30",
+        "destination": "불암산",
+        "train_no": "K4554"
+      },
+      {
+        "time": "10:48:30",
+        "destination": "불암산",
+        "train_no": "K4556"
+      },
+      {
+        "time": "10:58:30",
+        "destination": "불암산",
+        "train_no": "K4558"
+      },
+      {
+        "time": "11:03:30",
+        "destination": "불암산",
+        "train_no": "K4560"
+      },
+      {
+        "time": "11:13:30",
+        "destination": "불암산",
+        "train_no": "K4562"
+      },
+      {
+        "time": "11:23:30",
+        "destination": "불암산",
+        "train_no": "K4564"
+      },
+      {
+        "time": "11:28:30",
+        "destination": "불암산",
+        "train_no": "K4566"
+      },
+      {
+        "time": "11:38:30",
+        "destination": "불암산",
+        "train_no": "K4568"
+      },
+      {
+        "time": "11:47:00",
+        "destination": "불암산",
+        "train_no": "S4312"
+      },
+      {
+        "time": "11:53:30",
+        "destination": "불암산",
+        "train_no": "K4570"
+      },
+      {
+        "time": "12:01:30",
+        "destination": "불암산",
+        "train_no": "K4314"
+      },
+      {
+        "time": "12:09:30",
+        "destination": "불암산",
+        "train_no": "K4572"
+      },
+      {
+        "time": "12:18:30",
+        "destination": "불암산",
+        "train_no": "S4574"
+      },
+      {
+        "time": "12:28:30",
+        "destination": "불암산",
+        "train_no": "K4576"
+      },
+      {
+        "time": "12:38:30",
+        "destination": "불암산",
+        "train_no": "K4578"
+      },
+      {
+        "time": "12:43:30",
+        "destination": "불암산",
+        "train_no": "S4580"
+      },
+      {
+        "time": "12:53:30",
+        "destination": "불암산",
+        "train_no": "S4582"
+      },
+      {
+        "time": "13:01:30",
+        "destination": "불암산",
+        "train_no": "K4316"
+      },
+      {
+        "time": "13:09:30",
+        "destination": "불암산",
+        "train_no": "K4584"
+      },
+      {
+        "time": "13:18:30",
+        "destination": "불암산",
+        "train_no": "S4586"
+      },
+      {
+        "time": "13:28:30",
+        "destination": "불암산",
+        "train_no": "S4588"
+      },
+      {
+        "time": "13:33:30",
+        "destination": "불암산",
+        "train_no": "K4590"
+      },
+      {
+        "time": "13:43:30",
+        "destination": "불암산",
+        "train_no": "S4592"
+      },
+      {
+        "time": "13:53:30",
+        "destination": "불암산",
+        "train_no": "K4594"
+      },
+      {
+        "time": "13:58:30",
+        "destination": "불암산",
+        "train_no": "S4596"
+      },
+      {
+        "time": "14:06:30",
+        "destination": "불암산",
+        "train_no": "S4318"
+      },
+      {
+        "time": "14:14:30",
+        "destination": "불암산",
+        "train_no": "K4598"
+      },
+      {
+        "time": "14:23:30",
+        "destination": "불암산",
+        "train_no": "K4600"
+      },
+      {
+        "time": "14:33:30",
+        "destination": "불암산",
+        "train_no": "K4602"
+      },
+      {
+        "time": "14:43:30",
+        "destination": "불암산",
+        "train_no": "S4604"
+      },
+      {
+        "time": "14:48:30",
+        "destination": "불암산",
+        "train_no": "K4320"
+      },
+      {
+        "time": "14:58:30",
+        "destination": "불암산",
+        "train_no": "K4606"
+      },
+      {
+        "time": "15:06:30",
+        "destination": "불암산",
+        "train_no": "K4608"
+      },
+      {
+        "time": "15:14:30",
+        "destination": "불암산",
+        "train_no": "K4610"
+      },
+      {
+        "time": "15:23:30",
+        "destination": "불암산",
+        "train_no": "K4612"
+      },
+      {
+        "time": "15:32:30",
+        "destination": "불암산",
+        "train_no": "K4614"
+      },
+      {
+        "time": "15:39:30",
+        "destination": "불암산",
+        "train_no": "K4616"
+      },
+      {
+        "time": "15:48:30",
+        "destination": "불암산",
+        "train_no": "K4618"
+      },
+      {
+        "time": "15:58:30",
+        "destination": "불암산",
+        "train_no": "S4322"
+      },
+      {
+        "time": "16:03:30",
+        "destination": "불암산",
+        "train_no": "K4620"
+      },
+      {
+        "time": "16:12:30",
+        "destination": "불암산",
+        "train_no": "K4622"
+      },
+      {
+        "time": "16:19:30",
+        "destination": "불암산",
+        "train_no": "K4324"
+      },
+      {
+        "time": "16:28:30",
+        "destination": "불암산",
+        "train_no": "K4624"
+      },
+      {
+        "time": "16:38:30",
+        "destination": "불암산",
+        "train_no": "S4626"
+      },
+      {
+        "time": "16:47:00",
+        "destination": "불암산",
+        "train_no": "K4326"
+      },
+      {
+        "time": "16:53:30",
+        "destination": "불암산",
+        "train_no": "K4628"
+      },
+      {
+        "time": "17:03:30",
+        "destination": "불암산",
+        "train_no": "K4328"
+      },
+      {
+        "time": "17:08:30",
+        "destination": "불암산",
+        "train_no": "S4630"
+      },
+      {
+        "time": "17:19:30",
+        "destination": "불암산",
+        "train_no": "S4632"
+      },
+      {
+        "time": "17:30:30",
+        "destination": "불암산",
+        "train_no": "K4634"
+      },
+      {
+        "time": "17:40:30",
+        "destination": "불암산",
+        "train_no": "S4636"
+      },
+      {
+        "time": "17:45:30",
+        "destination": "불암산",
+        "train_no": "K4330"
+      },
+      {
+        "time": "17:55:30",
+        "destination": "불암산",
+        "train_no": "S4638"
+      },
+      {
+        "time": "18:07:30",
+        "destination": "불암산",
+        "train_no": "S4640"
+      },
+      {
+        "time": "18:19:30",
+        "destination": "불암산",
+        "train_no": "S4332"
+      },
+      {
+        "time": "18:25:30",
+        "destination": "불암산",
+        "train_no": "S4642"
+      },
+      {
+        "time": "18:37:30",
+        "destination": "불암산",
+        "train_no": "K4644"
+      },
+      {
+        "time": "18:49:30",
+        "destination": "불암산",
+        "train_no": "K4646"
+      },
+      {
+        "time": "19:01:30",
+        "destination": "불암산",
+        "train_no": "S4648"
+      },
+      {
+        "time": "19:13:30",
+        "destination": "불암산",
+        "train_no": "K4650"
+      },
+      {
+        "time": "19:25:30",
+        "destination": "불암산",
+        "train_no": "K4652"
+      },
+      {
+        "time": "19:37:30",
+        "destination": "불암산",
+        "train_no": "K4654"
+      },
+      {
+        "time": "19:49:30",
+        "destination": "불암산",
+        "train_no": "K4656"
+      },
+      {
+        "time": "20:00:30",
+        "destination": "불암산",
+        "train_no": "K4658"
+      },
+      {
+        "time": "20:08:30",
+        "destination": "불암산",
+        "train_no": "K4660"
+      },
+      {
+        "time": "20:19:30",
+        "destination": "불암산",
+        "train_no": "K4662"
+      },
+      {
+        "time": "20:31:30",
+        "destination": "불암산",
+        "train_no": "K4664"
+      },
+      {
+        "time": "20:43:30",
+        "destination": "불암산",
+        "train_no": "K4666"
+      },
+      {
+        "time": "20:55:30",
+        "destination": "불암산",
+        "train_no": "K4668"
+      },
+      {
+        "time": "21:07:30",
+        "destination": "불암산",
+        "train_no": "S4670"
+      },
+      {
+        "time": "21:19:30",
+        "destination": "불암산",
+        "train_no": "K4672"
+      },
+      {
+        "time": "21:31:30",
+        "destination": "불암산",
+        "train_no": "K4674"
+      },
+      {
+        "time": "21:43:30",
+        "destination": "불암산",
+        "train_no": "S4676"
+      },
+      {
+        "time": "21:59:30",
+        "destination": "불암산",
+        "train_no": "S4678"
+      },
+      {
+        "time": "22:15:30",
+        "destination": "불암산",
+        "train_no": "S4680"
+      },
+      {
+        "time": "22:31:30",
+        "destination": "노원",
+        "train_no": "S4682"
+      },
+      {
+        "time": "22:47:30",
+        "destination": "한성대입구",
+        "train_no": "S4684"
+      },
+      {
+        "time": "22:59:30",
+        "destination": "금정",
+        "train_no": "K4686"
+      },
+      {
+        "time": "23:17:30",
+        "destination": "사당",
+        "train_no": "S4688"
+      },
+      {
+        "time": "23:42:30",
+        "destination": "금정",
+        "train_no": "K4690"
+      }
+    ],
+    "downward": [
+      {
+        "time": "05:57:30",
+        "destination": "오이도",
+        "train_no": "K4501"
+      },
+      {
+        "time": "06:14:30",
+        "destination": "오이도",
+        "train_no": "K4503"
+      },
+      {
+        "time": "06:32:30",
+        "destination": "오이도",
+        "train_no": "S4505"
+      },
+      {
+        "time": "06:49:30",
+        "destination": "오이도",
+        "train_no": "S4507"
+      },
+      {
+        "time": "07:06:00",
+        "destination": "오이도",
+        "train_no": "K4509"
+      },
+      {
+        "time": "07:18:00",
+        "destination": "오이도",
+        "train_no": "S4511"
+      },
+      {
+        "time": "07:30:00",
+        "destination": "오이도",
+        "train_no": "S4513"
+      },
+      {
+        "time": "07:42:00",
+        "destination": "안산",
+        "train_no": "S4301"
+      },
+      {
+        "time": "07:54:00",
+        "destination": "오이도",
+        "train_no": "S4515"
+      },
+      {
+        "time": "08:06:00",
+        "destination": "오이도",
+        "train_no": "S4517"
+      },
+      {
+        "time": "08:18:00",
+        "destination": "오이도",
+        "train_no": "S4519"
+      },
+      {
+        "time": "08:30:00",
+        "destination": "오이도",
+        "train_no": "S4521"
+      },
+      {
+        "time": "08:36:00",
+        "destination": "오이도",
+        "train_no": "K4523"
+      },
+      {
+        "time": "08:48:00",
+        "destination": "오이도",
+        "train_no": "K4525"
+      },
+      {
+        "time": "08:54:00",
+        "destination": "안산",
+        "train_no": "K4303"
+      },
+      {
+        "time": "09:05:00",
+        "destination": "오이도",
+        "train_no": "K4527"
+      },
+      {
+        "time": "09:12:00",
+        "destination": "오이도",
+        "train_no": "K4529"
+      },
+      {
+        "time": "09:24:00",
+        "destination": "오이도",
+        "train_no": "S4531"
+      },
+      {
+        "time": "09:36:00",
+        "destination": "오이도",
+        "train_no": "K4533"
+      },
+      {
+        "time": "09:48:00",
+        "destination": "오이도",
+        "train_no": "K4535"
+      },
+      {
+        "time": "10:00:00",
+        "destination": "오이도",
+        "train_no": "K4537"
+      },
+      {
+        "time": "10:12:00",
+        "destination": "오이도",
+        "train_no": "K4539"
+      },
+      {
+        "time": "10:24:00",
+        "destination": "오이도",
+        "train_no": "K4541"
+      },
+      {
+        "time": "10:36:00",
+        "destination": "오이도",
+        "train_no": "K4543"
+      },
+      {
+        "time": "10:48:00",
+        "destination": "오이도",
+        "train_no": "K4545"
+      },
+      {
+        "time": "11:00:00",
+        "destination": "안산",
+        "train_no": "S4305"
+      },
+      {
+        "time": "11:06:00",
+        "destination": "오이도",
+        "train_no": "K4547"
+      },
+      {
+        "time": "11:18:00",
+        "destination": "오이도",
+        "train_no": "S4549"
+      },
+      {
+        "time": "11:30:00",
+        "destination": "오이도",
+        "train_no": "K4551"
+      },
+      {
+        "time": "11:42:00",
+        "destination": "오이도",
+        "train_no": "S4553"
+      },
+      {
+        "time": "11:54:00",
+        "destination": "오이도",
+        "train_no": "S4555"
+      },
+      {
+        "time": "12:06:00",
+        "destination": "오이도",
+        "train_no": "K4557"
+      },
+      {
+        "time": "12:18:00",
+        "destination": "오이도",
+        "train_no": "S4559"
+      },
+      {
+        "time": "12:30:00",
+        "destination": "오이도",
+        "train_no": "S4561"
+      },
+      {
+        "time": "12:42:00",
+        "destination": "오이도",
+        "train_no": "S4563"
+      },
+      {
+        "time": "12:54:00",
+        "destination": "오이도",
+        "train_no": "S4565"
+      },
+      {
+        "time": "13:06:00",
+        "destination": "오이도",
+        "train_no": "K4567"
+      },
+      {
+        "time": "13:11:00",
+        "destination": "오이도",
+        "train_no": "K4569"
+      },
+      {
+        "time": "13:19:00",
+        "destination": "안산",
+        "train_no": "S4307"
+      },
+      {
+        "time": "13:27:00",
+        "destination": "오이도",
+        "train_no": "K4571"
+      },
+      {
+        "time": "13:36:00",
+        "destination": "오이도",
+        "train_no": "K4573"
+      },
+      {
+        "time": "13:46:00",
+        "destination": "오이도",
+        "train_no": "S4575"
+      },
+      {
+        "time": "13:56:00",
+        "destination": "오이도",
+        "train_no": "K4577"
+      },
+      {
+        "time": "14:01:00",
+        "destination": "안산",
+        "train_no": "K4309"
+      },
+      {
+        "time": "14:11:00",
+        "destination": "오이도",
+        "train_no": "K4579"
+      },
+      {
+        "time": "14:19:00",
+        "destination": "오이도",
+        "train_no": "K4581"
+      },
+      {
+        "time": "14:27:00",
+        "destination": "오이도",
+        "train_no": "K4583"
+      },
+      {
+        "time": "14:36:00",
+        "destination": "오이도",
+        "train_no": "K4585"
+      },
+      {
+        "time": "14:46:00",
+        "destination": "오이도",
+        "train_no": "K4587"
+      },
+      {
+        "time": "14:51:00",
+        "destination": "오이도",
+        "train_no": "K4589"
+      },
+      {
+        "time": "15:01:00",
+        "destination": "오이도",
+        "train_no": "K4591"
+      },
+      {
+        "time": "15:11:00",
+        "destination": "안산",
+        "train_no": "S4311"
+      },
+      {
+        "time": "15:16:00",
+        "destination": "오이도",
+        "train_no": "K4593"
+      },
+      {
+        "time": "15:24:00",
+        "destination": "안산",
+        "train_no": "K4313"
+      },
+      {
+        "time": "15:32:00",
+        "destination": "오이도",
+        "train_no": "K4595"
+      },
+      {
+        "time": "15:41:00",
+        "destination": "오이도",
+        "train_no": "S4597"
+      },
+      {
+        "time": "15:51:00",
+        "destination": "오이도",
+        "train_no": "K4599"
+      },
+      {
+        "time": "16:01:00",
+        "destination": "안산",
+        "train_no": "K4315"
+      },
+      {
+        "time": "16:06:00",
+        "destination": "오이도",
+        "train_no": "S4601"
+      },
+      {
+        "time": "16:16:00",
+        "destination": "오이도",
+        "train_no": "S4603"
+      },
+      {
+        "time": "16:24:00",
+        "destination": "오이도",
+        "train_no": "K4605"
+      },
+      {
+        "time": "16:32:00",
+        "destination": "안산",
+        "train_no": "K4317"
+      },
+      {
+        "time": "16:41:00",
+        "destination": "오이도",
+        "train_no": "S4607"
+      },
+      {
+        "time": "16:51:00",
+        "destination": "오이도",
+        "train_no": "S4609"
+      },
+      {
+        "time": "16:56:00",
+        "destination": "안산",
+        "train_no": "K4319"
+      },
+      {
+        "time": "17:06:00",
+        "destination": "오이도",
+        "train_no": "S4611"
+      },
+      {
+        "time": "17:16:00",
+        "destination": "안산",
+        "train_no": "K4321"
+      },
+      {
+        "time": "17:21:00",
+        "destination": "오이도",
+        "train_no": "S4613"
+      },
+      {
+        "time": "17:29:00",
+        "destination": "안산",
+        "train_no": "S4323"
+      },
+      {
+        "time": "17:37:00",
+        "destination": "오이도",
+        "train_no": "K4615"
+      },
+      {
+        "time": "17:46:00",
+        "destination": "오이도",
+        "train_no": "K4617"
+      },
+      {
+        "time": "17:56:00",
+        "destination": "오이도",
+        "train_no": "K4619"
+      },
+      {
+        "time": "18:06:00",
+        "destination": "오이도",
+        "train_no": "S4621"
+      },
+      {
+        "time": "18:11:00",
+        "destination": "오이도",
+        "train_no": "K4623"
+      },
+      {
+        "time": "18:21:00",
+        "destination": "오이도",
+        "train_no": "K4625"
+      },
+      {
+        "time": "18:31:00",
+        "destination": "오이도",
+        "train_no": "K4627"
+      },
+      {
+        "time": "18:36:00",
+        "destination": "오이도",
+        "train_no": "K4629"
+      },
+      {
+        "time": "18:46:00",
+        "destination": "오이도",
+        "train_no": "K4631"
+      },
+      {
+        "time": "18:56:00",
+        "destination": "오이도",
+        "train_no": "K4633"
+      },
+      {
+        "time": "19:01:00",
+        "destination": "오이도",
+        "train_no": "K4635"
+      },
+      {
+        "time": "19:12:00",
+        "destination": "오이도",
+        "train_no": "K4637"
+      },
+      {
+        "time": "19:24:00",
+        "destination": "오이도",
+        "train_no": "K4639"
+      },
+      {
+        "time": "19:36:00",
+        "destination": "오이도",
+        "train_no": "K4641"
+      },
+      {
+        "time": "19:43:00",
+        "destination": "오이도",
+        "train_no": "K4643"
+      },
+      {
+        "time": "19:54:00",
+        "destination": "오이도",
+        "train_no": "K4645"
+      },
+      {
+        "time": "20:05:00",
+        "destination": "오이도",
+        "train_no": "S4647"
+      },
+      {
+        "time": "20:15:00",
+        "destination": "오이도",
+        "train_no": "K4649"
+      },
+      {
+        "time": "20:20:00",
+        "destination": "오이도",
+        "train_no": "K4651"
+      },
+      {
+        "time": "20:30:00",
+        "destination": "오이도",
+        "train_no": "K4653"
+      },
+      {
+        "time": "20:42:00",
+        "destination": "오이도",
+        "train_no": "S4655"
+      },
+      {
+        "time": "20:54:00",
+        "destination": "오이도",
+        "train_no": "K4657"
+      },
+      {
+        "time": "21:04:00",
+        "destination": "오이도",
+        "train_no": "S4659"
+      },
+      {
+        "time": "21:09:00",
+        "destination": "안산",
+        "train_no": "K4325"
+      },
+      {
+        "time": "21:19:00",
+        "destination": "오이도",
+        "train_no": "S4661"
+      },
+      {
+        "time": "21:29:00",
+        "destination": "오이도",
+        "train_no": "S4663"
+      },
+      {
+        "time": "21:34:00",
+        "destination": "오이도",
+        "train_no": "S4665"
+      },
+      {
+        "time": "21:44:00",
+        "destination": "오이도",
+        "train_no": "S4667"
+      },
+      {
+        "time": "21:49:00",
+        "destination": "오이도",
+        "train_no": "S4669"
+      },
+      {
+        "time": "22:00:00",
+        "destination": "오이도",
+        "train_no": "K4671"
+      },
+      {
+        "time": "22:12:00",
+        "destination": "오이도",
+        "train_no": "K4673"
+      },
+      {
+        "time": "22:24:00",
+        "destination": "오이도",
+        "train_no": "S4675"
+      },
+      {
+        "time": "22:36:00",
+        "destination": "오이도",
+        "train_no": "K4677"
+      },
+      {
+        "time": "22:48:00",
+        "destination": "오이도",
+        "train_no": "K4679"
+      },
+      {
+        "time": "23:00:00",
+        "destination": "오이도",
+        "train_no": "K4681"
+      },
+      {
+        "time": "23:12:00",
+        "destination": "오이도",
+        "train_no": "K4683"
+      },
+      {
+        "time": "23:22:00",
+        "destination": "안산",
+        "train_no": "K4327"
+      },
+      {
+        "time": "23:29:00",
+        "destination": "오이도",
+        "train_no": "K4685"
+      },
+      {
+        "time": "23:45:00",
+        "destination": "오이도",
+        "train_no": "K4687"
+      },
+      {
+        "time": "23:58:00",
+        "destination": "안산",
+        "train_no": "K4329"
+      },
+      {
+        "time": "24:21:00",
+        "destination": "안산",
+        "train_no": "K4331"
+      }
+    ]
+  }
+}
