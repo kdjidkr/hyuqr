@@ -679,29 +679,44 @@ p.subtitle {
 .alarm-fab {
   position: fixed;
   bottom: calc(var(--space-page) + 64px + var(--space-element));
-  right: max(var(--space-page), calc((100vw - 440px) / 2 + var(--space-page)));
-  width: 48px;
-  height: 48px;
-  background: var(--color-primary);
-  color: white;
-  border: none;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 40px;
+  padding: 0 12px;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   cursor: pointer;
-  box-shadow: 0 4px 16px var(--color-primary-glow);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
   z-index: 999;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+  font-size: 0.78rem;
+  font-weight: var(--font-weight-body2);
+  font-family: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .alarm-fab:hover {
-  transform: scale(1.08);
-  box-shadow: 0 6px 22px var(--color-primary-glow);
+  transform: translateX(-50%) scale(1.04);
+  background: rgba(15, 23, 42, 0.88);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.45);
 }
 
 .alarm-fab:active {
-  transform: scale(0.95);
+  transform: translateX(-50%) scale(0.97);
+}
+
+.alarm-section--disabled {
+  opacity: 0.38;
+  pointer-events: none;
+  user-select: none;
 }
 
 /* Alarm Settings Bottom Sheet */

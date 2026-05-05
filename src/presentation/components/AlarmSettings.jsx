@@ -98,7 +98,7 @@ export function AlarmSettings({ onClose }) {
         </div>
 
         {/* 키워드 알림 */}
-        <div className="alarm-section">
+        <div className={`alarm-section${!settings.jeyukAlert ? ' alarm-section--disabled' : ''}`}>
           <div className="alarm-section-title">키워드 알림</div>
           <div className="alarm-section-desc">입력된 키워드가 포함된 알림을 보내드려요!</div>
           <div className="alarm-keyword-row">
@@ -108,8 +108,9 @@ export function AlarmSettings({ onClose }) {
               onChange={e => setKeywordInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && addKeyword()}
               placeholder="키워드 입력"
+              disabled={!settings.jeyukAlert}
             />
-            <button className="alarm-add-btn" onClick={addKeyword}>
+            <button className="alarm-add-btn" onClick={addKeyword} disabled={!settings.jeyukAlert}>
               <Plus size={18} />
             </button>
           </div>
@@ -126,13 +127,14 @@ export function AlarmSettings({ onClose }) {
         </div>
 
         {/* 알림수신시간 */}
-        <div className="alarm-section">
+        <div className={`alarm-section${!settings.jeyukAlert ? ' alarm-section--disabled' : ''}`}>
           <div className="alarm-section-title">알림 수신 시간</div>
           <div className="alarm-section-desc">정해진 시간마다 알림을 보내드려요!</div>
           <select
             className="alarm-time-select"
             value={settings.notifyTime}
             onChange={e => setSettings(p => ({ ...p, notifyTime: e.target.value }))}
+            disabled={!settings.jeyukAlert}
           >
             {TIME_OPTIONS.map(t => (
               <option key={t} value={t}>{formatTime(t)}</option>
