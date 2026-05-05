@@ -103,7 +103,7 @@ function SubwayDropdown({ selected, onChange }) {
 }
 
 // ── 시간표 행 ─────────────────────────────────────────────────────────────────
-function TimetableRow({ row, lineId, isNext, isLast, subwayArrivals, subwayOffPeak, isSubwayLoading }) {
+function TimetableRow({ row, lineId, isNext, isLast, isPast, subwayArrivals, subwayOffPeak, isSubwayLoading }) {
   const opt    = SUBWAY_OPTS.find(o => o.id === lineId);
   const trains = row.subway ? connectingTrains(subwayArrivals, row.arr, lineId) : [];
   const noTrainReason = row.subway && trains.length === 0
@@ -113,11 +113,12 @@ function TimetableRow({ row, lineId, isNext, isLast, subwayArrivals, subwayOffPe
   const routeClass = row.route === 'DY' ? 'dy' : (row.route === 'C' || row.route === '중앙역' ? 'c' : 'd');
 
   return (
-    <div className={`stt-trow${isNext ? ' next' : ''}`}>
+    <div className={`stt-trow${isNext ? ' next' : ''}${isPast ? ' past' : ''}`}>
       {isNext && <div className="stt-next-tag">다음 셔틀</div>}
       {isLast && !isNext && <div className="stt-last-tag">마지막 셔틀</div>}
+      {isPast && <div className="stt-past-tag">이전 셔틀</div>}
 
-      <div className="stt-shuttle-col" style={{ paddingTop: (isNext || isLast) ? 26 : 16, flex: '0 0 52%' }}>
+      <div className="stt-shuttle-col" style={{ paddingTop: (isNext || isLast || isPast) ? 26 : 16, flex: '0 0 52%' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <span className={`stt-route-label ${routeClass}`}>{rLabel}</span>
           <div>
@@ -134,7 +135,7 @@ function TimetableRow({ row, lineId, isNext, isLast, subwayArrivals, subwayOffPe
         </div>
       </div>
 
-      <div className="stt-subway-col" style={{ paddingTop: (isNext || isLast) ? 26 : 14 }}>
+      <div className="stt-subway-col" style={{ paddingTop: (isNext || isLast || isPast) ? 26 : 14 }}>
         {row.subway ? (
           isSubwayLoading ? (
             <div className="stt-subway-loader-wrap">
@@ -158,7 +159,7 @@ export function ShuttleView() {
   const {
     stop, setStop,
     lineId, setLineId,
-    schedule, nextIdx,
+    schedule, nextIdx, now,
     subwayArrivals, subwayOffPeak,
     needsSubway,
     loadErr, isLoading, isSubwayLoading,
@@ -224,6 +225,7 @@ export function ShuttleView() {
                 lineId={lineId}
                 isNext={i === nextIdx && nextIdx !== -1}
                 isLast={i === schedule.length - 1}
+                isPast={row.depMin < now}
                 subwayArrivals={subwayArrivals}
                 subwayOffPeak={subwayOffPeak}
                 isSubwayLoading={isSubwayLoading}

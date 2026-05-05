@@ -1929,7 +1929,18 @@ p.subtitle {
 }
 
 .stt-trow.next {
-  background: rgba(14, 74, 132, 0.03);
+  background: rgba(14, 74, 132, 0.05);
+  box-shadow: inset 4px 0 0 0 var(--color-primary);
+  z-index: 10;
+}
+
+.stt-trow.past {
+  opacity: 0.55;
+  background: #f8fafc;
+}
+
+.stt-trow.past .stt-time-big {
+  color: var(--color-text-hint);
 }
 
 .stt-shuttle-col {
@@ -2020,6 +2031,18 @@ p.subtitle {
   font-weight: 800;
   color: white;
   background: #475569;
+  padding: 2px 8px;
+  border-radius: 0 0 var(--radius-sm) 0;
+}
+
+.stt-past-tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 9px;
+  font-weight: 800;
+  color: #64748b;
+  background: #e2e8f0;
   padding: 2px 8px;
   border-radius: 0 0 var(--radius-sm) 0;
 }

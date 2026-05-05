@@ -62,8 +62,8 @@ function arrivalInfo(displayStop, route) {
   }
 }
 
-// 현재 시각 이후의 셔틀 5편 계산 (순수 함수)
-export function computeSchedule(allData, displayStop, nowMinutes, isHolidayServer) {
+// 현재 시각 근처의 셔틀 계산 (순수 함수)
+export function computeSchedule(allData, displayStop, nowMinutes, isHolidayServer, lookbackMinutes = 0) {
   const src = STOP_SOURCE[displayStop];
   let rows = allData.filter(d =>
     d['출발지'] === src &&
@@ -89,7 +89,7 @@ export function computeSchedule(allData, displayStop, nowMinutes, isHolidayServe
       };
     })
     .sort((a, b) => a.depMin - b.depMin)
-    .filter(r => r.depMin >= nowMinutes);
+    .filter(r => r.depMin >= nowMinutes - lookbackMinutes);
 }
 
 // 셔틀 도착 이후 연결 가능한 지하철 편 필터 (순수 함수)
