@@ -332,6 +332,13 @@ p.subtitle {
   background: var(--color-surface);
 }
 
+.qr-refresh-btn:disabled,
+.qr-logout-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .qr-logout-btn {
   background: transparent;
   border: none;
@@ -344,6 +351,21 @@ p.subtitle {
 .qr-logout-btn:hover {
   color: #cbd5e1;
   text-decoration: underline;
+}
+
+.qr-loading-blur {
+  filter: blur(10px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.qr-placeholder {
+  width: 220px;
+  height: 220px;
+  background:
+    repeating-conic-gradient(#2d2d2d 0% 25%, #ffffff 0% 50%)
+    0 0 / 12px 12px;
+  border-radius: 4px;
 }
 
 /* Animations */

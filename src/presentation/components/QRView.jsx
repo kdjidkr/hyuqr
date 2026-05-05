@@ -24,8 +24,24 @@ export function QRView({ user, reloginFn, onNameDiscovered, onLogout }) {
   if (status === 'loading') {
     return (
       <div className="qr-glass-panel">
-        <div className="loader-spinner" style={{ borderColor: 'rgba(0,0,0,0.1)', borderTopColor: 'var(--color-primary)' }} />
-        <p style={{ color: 'var(--color-text-sub)', fontSize: '0.875rem', marginTop: '1rem' }}>인증 코드를 불러오는 중...</p>
+        <h2 className="qr-title">출입증 QR</h2>
+        {user?.name && (
+          <div style={{ marginBottom: '0.25rem', fontSize: '1.1rem', fontWeight: '600', color: 'var(--text-primary)' }}>
+            {user.name}님 안녕하세요!
+          </div>
+        )}
+        <p className="qr-desc">스캐너에 화면을 인식시켜주세요.</p>
+        <div className="qr-wrapper qr-loading-blur">
+          <div className="qr-placeholder" />
+        </div>
+        <p style={{ color: 'var(--color-text-hint)', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+          인증 코드를 불러오는 중...
+        </p>
+        <button className="qr-refresh-btn" disabled style={{ marginBottom: '1.5rem' }}>
+          <RefreshCw size={16} />
+          <span>QR 새로고침</span>
+        </button>
+        <button className="qr-logout-btn" disabled style={{ marginTop: '1rem' }}>로그아웃</button>
       </div>
     );
   }
