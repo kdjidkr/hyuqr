@@ -156,67 +156,7 @@ export default async function handler(req, res) {
   const key = process.env.SUBWAY_KEY;
   if (!key) return res.status(500).json({ error: 'SUBWAY_KEY env var not configured' });
 
-  // 1. Fetch Realtime Data (Always from API for live status)
-  let rtArrivals = [];
-  try {
-    const rtUrl = `http://swopenAPI.seoul.go.kr/api/subway/${key}/json/realtimeStationArrival/0/100/${encodeURIComponent('한대앞')}`;
-    const rtRes = await fetch(rtUrl, { signal: AbortSignal.timeout(5000) });
-    const rtData = await rtRes.json();
-    
-    rtArrivals = (rtData.realtimeArrivalList || []).map(tr => {
-      const isUp = tr.updnLine === '상행';
-      const isLine4 = String(tr.subwayId) === '1004';
-      const msg = tr.arvlMsg2 || '';
-      
-      let secsLeft = parseInt(tr.barvlDt || '0', 10);
-      
-      // 1. Calculate Base Seconds based on station count (n)
-      if (secsLeft === 0) {
-        const nMatch = msg.match(/\[(\d+)\]번째 전역/);
-        let n = nMatch ? parseInt(nMatch[1], 10) : (msg.includes('전역') ? 1 : 0);
-        
-        if (n > 0) {
-          if (isUp) {
-            // Upward (from Jungang): 2m, 4m, 6m...
-            secsLeft = n * 120;
-          } else if (isLine4) {
-            // Line 4 Down (from Sangnoksu): 1st=2m, 2nd=5m, 3rd=8m
-            if (n === 1) secsLeft = 120;
-            else if (n === 2) secsLeft = 300;
-            else secsLeft = 300 + (n - 2) * 180;
-          } else {
-            // Suin Down (from Sa-ri): 1st=3m, 2nd=8m, 3rd=11m
-            if (n === 1) secsLeft = 180;
-            else if (n === 2) secsLeft = 480;
-            else secsLeft = 480 + (n - 2) * 180;
-          }
-          
-          // 2. Apply Correction Values (보정값) based on status for n > 0
-          if (msg.includes('진입')) secsLeft += 30;       // Still entering the station
-          else if (msg.includes('출발')) secsLeft -= 40;  // Already left for next station
-          // '도착' is considered the base time
-        } else {
-          // No station count found, check direct Handaeap status
-          if (tr.arvlCd === '5') secsLeft = 120;
-          else if (tr.arvlCd === '4') secsLeft = 180;
-          else if (msg.includes('진입')) secsLeft = 40;
-          else if (msg.includes('도착')) secsLeft = 15;
-          else secsLeft = 0;
-        }
-      }
-      const arrDateKst = new Date(nowKst.getTime() + secsLeft * 1000);
-      return {
-        subwayId: String(tr.subwayId),
-        updnLine: tr.updnLine,
-        dest: tr.bstatnNm,
-        arrTime: `${String(arrDateKst.getHours()).padStart(2, '0')}:${String(arrDateKst.getMinutes()).padStart(2, '0')}`,
-        btrainNo: tr.btrainNo,
-        isRealtime: true,
-      };
-    });
-  } catch (e) {
-    console.warn('[Subway API] Realtime fetch failed, showing timetable only:', e.message);
-  }
+  // Realtime API fetch removed per user request to rely purely on static timetables
 
   try {
     // 2. Load/Fetch Timetables
@@ -273,49 +213,14 @@ export default async function handler(req, res) {
     }
 
 
-    // 3. Merge: Realtime priority
-    const combined = [...rtArrivals];
-    const normalizeTrainNo = (no) => (no || '').replace(/[^0-9]/g, '');
-    
-    const rtTimeKeys = new Set(rtArrivals.map(a => `${a.subwayId}-${a.updnLine}-${a.arrTime}`));
-    const rtTrainKeys = new Set(rtArrivals.map(a => `${a.subwayId}-${a.updnLine}-${normalizeTrainNo(a.btrainNo)}`));
-    
+    // 3. Filter Future Timetable Entries
+    const combined = [];
     const nowHHMM = `${String(hour).padStart(2, '0')}:${String(nowKst.getMinutes()).padStart(2, '0')}`;
     console.log(`[Subway API] DayTag: ${dayTag}, Time: ${nowHHMM}`);
     
     timetableCache[dayTag].data.forEach(tt => {
-      const normTtTrainNo = normalizeTrainNo(tt.trainNo);
-      const keyPrefix = `${tt.subwayId}-${tt.updnLine}-`;
-      const timeKey = `${keyPrefix}${tt.arrTime}`;
-      const trainKey = `${keyPrefix}${normTtTrainNo}`;
-      
-      const [h, m] = tt.arrTime.split(':').map(Number);
-      const toTimeKey = (hh, mm) => {
-        let finalH = hh, finalM = mm;
-        while (finalM < 0) { finalM += 60; finalH--; }
-        while (finalM > 59) { finalM -= 60; finalH++; }
-        return `${keyPrefix}${String(finalH).padStart(2, '0')}:${String(finalM).padStart(2, '0')}`;
-      };
-
-      // Deduplication Logic:
-      // 1. Priority: Match by Train Number (Normalized)
-      let isDuplicate = rtTrainKeys.has(trainKey);
-      
-      // 2. Fallback: Match by narrow time window (±1 min) if train number didn't match
-      // This handles cases where train numbers might differ but it's clearly the same arrival
-      if (!isDuplicate) {
-        for (let diff = -1; diff <= 1; diff++) {
-          if (rtTimeKeys.has(toTimeKey(h, m + diff))) {
-            isDuplicate = true;
-            break;
-          }
-        }
-      }
-
-      if (!isDuplicate && tt.arrTime >= nowHHMM) {
+      if (tt.arrTime >= nowHHMM) {
         combined.push(tt);
-        rtTimeKeys.add(timeKey);
-        rtTrainKeys.add(trainKey);
       }
     });
 
