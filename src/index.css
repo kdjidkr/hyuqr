@@ -2589,6 +2589,11 @@ p.subtitle {
   letter-spacing: -0.2px;
 }
 
+.stt-route-label.ja {
+  background: rgba(253, 224, 71, 0.2);
+  color: #854d0e;
+}
+
 .stt-tooltip {
   position: absolute;
   bottom: calc(100% + 12px);

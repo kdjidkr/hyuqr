@@ -32,7 +32,7 @@ const IcBus = () => (
 
 const STOP_ICON = { '기숙사': IcBed, '셔틀콕': IcSchool, '한대앞': IcSubway, '셔틀콕 건너편': IcSchool, '예술인': IcBus, '중앙역': IcSubway };
 
-const ROUTE_LABEL = { 'DH': '직행', 'D': '직행', 'DY': '예술인\n직행', 'C': '순환', '중앙역': '순환' };
+const ROUTE_LABEL = { 'DH': '직행', 'D': '직행', 'DY': '예술인\n직행', 'C': '순환', '중앙역': '중앙역' };
 
 // ── 지하철 노선 뱃지 ──────────────────────────────────────────────────────────
 function LineBadge({ opt, size = 32 }) {
@@ -110,7 +110,7 @@ function TimetableRow({ row, lineId, isNext, isLast, isPast, subwayArrivals, sub
     ? (subwayOffPeak ? '운행 시간 외' : '연결 열차 없음') : null;
 
   const rLabel = ROUTE_LABEL[row.route] || row.route;
-  const routeClass = row.route === 'DY' ? 'dy' : (row.route === 'C' || row.route === '중앙역' ? 'c' : 'd');
+  const routeClass = row.route === 'DY' ? 'dy' : (row.route === '중앙역' ? 'ja' : (row.route === 'C' ? 'c' : 'd'));
 
   return (
     <div className={`stt-trow${isNext ? ' next' : ''}${isPast ? ' past' : ''}`}>
@@ -274,7 +274,7 @@ export function ShuttleView() {
             </div>
           )}
 
-          <div style={{ 
+          <div style={{
             position: 'absolute', right: 0, top: -2,
             display: 'flex', alignItems: 'center', gap: 6
           }}>
