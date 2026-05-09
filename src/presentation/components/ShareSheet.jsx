@@ -17,7 +17,7 @@ function stripHtml(html) {
 export function ShareSheet({ cafeName, dateText, dateLabel, mealType, menuText, shareUrl, onClose, onCopied }) {
   const mealEmoji = mealType.includes('조식') ? '☀️' : mealType.includes('석식') ? '🌙' : mealType.includes('천원') ? '💰' : '🍴';
   const titleLine = `${dateLabel}의 '${cafeName}' ${mealType}${mealEmoji} 공유하기`;
-  const kakaoTitle = `${dateLabel}의 ${cafeName} ${mealType}${mealEmoji} 학식 메뉴는 뭘까요?`;
+  const kakaoTitle = `${dateLabel}의 '${cafeName}' ${mealType}${mealEmoji} 메뉴는 뭘까요?`;
   const cleanMenu = stripHtml(menuText);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export function ShareSheet({ cafeName, dateText, dateLabel, mealType, menuText, 
         content: {
           title: kakaoTitle,
           description: '하냥냥에서 자세한 학식 정보를 확인해보세요.',
-          imageUrl: 'https://www.hanyang.life/hanyang_splash.png',
+          imageUrl: 'https://www.hanyang.life/hanyang_cafeteria.png',
           link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
         },
         buttons: [
