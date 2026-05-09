@@ -203,6 +203,7 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
           dateText={formatDate(date)}
           mealType={shareTarget.type}
           menuText={shareTarget.menu.menu}
+          dateLabel={shareTarget.dateLabel}
           shareUrl={shareTarget.shareUrl}
           onClose={() => setShareTarget(null)}
           onCopied={handleCopied}
@@ -281,6 +282,7 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
                                 const isCheonwon = type.includes('천원') || m.menu.includes('천원의아침밥');
                                 const cardClass = `menu-card${hasJeyuk ? ' menu-card--jeyuk' : ''}`;
                                 const shareUrl = `${window.location.origin}?date=${date.toISOString().split('T')[0]}&cafe=${selectedCafeId}&type=${encodeURIComponent(type)}`;
+                                const dateLabel = `${date.getUTCMonth() + 1}월 ${date.getUTCDate()}일`;
                                 const menuLines = m.menu.split('\n').filter(line => !line.includes('천원의아침밥'));
                                 return (
                                   <div key={i} className={cardClass}>
@@ -303,7 +305,7 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
                                       ) : <span />}
                                       <button
                                         className="menu-card-share-btn"
-                                        onClick={() => setShareTarget({ type, menu: m, shareUrl })}
+                                        onClick={() => setShareTarget({ type, menu: m, shareUrl, dateLabel })}
                                         aria-label="메뉴 공유"
                                       >
                                         <Share2 size={14} />
