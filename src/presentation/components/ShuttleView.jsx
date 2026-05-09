@@ -214,17 +214,23 @@ export function ShuttleView() {
       <div className="stt-section">
         <div className="stt-section-header" style={{ alignItems: 'center' }}>
           <div>
-            <div className="stt-sec-label" style={{ marginBottom: 2 }}>
-              시간표
-              {!isFullMode && (isWeekend ? (
-                <span className="stt-holiday-badge">주말</span>
-              ) : isHolidayServer ? (
-                <span className="stt-holiday-badge">공휴일</span>
-              ) : null)}
-            </div>
+            <div className="stt-sec-label" style={{ marginBottom: 2 }}>시간표</div>
           </div>
 
-          {isFullMode && (
+          {!isFullMode ? (
+            <span style={{
+              marginLeft: 16,
+              padding: '4px 12px',
+              borderRadius: 6,
+              background: 'white',
+              color: 'var(--color-primary)',
+              fontWeight: 700,
+              fontSize: 12,
+              boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+            }}>
+              {isHolidayServer ? '공휴일' : isWeekend ? '주말' : '평일'}
+            </span>
+          ) : (
             <div style={{
               display: 'flex',
               background: 'var(--color-surface-variant)',
@@ -241,11 +247,9 @@ export function ShuttleView() {
                   background: fullDayType === '평일' ? 'white' : 'transparent',
                   color: fullDayType === '평일' ? 'var(--color-primary)' : 'var(--color-text-hint)',
                   boxShadow: fullDayType === '평일' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.2s ease',
                 }}
-              >
-                평일
-              </button>
+              >평일</button>
               <button
                 onClick={() => setFullDayType('주말')}
                 style={{
@@ -253,11 +257,9 @@ export function ShuttleView() {
                   background: fullDayType === '주말' ? 'white' : 'transparent',
                   color: fullDayType === '주말' ? 'var(--color-primary)' : 'var(--color-text-hint)',
                   boxShadow: fullDayType === '주말' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.2s ease',
                 }}
-              >
-                주말/공휴일
-              </button>
+              >주말/공휴일</button>
             </div>
           )}
 

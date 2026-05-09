@@ -1500,9 +1500,9 @@ p.subtitle {
 }
 
 .share-sheet-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--color-text-sub);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-main);
   text-align: center;
   margin: 0 0 var(--space-page);
 }
