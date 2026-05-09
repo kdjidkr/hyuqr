@@ -1357,10 +1357,6 @@ p.subtitle {
   z-index: 1;
 }
 
-.menu-price--cheonwon {
-  color: #c0395a;
-  background: rgba(220, 80, 110, 0.08);
-}
 
 .menu-hours {
   display: flex;

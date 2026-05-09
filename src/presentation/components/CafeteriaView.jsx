@@ -288,7 +288,7 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
                                   <div key={i} className={cardClass}>
                                     {m.price && (
                                       <div className={`menu-price${isCheonwon ? ' menu-price--cheonwon' : ''}`}>
-                                        {isCheonwon ? `💕 ${m.price} 💕` : m.price}
+                                        {isCheonwon ? `${m.price}💕` : m.price}
                                       </div>
                                     )}
                                     <div className="menu-items">
