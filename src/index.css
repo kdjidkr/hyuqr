@@ -1350,11 +1350,16 @@ p.subtitle {
   right: 1.25rem;
   color: var(--color-primary);
   font-weight: 700;
-  font-size: 1rem;
-  background: rgba(14, 74, 132, 0.05);
+  font-size: 0.9rem;
+  background: rgba(14, 74, 132, 0.06);
   padding: 4px 10px;
   border-radius: var(--radius-sm);
   z-index: 1;
+}
+
+.menu-price--cheonwon {
+  color: #c0395a;
+  background: rgba(220, 80, 110, 0.08);
 }
 
 .menu-hours {
@@ -1371,11 +1376,8 @@ p.subtitle {
   align-items: center;
   margin-top: 0.6rem;
   padding-top: 0.6rem;
-  border-top: 1px solid #e2e8f0;
-}
-
-.menu-hours--card {
   padding-left: 0.2rem;
+  border-top: 1px solid #e2e8f0;
 }
 
 .menu-card--jeyuk {
@@ -1454,24 +1456,22 @@ p.subtitle {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border: none;
-  background: transparent;
-  border-radius: var(--radius-full);
-  color: var(--color-text-hint);
+  background: #f1f5f9;
+  border-radius: 50%;
+  color: var(--color-text-sub);
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 
 .menu-card-share-btn:hover {
-  background: #f1f5f9;
-  color: var(--color-text-sub);
+  background: #e2e8f0;
 }
 
 .menu-card-share-btn:active {
-  background: #e2e8f0;
-  transform: scale(0.92);
+  transform: scale(0.9);
 }
 
 /* Share Bottom Sheet */

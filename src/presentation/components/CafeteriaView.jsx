@@ -278,13 +278,19 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
                             <div className="accordion-inner">
                               {menus.map((m, i) => {
                                 const hasJeyuk = m.menu.includes('제육');
+                                const isCheonwon = type.includes('천원') || m.menu.includes('천원의아침밥');
                                 const cardClass = `menu-card${hasJeyuk ? ' menu-card--jeyuk' : ''}`;
                                 const shareUrl = `${window.location.origin}?date=${date.toISOString().split('T')[0]}&cafe=${selectedCafeId}&type=${encodeURIComponent(type)}`;
+                                const menuLines = m.menu.split('\n').filter(line => !line.includes('천원의아침밥'));
                                 return (
                                   <div key={i} className={cardClass}>
-                                    {m.price && <div className="menu-price">{m.price}</div>}
+                                    {m.price && (
+                                      <div className={`menu-price${isCheonwon ? ' menu-price--cheonwon' : ''}`}>
+                                        {isCheonwon ? `💕 ${m.price} 💕` : m.price}
+                                      </div>
+                                    )}
                                     <div className="menu-items">
-                                      {m.menu.split('\n').map((line, idx) => (
+                                      {menuLines.map((line, idx) => (
                                         <MenuItemLine key={idx} html={line} />
                                       ))}
                                     </div>
