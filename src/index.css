@@ -1357,10 +1357,6 @@ p.subtitle {
   z-index: 1;
 }
 
-.menu-price--cheonwon {
-  color: #c0395a;
-  background: rgba(220, 80, 110, 0.08);
-}
 
 .menu-hours {
   display: flex;
@@ -1504,9 +1500,9 @@ p.subtitle {
 }
 
 .share-sheet-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--color-text-sub);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-main);
   text-align: center;
   margin: 0 0 var(--space-page);
 }
