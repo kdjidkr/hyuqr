@@ -114,13 +114,9 @@ function TimetableRow({ row, lineId, isNext, isLast, isPast, subwayArrivals, sub
 
   return (
     <div className={`stt-trow${isNext ? ' next' : ''}${isPast ? ' past' : ''}`}>
-      {isNext && (
-        <div className={isLast ? "stt-last-tag" : "stt-next-tag"}>
-          {isLast ? "마지막 셔틀" : "다음 셔틀"}
-        </div>
-      )}
-      {isLast && !isNext && <div className="stt-last-tag">마지막 셔틀</div>}
-      {isPast && <div className="stt-past-tag">이전 셔틀</div>}
+      {isPast && <div className="stt-past-tag">이전 셔틀{isLast && <span className="stt-mak-badge">막</span>}</div>}
+      {isNext && <div className="stt-next-tag">다음 셔틀{isLast && <span className="stt-mak-badge">막</span>}</div>}
+      {isLast && !isNext && !isPast && <div className="stt-last-tag">마지막 셔틀</div>}
 
       <div className="stt-shuttle-col" style={{ paddingTop: (isNext || isLast || isPast) ? 26 : 16, flex: hideSubwayCol ? 1 : '0 0 52%' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -227,7 +223,7 @@ export function ShuttleView() {
         </div>
 
         <div className="stt-col-header">
-          <div style={{ flex: hideSubwayCol ? 1 : '0 0 52%', paddingLeft: 16 }} className="stt-col-label">출발 시간</div>
+          <div style={{ flex: hideSubwayCol ? 1 : '0 0 52%', paddingLeft: 90 }} className="stt-col-label">출발 시간</div>
           {!hideSubwayCol && (
             <div style={{ flex: 1, paddingLeft: 4 }} className="stt-col-label">
               {needsSubway ? '연결 지하철' : '도착'}
