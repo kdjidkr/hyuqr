@@ -14,8 +14,9 @@ function stripHtml(html) {
   return html.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').trim();
 }
 
-export function ShareSheet({ cafeName, dateText, mealType, menuText, shareUrl, onClose, onCopied }) {
+export function ShareSheet({ cafeName, dateText, dateLabel, mealType, menuText, shareUrl, onClose, onCopied }) {
   const titleLine = `[${cafeName}] ${dateText} ${mealType}`;
+  const kakaoTitle = `${dateLabel}의 ${cafeName} ${mealType} 학식 메뉴는 뭘까요?`;
   const cleanMenu = stripHtml(menuText);
 
   useEffect(() => {
@@ -26,18 +27,17 @@ export function ShareSheet({ cafeName, dateText, mealType, menuText, shareUrl, o
 
   const handleKakao = () => {
     if (window.Kakao?.isInitialized()) {
-      const imageUrl = `${window.location.origin}/hanyang_splash.png`;
       window.Kakao.Share.sendDefault({
         objectType: 'feed',
         content: {
-          title: titleLine,
-          description: cleanMenu.slice(0, 100),
-          imageUrl,
+          title: kakaoTitle,
+          description: '하냥냥에서 자세한 학식 정보를 확인해보세요.',
+          imageUrl: `${window.location.origin}/hanyang_splash.png`,
           link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
         },
         buttons: [
           {
-            title: '메뉴 보러가기',
+            title: '하냥냥으로 이동해서 학식 메뉴보기',
             link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
           },
         ],
@@ -46,7 +46,7 @@ export function ShareSheet({ cafeName, dateText, mealType, menuText, shareUrl, o
       return;
     }
     if (navigator.share) {
-      navigator.share({ title: titleLine, text: cleanMenu, url: shareUrl }).catch(() => {});
+      navigator.share({ title: kakaoTitle, url: shareUrl }).catch(() => {});
       onClose();
       return;
     }
