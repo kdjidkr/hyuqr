@@ -11,7 +11,7 @@ if (!admin.apps.length) {
   try {
     // If FIREBASE_PRIVATE_KEY contains literal \n, replace them with actual newlines
     const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
-    
+
     admin.initializeApp({
       credential: admin.credential.cert({
         projectId: process.env.VITE_FIREBASE_PROJECT_ID,
@@ -56,7 +56,6 @@ export default async function handler(req, res) {
     }
 
     // 3. Fetch today's menu
-    // Assuming the app is deployed to hanyang.life, or fallback to it
     const host = req.headers.host || 'hanyang.life';
     const protocol = host.includes('localhost') ? 'http' : 'https';
     const menuRes = await fetch(`${protocol}://${host}/api/menu`);
@@ -68,39 +67,64 @@ export default async function handler(req, res) {
 
     // Prepare notifications
     const messages = [];
+    const sentTokens = new Set(); // 중복 발송 방지용
 
     matchingSubscriptions.forEach(sub => {
       const keywords = sub.params?.keywords || [];
       const token = sub.devices?.fcm_token;
 
-      if (!keywords.length || !token) return;
+      if (!keywords.length || !token || sentTokens.has(token)) return;
 
       // Find if any keyword exists in today's menu
       let foundKeywords = [];
-      menuData.data.forEach(cafe => {
-        if (!cafe.available) return;
-        cafe.menus.forEach(menuItem => {
-          keywords.forEach(kw => {
-            if (menuItem.menu.includes(kw) && !foundKeywords.includes(kw)) {
-              foundKeywords.push(kw);
+      const matchedCafes = [];
+      let targetCafeId = '';
+      let targetMealType = '';
+
+      for (const cafe of menuData.data) {
+        if (!cafe.available) continue;
+        let cafeMatched = false;
+        for (const menuItem of cafe.menus) {
+          if (keywords.some(kw => menuItem.menu.includes(kw))) {
+            const matchedInThisItem = keywords.filter(kw => menuItem.menu.includes(kw));
+            matchedInThisItem.forEach(kw => {
+              if (!foundKeywords.includes(kw)) foundKeywords.push(kw);
+            });
+
+            if (!targetCafeId) {
+              targetCafeId = cafe.id;
+              targetMealType = menuItem.type;
             }
-          });
-        });
-      });
+            cafeMatched = true;
+          }
+        }
+        if (cafeMatched) {
+          matchedCafes.push(cafe.name);
+        }
+      }
 
       if (foundKeywords.length > 0) {
+        const dateParam = menuData.date.replace(/\//g, '-');
+        const deepLink = `https://${host}/?tab=cafe&date=${dateParam}&cafe=${targetCafeId}&type=${encodeURIComponent(targetMealType)}`;
+
+        const cafeInfo = matchedCafes.length > 1
+          ? `${matchedCafes[0]} 등 ${matchedCafes.length}곳`
+          : matchedCafes[0];
+
         messages.push({
           token: token,
           notification: {
-            title: '🍔 기다리던 학식 메뉴가 나왔어요!',
-            body: `오늘 식단에 [${foundKeywords.join(', ')}] 메뉴가 포함되어 있습니다. 앱에서 확인해보세요!`,
+            title: '🍔 기다리던 메뉴가 나왔어요!',
+            body: `오늘 ${cafeInfo}에 [${foundKeywords.join(', ')}] 메뉴가 있어요! 얼른 확인해볼까요?`,
           },
           webpush: {
             fcmOptions: {
-              link: 'https://hanyang.life'
+              link: deepLink
             }
           }
         });
+
+        sentTokens.add(token); // 발송 목록에 추가
       }
     });
 
