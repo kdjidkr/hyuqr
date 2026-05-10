@@ -57,18 +57,18 @@ export function ShareSheet({ cafeName, dateText, dateLabel, mealType, menuText, 
         objectType: 'feed',
         content: {
           title: kakaoTitle,
-          description: '하냥냥에서 자세한 학식 정보를 확인해보세요.',
+          // description: '하냥냥에서 자세한 학식 정보를 확인해보세요.',
           imageUrl: 'https://www.hanyang.life/hanyang_cafeteria.jpg',
           imageWidth: 800,
           imageHeight: 500,
           link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
         },
-        // buttons: [
-        //   {
-        //     title: '하냥냥에서 학식 메뉴 보기',
-        //     link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
-        //   },
-        // ],
+        buttons: [
+          {
+            title: '학식 정보 확인하기',
+            link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
+          },
+        ],
       });
       onClose();
     } catch (e) {
