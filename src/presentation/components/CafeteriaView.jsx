@@ -97,6 +97,7 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
 
   const selectedCafe = cafes.find(c => c.id === selectedCafeId) || { menus: [] };
 
+  // 식당 자동 선택 및 메뉴 유무 확인
   useEffect(() => {
     if (!cafes.length) return;
     const current = cafes.find(c => c.id === selectedCafeId);
@@ -106,9 +107,24 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
     }
   }, [cafes]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // 딥링크 처리: 날짜 동기화
+  useEffect(() => {
+    const urlDate = urlParams.get('date');
+    if (urlDate) {
+      const parsed = new Date(urlDate);
+      if (!isNaN(parsed) && urlDate !== date.toISOString().split('T')[0]) {
+        changeDate(parsed);
+      }
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 딥링크 처리: 파라미터 제거 (모든 연동 준비 후)
   useEffect(() => {
     if (window.location.search) {
-      window.history.replaceState({}, '', window.location.pathname);
+      const t = setTimeout(() => {
+        window.history.replaceState({}, '', window.location.pathname);
+      }, 1000); // 넉넉히 1초 후 제거
+      return () => clearTimeout(t);
     }
   }, []);
 
@@ -118,16 +134,37 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
     const urlType = urlTypeRef.current;
     if (urlType) {
       const initial = {};
+      let foundExact = false;
+      
       selectedCafe.menus.forEach(m => {
-        if (initial[m.type] === undefined) initial[m.type] = m.type === urlType;
+        // 정확히 일치하거나, 포함되어 있는 경우 (예: "중식" vs "중식 (학식)")
+        const match = m.type === urlType || m.type.includes(urlType) || urlType.includes(m.type);
+        if (initial[m.type] === undefined) {
+          initial[m.type] = match;
+          if (match) foundExact = true;
+        }
       });
+      
       setExpandedGroups(initial);
       urlTypeRef.current = null;
 
-      setTimeout(() => {
-        const targetEl = listRef.current?.querySelector(`[data-type="${CSS.escape(urlType)}"]`);
-        if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 150);
+      if (foundExact) {
+        setTimeout(() => {
+          // 정확히 일치하는 data-type을 찾거나, 포함하는 요소를 찾음
+          const targetEl = listRef.current?.querySelector(`[data-type="${CSS.escape(urlType)}"]`) || 
+                          listRef.current?.querySelector(`[data-type*="${urlType}"]`);
+          if (targetEl) {
+            const headerOffset = 120; // 고정 헤더 높이 고려
+            const elementPosition = targetEl.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        }, 300);
+      }
       return;
     }
 

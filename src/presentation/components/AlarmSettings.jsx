@@ -143,20 +143,66 @@ function TimePicker({ value, onChange, day, onDayChange }) {
     overflowY: 'auto',
     scrollSnapType: 'y mandatory',
     width,
+    touchAction: 'pan-y',
+    scrollbarWidth: 'none',
+    msOverflowStyle: 'none',
+    cursor: 'grab',
   });
 
+  // --- 드래그로 휠 돌리기 (마우스용) ---
+  const handleDragScroll = (ref, liveSetter) => {
+    let isDown = false;
+    let startY;
+    let scrollTop;
+
+    const onDown = (e) => {
+      isDown = true;
+      ref.current.style.cursor = 'grabbing';
+      startY = e.pageY - ref.current.offsetTop;
+      scrollTop = ref.current.scrollTop;
+    };
+
+    const onLeave = () => {
+      isDown = false;
+      ref.current.style.cursor = 'grab';
+    };
+
+    const onUp = () => {
+      isDown = false;
+      ref.current.style.cursor = 'grab';
+    };
+
+    const onMove = (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const y = e.pageY - ref.current.offsetTop;
+      const walk = (y - startY) * 1.2; // 감도 조절 (1.5 -> 1.2)
+      ref.current.scrollTop = scrollTop - walk;
+    };
+
+    return { onMouseDown: onDown, onMouseLeave: onLeave, onMouseUp: onUp, onMouseMove: onMove };
+  };
+
   return (
-    <div style={{
-      position: 'relative',
-      display: 'flex',
-      alignItems: 'stretch',
-      height: ITEM_H * VISIBLE,
-      background: 'white',
-      borderRadius: 10,
-      overflow: 'hidden',
-      width: 'fit-content',
-      margin: '0 auto',
-    }}>
+    <div 
+      onMouseDown={e => e.stopPropagation()}
+      onMouseMove={e => e.stopPropagation()}
+      onMouseUp={e => e.stopPropagation()}
+      onTouchStart={e => e.stopPropagation()}
+      onTouchMove={e => e.stopPropagation()}
+      onTouchEnd={e => e.stopPropagation()}
+      style={{
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'stretch',
+        height: ITEM_H * VISIBLE,
+        background: 'white',
+        borderRadius: 10,
+        overflow: 'hidden',
+        width: 'fit-content',
+        margin: '0 auto',
+      }}
+    >
       {/* 선택 하이라이트 바 */}
       <div style={{
         position: 'absolute',
@@ -174,7 +220,7 @@ function TimePicker({ value, onChange, day, onDayChange }) {
       <div
         ref={dayRef}
         onScroll={handleDayScroll}
-        onWheel={handleDayWheel}
+        {...handleDragScroll(dayRef, setLiveDay)}
         className="alarm-picker-scroll"
         style={colStyle(64)}
       >
@@ -185,11 +231,11 @@ function TimePicker({ value, onChange, day, onDayChange }) {
         <div style={{ height: ITEM_H }} />
       </div>
 
-      {/* 오전/오후 — 이제 직접 스크롤 가능 */}
+      {/* 오전/오후 */}
       <div
         ref={ampmRef}
         onScroll={handleAmpmScroll}
-        onWheel={handleAmpmWheel}
+        {...handleDragScroll(ampmRef, setLiveAmpm)}
         className="alarm-picker-scroll"
         style={colStyle(56)}
       >
@@ -204,7 +250,7 @@ function TimePicker({ value, onChange, day, onDayChange }) {
       <div
         ref={hourRef}
         onScroll={handleHourScroll}
-        onWheel={handleHourWheel}
+        {...handleDragScroll(hourRef, setLiveHour)}
         className="alarm-picker-scroll"
         style={colStyle(44)}
       >
@@ -262,7 +308,11 @@ export function AlarmSettings({ onClose }) {
   }));
   const [keywordInput, setKeywordInput] = useState('');
   const [closing, setClosing] = useState(false);
+  const [dragY, setDragY] = useState(0); // 드래그 거리
+  const [isDragging, setIsDragging] = useState(false);
+  const startY = useRef(0);
   const backdropRef = useRef(null);
+  const sheetRef = useRef(null);
 
   const isDirty = !settingsEqual(settings, savedRef.current);
 
@@ -288,10 +338,51 @@ export function AlarmSettings({ onClose }) {
   useEffect(() => {
     const el = backdropRef.current;
     if (!el) return;
-    const prevent = (e) => e.preventDefault();
+    const prevent = (e) => {
+      // 시트 내부의 스크롤 요소가 아닐 때만 차단
+      if (!e.target.closest('.alarm-picker-scroll')) {
+        e.preventDefault();
+      }
+    };
     el.addEventListener('touchmove', prevent, { passive: false });
     return () => el.removeEventListener('touchmove', prevent);
   }, []);
+
+  // 드래그 제어 핸들러 (전체 시트용)
+  const handleTouchStart = (e) => {
+    // 내부 스크롤 중이면 드래그 무시
+    if (sheetRef.current && sheetRef.current.scrollTop > 0) return;
+    startY.current = e.touches ? e.touches[0].clientY : e.clientY;
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging) return;
+    
+    const currentY = e.touches ? e.touches[0].clientY : e.clientY;
+    const deltaY = currentY - startY.current;
+
+    // 아래로 내릴 때만 시트 이동
+    if (deltaY > 0) {
+      // 이벤트 전파 방지 (스크롤 발생 차단)
+      if (e.cancelable) e.preventDefault();
+      setDragY(deltaY);
+    } else {
+      // 위로 올리려 할 때는 드래그 중단 (내부 스크롤 허용)
+      setDragY(0);
+      setIsDragging(false);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    if (dragY > 120) {
+      handleClose();
+    } else {
+      setDragY(0);
+    }
+  };
 
   const toggle = async () => {
     const turningOn = !settings.jeyukAlert;
@@ -319,7 +410,10 @@ export function AlarmSettings({ onClose }) {
   // 닫힘 애니메이션 후 실제 onClose 호출
   const triggerClose = (msg) => {
     setClosing(true);
-    setTimeout(() => onClose(msg), 260);
+    // 애니메이션 속도와 맞춤 (260ms)
+    setTimeout(() => {
+      onClose(msg);
+    }, 250);
   };
 
   const handleClose = () => {
@@ -386,11 +480,26 @@ export function AlarmSettings({ onClose }) {
       onClick={handleClose}
     >
       <div
-        className="w-[calc(100%-64px)] max-w-[300px] bg-white rounded-card px-5 pb-4 max-h-[90vh] overflow-y-auto mb-6"
-        style={{ animation: closing ? 'sheetDown 0.26s cubic-bezier(0.4,0,1,1) forwards' : 'sheetUp 0.3s cubic-bezier(0.16,1,0.3,1)' }}
+        ref={sheetRef}
+        className="w-[calc(100%-64px)] max-w-[300px] bg-white rounded-card px-5 pb-4 max-h-[90vh] overflow-y-auto mb-6 relative select-none"
+        style={{ 
+          transform: `translateY(${dragY}px)`,
+          transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+          animation: closing ? 'sheetDown 0.25s cubic-bezier(0.4, 0, 1, 1) forwards' : 'sheetUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+          willChange: 'transform'
+        }}
         onClick={e => e.stopPropagation()}
+        onMouseDown={handleTouchStart}
+        onMouseMove={handleTouchMove}
+        onMouseUp={handleTouchEnd}
+        onMouseLeave={handleTouchEnd}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
-        <div className="w-9 h-1 bg-[#e2e8f0] rounded-full mx-auto mt-3" />
+        <div className="py-3">
+          <div className="w-9 h-1 bg-[#e2e8f0] rounded-full mx-auto" />
+        </div>
 
         <div className="flex items-center justify-between py-3.5 pb-2.5 border-b border-[#f1f5f9] mb-0.5">
           <span className="text-[18px] font-extrabold text-text-main leading-none">학식 알림설정</span>

@@ -4,34 +4,6 @@ import { Loader2, ChevronDown } from 'lucide-react';
 import { STOPS, SUBWAY_OPTS, connectingTrains } from '../../domain/entities/Shuttle.js';
 import { useShuttle } from '../hooks/useShuttle.js';
 
-// ── 아이콘
-const IcBed = () => (
-  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M2 20V10h20v10M2 10V8a2 2 0 012-2h5a2 2 0 012 2v2M13 10V8a2 2 0 012-2h5a2 2 0 012 2v2" />
-  </svg>
-);
-const IcSchool = () => (
-  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 21h18M3 10l9-7 9 7M5 21V10M19 21V10M9 21V15h6v6" />
-  </svg>
-);
-const IcSubway = () => (
-  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-    <rect x="4" y="3" width="16" height="13" rx="3" />
-    <path d="M4 10h16" />
-    <circle cx="9" cy="16" r="2" /><circle cx="15" cy="16" r="2" />
-  </svg>
-);
-const IcBus = () => (
-  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="5" width="20" height="13" rx="2" />
-    <path d="M2 11h20" />
-    <circle cx="7" cy="18" r="1.5" /><circle cx="17" cy="18" r="1.5" />
-  </svg>
-);
-
-const STOP_ICON = { '기숙사': IcBed, '셔틀콕': IcSchool, '한대앞': IcSubway, '셔틀콕 건너편': IcSchool, '예술인': IcBus, '중앙역': IcSubway };
-
 const ROUTE_LABEL = { 'DH': '직행', 'D': '직행', 'DY': '예술인\n직행', 'C': '순환', '중앙역': '중앙역' };
 
 // ── 지하철 노선 뱃지
@@ -234,41 +206,33 @@ export function ShuttleView() {
   return (
     <div className="pb-20 [animation:slideUp_0.4s_ease-out]">
       {/* 출발지 선택 */}
-      <div className="mb-6 sticky top-0 bg-surface z-[100] pb-3 shadow-[0_8px_12px_-12px_rgba(0,0,0,0.15)]">
+      <div className="mb-6 sticky top-0 bg-[#F8F9FA]/40 backdrop-blur-xl z-[100] -mx-[50vw] px-[50vw] pb-3">
         <div className="flex items-center text-2xl font-extrabold text-text-main mb-3">
           출발지
-          {(isHolidayServer || isWeekend) && (
-            <span className="inline-flex items-center ml-2.5 px-2.5 py-0.5 bg-error text-white rounded-full text-[0.95rem] font-extrabold leading-[1.1] opacity-85">
-              {isHolidayServer ? '공휴일' : '주말'}
-            </span>
-          )}
         </div>
         <div className="grid grid-cols-3 gap-2">
-          {STOPS.map((s, idx) => {
-            const Icon = STOP_ICON[s];
-            return (
-              <div
-                key={s}
-                className={`py-[11px] px-2 text-center flex items-center justify-center gap-1 border-[1.5px] rounded-full font-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all duration-150 shadow-[0_2px_4px_rgba(0,0,0,0.02)] relative ${
-                  stop === s
-                    ? 'bg-primary text-white border-primary shadow-[0_4px_12px_rgba(14,74,132,0.22)]'
-                    : 'border-[#e2e8f0] bg-white text-text-sub hover:bg-surface hover:border-[#cbd5e1]'
-                }`}
-                onClick={() => setStop(s)}
-                style={{ position: 'relative' }}
-              >
-                {initialStop === s && showTooltip && (
-                  <div className={`stt-tooltip ${idx >= 3 ? 'bottom' : 'top'} absolute left-1/2 bg-[rgba(33,37,41,0.9)] text-white px-3.5 py-2.5 rounded-card text-[11px] font-bold whitespace-nowrap shadow-[0_12px_24px_-6px_rgba(0,0,0,0.3)] z-[500] flex items-center pointer-events-none backdrop-blur-sm ${idx >= 3 ? '[animation:tooltipPopDown_0.4s_cubic-bezier(0.175,0.885,0.32,1.275)] top-[calc(100%+12px)] bottom-auto' : '[animation:tooltipPop_0.4s_cubic-bezier(0.175,0.885,0.32,1.275)] bottom-[calc(100%+12px)]'}`}>
-                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
-                      <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
-                    </svg>
-                    잠깐! 이 출발지가 맞나요?
-                  </div>
-                )}
-                <Icon /> {s}
-              </div>
-            );
-          })}
+          {STOPS.map((s, idx) => (
+            <div
+              key={s}
+              className={`py-[8px] px-2 text-center flex items-center justify-center gap-1 border-[1.5px] rounded-full font-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all duration-150 shadow-[0_2px_4px_rgba(0,0,0,0.02)] relative ${
+                stop === s
+                  ? 'bg-primary text-white border-primary shadow-[0_4px_12px_rgba(14,74,132,0.22)]'
+                  : 'border-[#e2e8f0] bg-white text-text-sub hover:bg-surface hover:border-[#cbd5e1]'
+              }`}
+              onClick={() => setStop(s)}
+              style={{ position: 'relative' }}
+            >
+              {initialStop === s && showTooltip && (
+                <div className={`stt-tooltip ${idx >= 3 ? 'bottom' : 'top'} absolute left-1/2 -translate-x-1/2 bg-[rgba(33,37,41,0.9)] text-white px-3.5 py-2.5 rounded-card text-[11px] font-bold whitespace-nowrap shadow-[0_12px_24px_-6px_rgba(0,0,0,0.3)] z-[500] flex items-center pointer-events-none backdrop-blur-sm ${idx >= 3 ? '[animation:tooltipPopDown_0.4s_cubic-bezier(0.175,0.885,0.32,1.275)] top-[calc(100%+12px)] bottom-auto' : '[animation:tooltipPop_0.4s_cubic-bezier(0.175,0.885,0.32,1.275)] bottom-[calc(100%+12px)]'}`}>
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
+                    <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                  잠깐! 이 출발지가 맞나요?
+                </div>
+              )}
+              {s}
+            </div>
+          ))}
         </div>
       </div>
 
