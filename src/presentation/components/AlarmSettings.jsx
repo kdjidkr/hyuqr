@@ -82,7 +82,6 @@ function TimePicker({ value, onChange }) {
         pointerEvents: 'none',
       }} />
 
-      {/* AM/PM — auto-driven only */}
       <div
         ref={ampmRef}
         className="alarm-picker-scroll"
@@ -101,7 +100,6 @@ function TimePicker({ value, onChange }) {
         <div style={{ height: ITEM_H }} />
       </div>
 
-      {/* Hour — user-scrollable */}
       <div
         ref={hourRef}
         onScroll={handleHourScroll}
@@ -195,12 +193,15 @@ export function AlarmSettings({ onClose }) {
   };
 
   return (
-    <div className="alarm-overlay" onClick={handleClose}>
-      <div className="alarm-sheet" onClick={e => e.stopPropagation()}>
-        <div className="alarm-sheet-handle" />
+    <div className="fixed inset-0 bg-black/45 z-[1100] flex items-end justify-center [animation:fadeIn_0.2s_ease]" onClick={handleClose}>
+      <div
+        className="w-[calc(100%-64px)] max-w-[300px] bg-white rounded-card px-5 pb-4 max-h-[90vh] overflow-y-auto [animation:sheetUp_0.3s_cubic-bezier(0.16,1,0.3,1)] mb-6"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="w-9 h-1 bg-[#e2e8f0] rounded-full mx-auto mt-3" />
 
-        <div className="alarm-sheet-header">
-          <span className="alarm-sheet-title">학식 알림설정</span>
+        <div className="flex items-center justify-between py-3.5 pb-2.5 border-b border-[#f1f5f9] mb-0.5">
+          <span className="text-[18px] font-extrabold text-text-main leading-none">학식 알림설정</span>
           <label className="alarm-toggle" style={{ marginLeft: 'auto', alignSelf: 'center' }}>
             <input type="checkbox" checked={settings.jeyukAlert} onChange={toggle} />
             <span className="alarm-toggle-slider" />
@@ -212,34 +213,42 @@ export function AlarmSettings({ onClose }) {
           pointerEvents: settings.jeyukAlert ? 'auto' : 'none',
           transition: 'opacity 0.2s',
         }}>
-          <div className="alarm-section">
-            <div className="alarm-section-title">키워드</div>
-            <div className="alarm-keyword-row">
+          <div className="py-2 border-b border-[#f1f5f9]">
+            <div className="text-[14px] font-extrabold text-text-main mb-1.5">키워드</div>
+            <div className="flex gap-2 mb-2">
               <input
-                className="alarm-input"
+                className="flex-1 h-10 border-[1.5px] border-[#e2e8f0] rounded-card px-3 text-[14px] text-text-main bg-surface outline-none transition-colors duration-200 focus:border-[#3b82f6] focus:shadow-[0_0_0_3px_rgba(59,130,246,0.15)]"
                 value={keywordInput}
                 onChange={e => setKeywordInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && addKeyword()}
                 placeholder="키워드 입력"
               />
-              <button className="alarm-add-btn" onClick={addKeyword}>
+              <button
+                className="w-10 h-10 bg-[#3b82f6] text-white border-none rounded-card flex items-center justify-center cursor-pointer flex-shrink-0 transition-opacity duration-150 hover:opacity-[0.88]"
+                onClick={addKeyword}
+              >
                 <Plus size={18} />
               </button>
             </div>
             {settings.keywords.length > 0 && (
-              <div className="alarm-keyword-tags">
+              <div className="flex flex-wrap gap-2">
                 {settings.keywords.map(kw => (
-                  <span key={kw} className="alarm-keyword-tag">
+                  <span key={kw} className="flex items-center gap-1 bg-[rgba(59,130,246,0.1)] text-[#3b82f6] text-[12px] font-bold px-3 py-1 rounded-full">
                     {kw}
-                    <button onClick={() => removeKeyword(kw)}><X size={11} /></button>
+                    <button
+                      className="bg-none border-none text-[#3b82f6] cursor-pointer flex items-center p-0 opacity-70 transition-opacity duration-150 hover:opacity-100"
+                      onClick={() => removeKeyword(kw)}
+                    >
+                      <X size={11} />
+                    </button>
                   </span>
                 ))}
               </div>
             )}
           </div>
 
-          <div className="alarm-section" style={{ borderBottom: 'none' }}>
-            <div className="alarm-section-title">언제 알림을 보낼까요?</div>
+          <div className="py-2">
+            <div className="text-[14px] font-extrabold text-text-main mb-1.5">언제 알림을 보낼까요?</div>
             <TimePicker
               value={settings.notifyTime}
               onChange={(t) => setSettings(p => ({ ...p, notifyTime: t }))}

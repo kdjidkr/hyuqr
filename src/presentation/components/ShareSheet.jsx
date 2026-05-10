@@ -28,26 +28,22 @@ export function ShareSheet({ cafeName, dateText, dateLabel, mealType, menuText, 
 
   const handleKakao = () => {
     console.log('[Share] shareUrl:', shareUrl);
-    console.log('[Share] shareUrl origin:', new URL(shareUrl).origin);
     console.log('[Share] kakaoTitle:', kakaoTitle);
     console.log('[Share] Kakao initialized:', window.Kakao?.isInitialized());
-    console.log('[Share] __kakaoStatus:', window.__kakaoStatus);
 
     if (!window.Kakao) {
-      console.error('[Share] window.Kakao 없음 (SDK_NOT_LOADED)');
-      alert('카카오 SDK를 불러오지 못했어요.\n[오류 코드: SDK_NOT_LOADED]\n\nindex.html의 script 태그가 올바른지 확인해주세요.');
+      alert('카카오 SDK를 불러오지 못했어요.\n[오류 코드: SDK_NOT_LOADED]');
       return;
     }
 
     if (!window.Kakao.isInitialized()) {
       const status = window.__kakaoStatus ?? 'UNKNOWN';
-      console.error(`[Share] Kakao 미초기화 (${status})`);
       if (status === 'NO_KEY') {
-        alert('앱 키가 설정되어 있지 않아요.\n[오류 코드: NO_APP_KEY]\n\nVercel 환경변수 VITE_KAKAO_JS_KEY를 확인하고 재배포해주세요.');
+        alert('앱 키가 설정되어 있지 않아요.\n[오류 코드: NO_APP_KEY]');
       } else if (status === 'INIT_ERROR') {
-        alert('SDK 초기화 중 오류가 발생했어요.\n[오류 코드: INIT_ERROR]\n\n카카오 개발자 콘솔에서 앱 키와 도메인 등록을 확인해주세요.');
+        alert('SDK 초기화 중 오류가 발생했어요.\n[오류 코드: INIT_ERROR]');
       } else {
-        alert('SDK가 아직 초기화되지 않았어요.\n[오류 코드: NOT_INITIALIZED]\n\n카카오 개발자 콘솔에서 도메인 등록 여부를 확인해주세요.');
+        alert('SDK가 아직 초기화되지 않았어요.\n[오류 코드: NOT_INITIALIZED]');
       }
       return;
     }
@@ -57,25 +53,17 @@ export function ShareSheet({ cafeName, dateText, dateLabel, mealType, menuText, 
         objectType: 'feed',
         content: {
           title: kakaoTitle,
-          // description: '하냥냥에서 자세한 학식 정보를 확인해보세요.',
           imageUrl: 'https://www.hanyang.life/hanyang_cafeteria.jpg',
           imageWidth: 800,
           imageHeight: 500,
           link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
         },
-        buttons: [
-          {
-            title: '학식 정보 확인하기',
-            link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
-          },
-        ],
+        buttons: [{ title: '학식 정보 확인하기', link: { mobileWebUrl: shareUrl, webUrl: shareUrl } }],
       });
       onClose();
     } catch (e) {
       const code = e?.code ?? e?.status ?? 'UNKNOWN';
-      const msg = e?.message ?? String(e);
-      console.error(`[Share] Kakao.Share.sendDefault 실패 (${code}):`, e);
-      alert(`카카오톡 공유에 실패했어요.\n[오류 코드: ${code}]\n${msg}`);
+      alert(`카카오톡 공유에 실패했어요.\n[오류 코드: ${code}]`);
     }
   };
 
@@ -108,22 +96,31 @@ export function ShareSheet({ cafeName, dateText, dateLabel, mealType, menuText, 
   };
 
   return (
-    <div className="share-overlay" onClick={onClose}>
-      <div className="share-sheet" onClick={(e) => e.stopPropagation()}>
-        <div className="share-sheet-handle" />
-        <p className="share-sheet-label">{titleLine}</p>
-        <div className="share-actions">
-          <button className="share-action-btn" onClick={handleKakao}>
-            <div className="share-action-icon share-action-icon--kakao">
+    <div className="fixed inset-0 bg-black/45 z-[1200] flex items-end justify-center [animation:fadeIn_0.2s_ease]" onClick={onClose}>
+      <div
+        className="w-full max-w-app bg-white rounded-card rounded-b-none px-5 pb-[calc(20px+env(safe-area-inset-bottom,0px))] [animation:sheetUp_0.3s_cubic-bezier(0.16,1,0.3,1)]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="w-9 h-1 bg-[#e2e8f0] rounded-full mx-auto my-3" />
+        <p className="text-base font-bold text-text-main text-center mb-5">{titleLine}</p>
+        <div className="flex justify-center gap-6 pb-2">
+          <button
+            className="flex flex-col items-center gap-2 bg-none border-none cursor-pointer p-2 rounded-card transition-colors duration-150 font-[inherit] hover:bg-surface"
+            onClick={handleKakao}
+          >
+            <div className="w-[52px] h-[52px] rounded-card flex items-center justify-center bg-[#FEE500]">
               <KakaoIcon />
             </div>
-            <span>카카오톡</span>
+            <span className="text-xs font-semibold text-text-main">카카오톡</span>
           </button>
-          <button className="share-action-btn" onClick={handleShare}>
-            <div className="share-action-icon share-action-icon--link">
+          <button
+            className="flex flex-col items-center gap-2 bg-none border-none cursor-pointer p-2 rounded-card transition-colors duration-150 font-[inherit] hover:bg-surface"
+            onClick={handleShare}
+          >
+            <div className="w-[52px] h-[52px] rounded-card flex items-center justify-center bg-[#f1f5f9]">
               <Share2 size={20} color="#475569" />
             </div>
-            <span>공유하기</span>
+            <span className="text-xs font-semibold text-text-main">공유하기</span>
           </button>
         </div>
       </div>
