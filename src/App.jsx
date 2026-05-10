@@ -43,34 +43,34 @@ export default function App() {
       {!splashDone && (
         <SplashScreen ready={!loading && !menuLoading} onDone={() => setSplashDone(true)} />
       )}
-    <div className="app-container">
-      <div key={activeTab} className={`main-content tab-slide-${slideDir}`}>
-        {activeTab === 'qr' ? (
-          user ? (
-            <QRView
-              user={user}
-              reloginFn={reloginFn}
-              onNameDiscovered={handleNameDiscovered}
-              onLogout={logout}
+      <div className="mx-auto w-full max-w-app min-h-screen px-5 py-6 flex flex-col">
+        <div key={activeTab} className={`tab-slide-${slideDir}`}>
+          {activeTab === 'qr' ? (
+            user ? (
+              <QRView
+                user={user}
+                reloginFn={reloginFn}
+                onNameDiscovered={handleNameDiscovered}
+                onLogout={logout}
+              />
+            ) : (
+              <LoginForm onSuccess={login} />
+            )
+          ) : activeTab === 'cafe' ? (
+            <CafeteriaView
+              date={menuDate}
+              changeDate={changeDate}
+              cafes={cafes}
+              loading={menuLoading}
             />
+          ) : activeTab === 'shuttle' ? (
+            <ShuttleView />
           ) : (
-            <LoginForm onSuccess={login} />
-          )
-        ) : activeTab === 'cafe' ? (
-          <CafeteriaView
-            date={menuDate}
-            changeDate={changeDate}
-            cafes={cafes}
-            loading={menuLoading}
-          />
-        ) : activeTab === 'shuttle' ? (
-          <ShuttleView />
-        ) : (
-          <MiscView />
-        )}
+            <MiscView />
+          )}
+        </div>
+        <BottomNav activeTab={activeTab} setActiveTab={handleTabChange} />
       </div>
-      <BottomNav activeTab={activeTab} setActiveTab={handleTabChange} />
-    </div>
     </>
   );
 }
