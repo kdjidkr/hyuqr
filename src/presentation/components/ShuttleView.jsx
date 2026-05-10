@@ -253,7 +253,7 @@ export function ShuttleView() {
                 style={{ position: 'relative' }}
               >
                 {initialStop === s && showTooltip && (
-                  <div className={`stt-tooltip ${idx >= 3 ? 'bottom' : 'top'} absolute left-1/2 bg-[rgba(33,37,41,0.9)] text-white px-3.5 py-2.5 rounded-card text-[11px] font-bold whitespace-nowrap shadow-[0_12px_24px_-6px_rgba(0,0,0,0.3)] z-[500] flex items-center pointer-events-none backdrop-blur-sm ${idx >= 3 ? '[animation:tooltipPopDown_0.4s_cubic-bezier(0.175,0.885,0.32,1.275)] top-[calc(100%+12px)] bottom-auto' : '[animation:tooltipPop_0.4s_cubic-bezier(0.175,0.885,0.32,1.275)] bottom-[calc(100%+12px)]'}`}>
+                  <div className={`stt-tooltip ${idx >= 3 ? 'bottom' : 'top'} absolute left-1/2 -translate-x-1/2 bg-[rgba(33,37,41,0.9)] text-white px-3.5 py-2.5 rounded-card text-[11px] font-bold whitespace-nowrap shadow-[0_12px_24px_-6px_rgba(0,0,0,0.3)] z-[500] flex items-center pointer-events-none backdrop-blur-sm ${idx >= 3 ? '[animation:tooltipPopDown_0.4s_cubic-bezier(0.175,0.885,0.32,1.275)] top-[calc(100%+12px)] bottom-auto' : '[animation:tooltipPop_0.4s_cubic-bezier(0.175,0.885,0.32,1.275)] bottom-[calc(100%+12px)]'}`}>
                     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
                       <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                     </svg>
