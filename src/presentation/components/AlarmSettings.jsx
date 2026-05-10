@@ -176,7 +176,7 @@ function TimePicker({ value, onChange, day, onDayChange }) {
       if (!isDown) return;
       e.preventDefault();
       const y = e.pageY - ref.current.offsetTop;
-      const walk = (y - startY) * 1.5;
+      const walk = (y - startY) * 1.2; // 감도 조절 (1.5 -> 1.2)
       ref.current.scrollTop = scrollTop - walk;
     };
 
@@ -220,7 +220,6 @@ function TimePicker({ value, onChange, day, onDayChange }) {
       <div
         ref={dayRef}
         onScroll={handleDayScroll}
-        onWheel={handleDayWheel}
         {...handleDragScroll(dayRef, setLiveDay)}
         className="alarm-picker-scroll"
         style={colStyle(64)}
@@ -232,11 +231,10 @@ function TimePicker({ value, onChange, day, onDayChange }) {
         <div style={{ height: ITEM_H }} />
       </div>
 
-      {/* 오전/오후 — 이제 직접 스크롤 가능 */}
+      {/* 오전/오후 */}
       <div
         ref={ampmRef}
         onScroll={handleAmpmScroll}
-        onWheel={handleAmpmWheel}
         {...handleDragScroll(ampmRef, setLiveAmpm)}
         className="alarm-picker-scroll"
         style={colStyle(56)}
@@ -252,7 +250,6 @@ function TimePicker({ value, onChange, day, onDayChange }) {
       <div
         ref={hourRef}
         onScroll={handleHourScroll}
-        onWheel={handleHourWheel}
         {...handleDragScroll(hourRef, setLiveHour)}
         className="alarm-picker-scroll"
         style={colStyle(44)}
