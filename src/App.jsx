@@ -7,12 +7,13 @@ import { LoginForm }     from './presentation/components/LoginForm.jsx';
 import { QRView }        from './presentation/components/QRView.jsx';
 import { CafeteriaView } from './presentation/components/CafeteriaView.jsx';
 import { ShuttleView }   from './presentation/components/ShuttleView.jsx';
+import { PortalView }    from './presentation/components/PortalView.jsx';
 import { MiscView }      from './presentation/components/MiscView.jsx';
 import { BottomNav }     from './presentation/components/BottomNav.jsx';
 import { SplashScreen }  from './presentation/components/SplashScreen.jsx';
 import { BootProvider, useBoot } from './presentation/context/BootContext';
 
-const TAB_ORDER = ['cafe', 'shuttle', 'qr', 'misc'];
+const TAB_ORDER = ['cafe', 'shuttle', 'qr', 'portal', 'misc'];
 
 export default function App() {
   return (
@@ -79,7 +80,11 @@ function MainLayout() {
           ) : activeTab === 'shuttle' ? (
             <ShuttleView />
           ) : (
-            <MiscView />
+            activeTab === 'portal' ? (
+              <PortalView />
+            ) : (
+              <MiscView />
+            )
           )}
         </div>
         <BottomNav activeTab={activeTab} setActiveTab={handleTabChange} />
