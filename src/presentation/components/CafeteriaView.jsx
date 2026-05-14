@@ -1,10 +1,7 @@
 // 컴포넌트: 날짜·식당 선택 및 아코디언 식단 목록 표시
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { ChevronLeft, ChevronRight, Clock, Bell, Share2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { getKSTDate } from '../../utils/time.js';
-import { AlarmSettings } from './AlarmSettings.jsx';
-import { ShareSheet } from './ShareSheet.jsx';
 
 function MenuItemLine({ html }) {
   const scrollWrapRef = useRef(null);
@@ -89,10 +86,6 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
     localStorage.setItem('lastSelectedCafeId', id);
   };
   const [expandedGroups, setExpandedGroups] = useState({});
-  const [showAlarm, setShowAlarm] = useState(false);
-  const [shareTarget, setShareTarget] = useState(null);
-  const [copiedToast, setCopiedToast] = useState(false);
-  const [alarmPopup, setAlarmPopup] = useState('');
   const listRef = useRef(null);
 
   const selectedCafe = cafes.find(c => c.id === selectedCafeId) || { menus: [] };
@@ -211,57 +204,8 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
     return acc;
   }, {});
 
-  const handleCopied = () => {
-    setCopiedToast(true);
-    setTimeout(() => setCopiedToast(false), 2000);
-  };
-
   return (
     <div className="pb-20 relative">
-      {createPortal(
-        <>
-          <button
-            className="fixed bottom-[calc(20px+64px+12px)] left-1/2 -translate-x-1/2 h-10 px-3 bg-[rgba(15,23,42,0.72)] backdrop-blur-[20px] text-surface border border-white/10 rounded-full flex items-center justify-center gap-1.5 cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.35)] z-[999] whitespace-nowrap text-[0.78rem] font-medium font-[inherit] transition-all duration-200 hover:scale-[1.04] hover:bg-[rgba(15,23,42,0.88)] hover:shadow-[0_6px_28px_rgba(0,0,0,0.45)] active:scale-[0.97]"
-            onClick={() => setShowAlarm(true)}
-          >
-            <Bell size={18} />
-            키워드 알림 받기
-          </button>
-          {showAlarm && <AlarmSettings onClose={(msg) => {
-            setShowAlarm(false);
-            if (msg) {
-              setAlarmPopup(msg);
-              setTimeout(() => setAlarmPopup(''), 1500);
-            }
-          }} />}
-        </>,
-        document.body
-      )}
-      {shareTarget && (
-        <ShareSheet
-          cafeName={selectedCafe.name}
-          dateText={formatDate(date)}
-          mealType={shareTarget.type}
-          menuText={shareTarget.menu.menu}
-          dateLabel={shareTarget.dateLabel}
-          shareUrl={shareTarget.shareUrl}
-          onClose={() => setShareTarget(null)}
-          onCopied={handleCopied}
-        />
-      )}
-      {copiedToast && (
-        <div className="copy-toast fixed bottom-[calc(20px+64px+52px)] left-1/2 -translate-x-1/2 bg-[rgba(15,23,42,0.88)] text-white text-[0.78rem] font-semibold px-4 py-2 rounded-full whitespace-nowrap z-[2000] pointer-events-none">
-          링크 복사됨!
-        </div>
-      )}
-      {alarmPopup && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 1500, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.45)', pointerEvents: 'none' }}>
-          <div style={{ background: 'white', borderRadius: 16, padding: '20px 24px', textAlign: 'center', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', maxWidth: 240, margin: '0 24px' }}>
-            <div style={{ fontSize: 22, marginBottom: 8 }}>🔔</div>
-            <p style={{ fontSize: 14, fontWeight: 700, color: '#111827', lineHeight: 1.6, whiteSpace: 'pre-line' }}>{alarmPopup}</p>
-          </div>
-        </div>
-      )}
 
       {/* 고정 헤더 */}
       <div className="sticky top-[-1.25rem] z-[100] bg-surface pt-5 pb-[0.4rem] mt-[-1.25rem] mb-[0.35rem] shadow-[0_4px_6px_-1px_rgba(248,249,250,1),0_10px_15px_-3px_rgba(0,0,0,0.02)]">
@@ -355,13 +299,6 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
                               {menus.map((m, i) => {
                                 const hasJeyuk = m.menu.includes('제육');
                                 const isCheonwon = type.includes('천원') || m.menu.includes('천원의아침밥');
-                                const shareUrl = `${window.location.origin}/?date=${date.toISOString().split('T')[0]}&cafe=${selectedCafeId}&type=${encodeURIComponent(type)}`;
-                                const nowKst = getKSTDate();
-                                const targetStr = date.toISOString().split('T')[0];
-                                const dateLabel = targetStr === nowKst.toISOString().split('T')[0] ? '오늘'
-                                  : targetStr === new Date(nowKst.getTime() + 86400000).toISOString().split('T')[0] ? '내일'
-                                  : targetStr === new Date(nowKst.getTime() - 86400000).toISOString().split('T')[0] ? '어제'
-                                  : `${date.getUTCMonth() + 1}월 ${date.getUTCDate()}일`;
                                 const menuLines = m.menu.split('\n').filter(line => !line.includes('천원의아침밥'));
                                 return (
                                   <div
@@ -378,21 +315,12 @@ export function CafeteriaView({ date, changeDate, cafes, loading }) {
                                         <MenuItemLine key={idx} html={line} />
                                       ))}
                                     </div>
-                                    <div className="flex justify-between items-center mt-[0.6rem] pt-[0.6rem] pl-[0.2rem] border-t border-[#e2e8f0]">
-                                      {hoursText ? (
-                                        <div className="flex items-center gap-1 text-xs text-text-hint">
-                                          <Clock size={12} />
-                                          <span>{hoursText}</span>
-                                        </div>
-                                      ) : <span />}
-                                      <button
-                                        className="flex items-center justify-center flex-shrink-0 w-9 h-9 border-none bg-[#f1f5f9] rounded-full text-text-sub cursor-pointer transition-all duration-150 hover:bg-[#e2e8f0] active:scale-90"
-                                        onClick={() => setShareTarget({ type, menu: m, shareUrl, dateLabel })}
-                                        aria-label="메뉴 공유"
-                                      >
-                                        <Share2 size={14} />
-                                      </button>
-                                    </div>
+                                    {hoursText && (
+                                      <div className="flex items-center gap-1 mt-[0.6rem] pt-[0.6rem] pl-[0.2rem] border-t border-[#e2e8f0] text-xs text-text-hint">
+                                        <Clock size={12} />
+                                        <span>{hoursText}</span>
+                                      </div>
+                                    )}
                                   </div>
                                 );
                               })}

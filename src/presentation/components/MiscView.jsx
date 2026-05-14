@@ -1,6 +1,6 @@
 // 컴포넌트: 체대 헬스장·인스타그램 등 기타 서비스 진입 그리드
 import React, { useState } from 'react';
-import { Dumbbell, LayoutGrid, ArrowUpRight } from 'lucide-react';
+import { Dumbbell, ShieldCheck } from 'lucide-react';
 import { GymTimetable } from './GymTimetable.jsx';
 import { InstagramListView } from './InstagramListView.jsx';
 
@@ -12,15 +12,6 @@ const InstagramIcon = ({ size = 24, color = 'currentColor' }) => (
   </svg>
 );
 
-const PianoIcon = ({ size = 24, color = 'currentColor' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="3" width="18" height="18" rx="2" />
-    <path d="M9 3v18" />
-    <path d="M15 3v18" />
-    <rect x="6" y="3" width="5" height="11" fill={color} stroke="none" />
-    <rect x="13" y="3" width="5" height="11" fill={color} stroke="none" />
-  </svg>
-);
 
 const cardClass = "bg-white border border-[#e2e8f0] rounded-card px-4 py-6 flex flex-col items-center text-center gap-3 cursor-pointer transition-all duration-200 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] hover:-translate-y-0.5 hover:border-hyu-blue-light hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] active:scale-[0.98]";
 
@@ -56,26 +47,15 @@ export function MiscView() {
           </div>
         </div>
 
-        <div className={cardClass} onClick={() => window.location.href = 'https://hanjari.site'}>
-          <div className="w-14 h-14 bg-surface rounded-card flex items-center justify-center">
-            <PianoIcon size={28} color="#0EA5E9" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[0.95rem] font-extrabold text-text-main">
-              동아리 <ArrowUpRight size={14} style={{ display: 'inline', marginLeft: '2px', verticalAlign: 'middle', opacity: 0.8 }} />
-            </span>
-            <span className="text-[0.8rem] text-text-sub">동아리 조회는 '한자리'</span>
-          </div>
-        </div>
+      </div>
 
-        <div className="bg-surface border border-[#e2e8f0] rounded-card px-4 py-6 flex flex-col items-center text-center gap-3 opacity-60 cursor-not-allowed shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)]">
-          <div className="w-14 h-14 bg-surface rounded-card flex items-center justify-center">
-            <LayoutGrid size={28} style={{ opacity: 0.2 }} />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[0.95rem] font-extrabold text-text-main">커밍순</span>
-            <span className="text-[0.8rem] text-text-sub">준비 중입니다</span>
-          </div>
+      <div className="mt-6">
+        <div
+          className="bg-white border border-[#e2e8f0] rounded-card px-5 py-4 flex items-center gap-3 cursor-pointer transition-all duration-200 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] hover:border-hyu-blue-light active:scale-[0.98]"
+          onClick={() => window.open('/privacy.html', '_blank')}
+        >
+          <ShieldCheck size={20} color="#64748b" />
+          <span className="text-[0.9rem] font-semibold text-text-sub">개인정보처리방침</span>
         </div>
       </div>
     </div>
